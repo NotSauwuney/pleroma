@@ -1,0 +1,24 @@
+{
+  "name": "motor",
+  "version": "1.0.1",
+  "description": "Pléroma — RPG por turnos text-based (fatfur/WG), data-driven sin dependencias en runtime.",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.5.1",
+      "onFail": "download"
+    }
+  },
+  "type": "module",
+  "devDependencies": {
+    "archiver": "^8.0.0",
+    "terser": "^5.48.0"
+  }
+}
