@@ -21,7 +21,15 @@ function comer(item, silencioso, tiempo) {
     if (S.mode === "muerte") return true;
   }
 
-  if (item.llena) p.ful += item.llena;
+  if (item.llena) {
+    p.ful += item.llena;
+    // Cuenta como "comida" real (no el chequeo de empacho que pasa {} sin llena).
+    if (p.lifetimeStats) {
+      p.lifetimeStats.mealsConsumed++;
+      tickQuest("meals", {});
+      tickLogro("mealsConsumed", p.lifetimeStats.mealsConsumed);
+    }
+  }
   if (item.engorda) p.fat += item.engorda;
   if (item.cura) p.hea = Math.min(maxHea(), p.hea + item.cura);
   if (item.mana) p.mana = Math.min(maxMana(), p.mana + item.mana);
@@ -39,6 +47,8 @@ function comer(item, silencioso, tiempo) {
     }
   }
   if (!silencioso && item.sabor) log(L(item.sabor), "comida");
+
+  trackWeightStats(p);
 
   // Comer rompe el ayuno: reinicia el contador de inanición
   if (p.ful >= EMPTY_THRESHOLD) p.accionesVacio = 0;

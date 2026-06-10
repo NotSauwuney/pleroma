@@ -100,8 +100,11 @@ function setLang(code) {
   if (!GD.i18n[code]) return;
   GD.lang = code;
   try { localStorage.setItem("pleroma_lang", code); } catch (e) {}
-  if (typeof S !== "undefined" && S.screen) S.screen();   // re-construye la vista actual
-  if (typeof render === "function") render();
+  if (typeof S !== "undefined" && S.screen) {
+    S.screen();   // re-construye la vista actual (incluye render() + re-attachment de listeners)
+  } else if (typeof render === "function") {
+    render();
+  }
 }
 
 /* ------------------------------------------------------------

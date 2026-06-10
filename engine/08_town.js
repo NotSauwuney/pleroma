@@ -5,21 +5,23 @@
    TIENDA / POSADA
    ============================================================ */
 const CATALOGOS = {
-  tienda:        ["daga", "maza", "baston", "cuero", "cota", "pocVida", "pocMana", "digestivo"],
+  tienda:        ["daga", "maza", "baston", "cuero", "cota", "tunica_mago", "manto_mago", "pocVida", "pocMana", "digestivo"],
   posada:        ["pan", "guiso", "pastel", "festin", "agua", "crema"],
-  herreria:      ["espadon", "estoque", "cetro", "placas"],
-  escuela_blanca: ["bendicion", "pocVida", "pocMana"],
-  escuela_gris:   ["piedraViento", "pocVida", "digestivo"],
-  escuela_negra:  ["esenciaVacia", "pocMana"],
+  herreria:      ["espadon", "estoque", "cetro"],
+  escuela_blanca:    ["bendicion", "pocVida", "pocMana"],
+  escuela_gris:      ["piedraViento", "pocVida", "digestivo"],
+  escuela_negra:     ["esenciaVacia", "pocMana"],
+  escuela_plenitud:  ["festin", "pocMana", "digestivo"],
 };
 // Config de cada local: NPC, trabajo, si tiene fragua
 const LUGARES = {
-  posada:        { npc: "tabernero",      job: "servir",        upgrade: false, nameKey: "shop.innName",      descKey: "shop.innDesc" },
-  tienda:        { npc: "mercader",       job: "acomodar",      upgrade: false, nameKey: "shop.storeName",    descKey: "shop.storeDesc" },
-  herreria:      { npc: "herrero",        job: "fuelle",        upgrade: true,  forja: true, nameKey: "shop.herreriaName", descKey: "shop.herreriaDesc" },
-  escuela_blanca: { npc: "maestraSiriel", job: "estudiarLuz",   upgrade: false, nameKey: "shop.blancaName",   descKey: "shop.blancaDesc" },
-  escuela_gris:   { npc: "maestroKor",    job: "estudiarFlujo", upgrade: false, nameKey: "shop.grisName",     descKey: "shop.grisDesc" },
-  escuela_negra:  { npc: "archimagaVexara", job: "asistirVexara", upgrade: false, nameKey: "shop.negraName",  descKey: "shop.negraDesc" },
+  posada:        { npc: "tabernero",      job: "servir",           upgrade: false, nameKey: "shop.innName",       descKey: "shop.innDesc" },
+  tienda:        { npc: "mercader",       job: "acomodar",         upgrade: false, nameKey: "shop.storeName",     descKey: "shop.storeDesc" },
+  herreria:      { npc: "herrero",        job: "fuelle",           upgrade: true,  forja: true, nameKey: "shop.herreriaName", descKey: "shop.herreriaDesc" },
+  escuela_blanca:   { npc: "maestraSiriel",   job: "estudiarLuz",   upgrade: false, nameKey: "shop.blancaName",    descKey: "shop.blancaDesc" },
+  escuela_gris:     { npc: "maestroKor",      job: "estudiarFlujo", upgrade: false, nameKey: "shop.grisName",      descKey: "shop.grisDesc" },
+  escuela_negra:    { npc: "archimagaVexara", job: "asistirVexara", upgrade: false, nameKey: "shop.negraName",     descKey: "shop.negraDesc" },
+  escuela_plenitud: { npc: "vadak",           job: "practicarPlenitud", upgrade: false, nameKey: "shop.plenitudName", descKey: "shop.plenitudDesc" },
 };
 
 // Nombre de un ítem para mostrar (las armas muestran su nivel de mejora +N)
@@ -66,10 +68,20 @@ function abrirTienda(tipo) {
 
   // Sección de hechizos (solo escuelas)
   if (isEscuela) {
-    const hechizosEscuela = Object.values(GD.hechizos).filter((sp) => sp.escuela === tipo);
-    if (hechizosEscuela.length) {
+    // Los hechizos legendarios (Feast) no se compran en la tienda: se desbloquean
+    // narrativamente vía quests de la Plenitud o logros (ver tickLogro).
+    // Hechizos base de esta escuela (sin evoluciones, sin legendarios, sin sinMenu)
+    const hechizosBase = Object.values(GD.hechizos).filter(
+      (sp) => sp.escuela === tipo && !sp.legendario && !sp.sinMenu && !sp.upgradeDe
+    );
+    // Evoluciones disponibles en esta escuela
+    const hechizosEvo = Object.values(GD.hechizos).filter(
+      (sp) => sp.escuela === tipo && !sp.legendario && sp.upgradeDe
+    );
+
+    if (hechizosBase.length) {
       h += `<div class="spellsect"><h3>${t("spell.shopSection")}</h3>`;
-      hechizosEscuela.forEach((sp) => {
+      hechizosBase.forEach((sp) => {
         if (tieneHechizo(sp.id)) {
           h += `<div class="spellrow">
             <span class="spellname">${L(sp.nombre)}</span>
@@ -95,6 +107,30 @@ function abrirTienda(tipo) {
               <button class="spellbuy" disabled>${t("spell.missionRequired")}</button>
             </div>`;
           }
+        }
+      });
+      h += `</div>`;
+    }
+
+    // Sección de evoluciones: aparece si el jugador ya tiene el hechizo base
+    const evosDisponibles = hechizosEvo.filter((sp) => tieneHechizo(sp.upgradeDe));
+    if (evosDisponibles.length) {
+      h += `<div class="spellsect"><h3>${t("spell.evolSection")}</h3>`;
+      evosDisponibles.forEach((sp) => {
+        if (tieneHechizo(sp.id)) {
+          h += `<div class="spellrow spell-evolved">
+            <span class="spellname">◈ ${L(sp.nombre)}</span>
+            <span class="spellinfo">${L(sp.desc)}</span>
+            <button class="spellbuy" disabled>${t("spell.alreadyLearned")}</button>
+          </div>`;
+        } else {
+          const caro = sp.precio > p.oro;
+          const base = GD.hechizos[sp.upgradeDe];
+          h += `<div class="spellrow spell-evolved">
+            <span class="spellname">◈ ${L(sp.nombre)}</span>
+            <span class="spellinfo">${L(sp.desc)} · ${t("spell.manaCost", { n: sp.costoMana })} · ${t("spell.upgradeOf", { base: L(base.nombre) })}</span>
+            <button class="spellbuy" data-spell="${sp.id}" ${caro ? "disabled" : ""}>${t("spell.buy", { n: sp.precio })}</button>
+          </div>`;
         }
       });
       h += `</div>`;

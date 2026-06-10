@@ -51,37 +51,214 @@ function revivir(causa) {
 }
 
 /* ============================================================
-   GUARDADO
+   GUARDADO  —  sistema de múltiples ranuras + exportar/importar
    ============================================================ */
-const SAVE_KEY = "pleroma_save_v1";
-function guardar() {
+const SAVE_KEY_LEGACY = "pleroma_save_v1";   // backward compat
+const SAVE_KEY_PREFIX = "pleroma_save_v2_slot_";
+const SAVE_SLOTS = 5;
+
+function _slotKey(i) { return SAVE_KEY_PREFIX + i; }
+
+function _slotMeta(i) {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({ player: S.player, zona: S.zona }));
-    log(t("menu.saved"), "bien");
-  } catch (e) { log(t("menu.saveFail"), "mal"); }
-  render();
+    const raw = localStorage.getItem(_slotKey(i));
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (!d || !d.player) return null;
+    const fecha = d.fecha ? new Date(d.fecha).toLocaleDateString() : "—";
+    return { nombre: d.player.nombre || "?", nivel: d.player.nivel || 1, fecha };
+  } catch (e) { return null; }
 }
-function haySave() { try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } }
-function cargar() {
+
+function _legacyMeta() {
   try {
-    const d = JSON.parse(localStorage.getItem(SAVE_KEY));
-    if (!d) return;
-    S.player = d.player;
-    if (S.player.arma && S.player.arma.id) S.player.arma = GD.items[S.player.arma.id] || GD.items.garras;
-    if (S.player.armadura && S.player.armadura.id) S.player.armadura = GD.items[S.player.armadura.id] || GD.items.sinArmar;
-    S.player.tempStats = S.player.tempStats || {};
-    S.player.mejoras = S.player.mejoras || {};
-    S.player.pronombres = S.player.pronombres || { s: "they", o: "them", p: "their" };
-    S.player.accionesDesdeEvento = S.player.accionesDesdeEvento || 0;
-    S.player.npcWG = S.player.npcWG || {};
-    S.player.quests = S.player.quests || {};
-    S.player.spells = S.player.spells || [];
-    S.player.mejoras = S.player.mejoras || {};
-    clearLog();
-    log(t("menu.loaded"), "bien");
-    entrarZona(d.zona || GD.world.inicio);
+    const raw = localStorage.getItem(SAVE_KEY_LEGACY);
+    if (!raw) return null;
+    const d = JSON.parse(raw);
+    if (!d || !d.player) return null;
+    return { nombre: d.player.nombre || "?", nivel: d.player.nivel || 1, fecha: "—" };
+  } catch (e) { return null; }
+}
+
+function haySave() {
+  for (let i = 0; i < SAVE_SLOTS; i++) {
+    try { if (localStorage.getItem(_slotKey(i))) return true; } catch (e) {}
+  }
+  try { if (localStorage.getItem(SAVE_KEY_LEGACY)) return true; } catch (e) {}
+  return false;
+}
+
+/* Aplica un objeto de partida a S.player y arranca el juego. */
+function _aplicarSave(d) {
+  S.player = d.player;
+  if (S.player.arma && S.player.arma.id) S.player.arma = GD.items[S.player.arma.id] || GD.items.garras;
+  if (S.player.armadura && S.player.armadura.id) S.player.armadura = GD.items[S.player.armadura.id] || GD.items.sinArmar;
+  S.player.tempStats = S.player.tempStats || {};
+  S.player.mejoras = S.player.mejoras || {};
+  S.player.pronombres = S.player.pronombres || { s: "they", o: "them", p: "their" };
+  S.player.accionesDesdeEvento = S.player.accionesDesdeEvento || 0;
+  S.player.npcWG = S.player.npcWG || {};
+  S.player.quests = S.player.quests || {};
+  S.player.spells = S.player.spells || [];
+  S.player.logros = S.player.logros || {};
+  S.player.lifetimeStats = Object.assign({
+    enemiesDevoured: 0,
+    grapplesSurvived: 0,
+    highestWeight: 0,
+    highestFat: 0,
+    timesObese: 0,
+    mealsConsumed: 0,
+  }, S.player.lifetimeStats || {});
+  clearLog();
+  log(t("menu.loaded"), "bien");
+  entrarZona(d.zona || GD.world.inicio);
+}
+
+/* ---- GUARDAR ---- */
+function _guardarEnSlot(i) {
+  try {
+    const data = { player: S.player, zona: S.zona, fecha: new Date().toISOString(), version: 2 };
+    localStorage.setItem(_slotKey(i), JSON.stringify(data));
+    log(t("save.saved", { n: i + 1 }), "bien");
+  } catch (e) { log(t("menu.saveFail"), "mal"); }
+  guardarPantalla(_guardarPantallaVolverA);
+}
+
+function _exportarSave() {
+  if (!S.player) return;
+  const data = { player: S.player, zona: S.zona, fecha: new Date().toISOString(), version: 2 };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const safe = (S.player.nombre || "partida").replace(/[^a-zA-Z0-9_-]/g, "_");
+  a.href = url;
+  a.download = `pleroma_${safe}_nv${S.player.nivel || 1}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  log(t("save.exported"), "bien");
+}
+
+/* Pantalla de guardado. volverA: "zona" | "combate" */
+let _guardarPantallaVolverA = "zona";
+function guardarPantalla(volverA) {
+  _guardarPantallaVolverA = volverA || "zona";
+  S.screen = () => guardarPantalla(_guardarPantallaVolverA);
+  let h = `<h2>${t("save.title")}</h2><div class="savelist">`;
+  for (let i = 0; i < SAVE_SLOTS; i++) {
+    const meta = _slotMeta(i);
+    const info = meta
+      ? `<b>${meta.nombre}</b> · Nv.${meta.nivel} · <span class="hint">${meta.fecha}</span>`
+      : `<span class="hint">${t("save.slotEmpty")}</span>`;
+    h += `<div class="saveslot">
+      <span class="slotnum">${t("save.slot", { n: i + 1 })}</span>
+      <span class="slotinfo">${info}</span>
+      <button class="act slotbtn-save" data-slot="${i}">${t("save.saveHere")}</button>
+    </div>`;
+  }
+  h += `</div>
+  <div class="saveslot saveexport" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);">
+    <span class="slotinfo" style="font-size:13px;color:var(--muted);">${t("save.exportHint")}
+      <span class="infotip" title="${t("save.exportTooltip")}">ⓘ</span>
+      <b style="color:var(--accent2);font-size:12px;margin-left:6px;">${t("save.recommended")}</b>
+    </span>
+    <button class="act primary" id="btnExportSave">${t("save.exportBtn")}</button>
+  </div>`;
+  S.story = h;
+  setActions([{ label: t("ui.back"), cls: "primary", fn: () => {
+    if (_guardarPantallaVolverA === "combate") renderCombate(); else mostrarZona();
+  }}]);
+  document.querySelectorAll(".slotbtn-save").forEach((b) => {
+    b.onclick = () => _guardarEnSlot(+b.dataset.slot);
+  });
+  const btnEx = document.getElementById("btnExportSave");
+  if (btnEx) btnEx.onclick = _exportarSave;
+}
+
+/* ---- CARGAR ---- */
+function _cargarDesdeSlot(i) {
+  try {
+    const raw = localStorage.getItem(_slotKey(i));
+    if (!raw) { log(t("menu.loadFail"), "mal"); return; }
+    _aplicarSave(JSON.parse(raw));
   } catch (e) { log(t("menu.loadFail"), "mal"); }
 }
+
+function _cargarLegacy() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY_LEGACY);
+    if (!raw) { log(t("menu.loadFail"), "mal"); return; }
+    _aplicarSave(JSON.parse(raw));
+  } catch (e) { log(t("menu.loadFail"), "mal"); }
+}
+
+function _importarDesdeArchivo(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const d = JSON.parse(String(reader.result));
+      if (!d || !d.player) throw new Error("invalid");
+      _aplicarSave(d);
+    } catch (e) { log(t("menu.loadFail"), "mal"); renderLog(); }
+  };
+  reader.onerror = () => { log(t("menu.loadFail"), "mal"); renderLog(); };
+  reader.readAsText(file, "utf-8");
+}
+
+function cargarPantalla() {
+  S.mode = "menu";
+  S.screen = cargarPantalla;
+  S.player = null;
+  let h = `<h2>${t("load.title")}</h2><div class="savelist">`;
+  for (let i = 0; i < SAVE_SLOTS; i++) {
+    const meta = _slotMeta(i);
+    const info = meta
+      ? `<b>${meta.nombre}</b> · Nv.${meta.nivel} · <span class="hint">${meta.fecha}</span>`
+      : `<span class="hint">${t("save.slotEmpty")}</span>`;
+    h += `<div class="saveslot">
+      <span class="slotnum">${t("save.slot", { n: i + 1 })}</span>
+      <span class="slotinfo">${info}</span>
+      <button class="act slotbtn-load"${meta ? "" : " disabled"} data-slot="${i}">${t("load.loadBtn")}</button>
+    </div>`;
+  }
+  // Ranura legacy (partida guardada con sistema viejo)
+  const leg = _legacyMeta();
+  if (leg) {
+    h += `<div class="saveslot" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);">
+      <span class="slotnum hint">${t("load.legacySlot")}</span>
+      <span class="slotinfo"><b>${leg.nombre}</b> · Nv.${leg.nivel}</span>
+      <button class="act" id="btnLoadLegacy">${t("load.loadBtn")}</button>
+    </div>`;
+  }
+  h += `</div>
+  <div class="saveslot" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);">
+    <span class="slotinfo hint">${t("load.importHint")}</span>
+    <button class="act" id="btnImportSave">${t("load.importBtn")}</button>
+    <input type="file" id="inpSaveFile" accept=".json" style="display:none">
+  </div>`;
+  S.story = h;
+  setActions([{ label: t("ui.back"), fn: menuPrincipal }]);
+  document.querySelectorAll(".slotbtn-load").forEach((b) => {
+    if (!b.disabled) b.onclick = () => _cargarDesdeSlot(+b.dataset.slot);
+  });
+  const btnLeg = document.getElementById("btnLoadLegacy");
+  if (btnLeg) btnLeg.onclick = _cargarLegacy;
+  const btnImp = document.getElementById("btnImportSave");
+  const inpFile = document.getElementById("inpSaveFile");
+  if (btnImp && inpFile) {
+    btnImp.onclick = () => inpFile.click();
+    inpFile.onchange = (ev) => {
+      const file = ev.target.files && ev.target.files[0];
+      if (file) _importarDesdeArchivo(file);
+      inpFile.value = "";
+    };
+  }
+}
+
+/* Mantener compatibilidad: guardar() desde topbar llama a guardarPantalla */
+function guardar() { if (S.player) guardarPantalla(); }
 
 /* ============================================================
    MENÚ PRINCIPAL  +  ARRANQUE
@@ -95,7 +272,7 @@ function menuPrincipal() {
     <p>${t("menu.intro")}</p>`;
   setActions([
     { label: t("menu.new"), cls: "primary", fn: nuevaPartida },
-    { label: t("menu.continue"), fn: cargar, disabled: !haySave() },
+    { label: t("menu.continue"), fn: cargarPantalla, disabled: !haySave() },
   ]);
 }
 
@@ -111,7 +288,12 @@ function renderTopbar() {
 }
 
 function bindTopbar() {
-  $("#btnGuardar").onclick = () => { if (S.player) guardar(); };
+  $("#btnGuardar").onclick = () => {
+    if (S.player) {
+      const va = (S.mode === "combate") ? "combate" : "zona";
+      guardarPantalla(va);
+    }
+  };
   $("#btnMenu").onclick = menuPrincipal;
   $("#btnUnidades").onclick = toggleUnidades;
   $("#selLang").onchange = (ev) => { setLang(ev.target.value); renderTopbar(); };

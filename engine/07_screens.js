@@ -77,11 +77,19 @@ function itemResumen(it) {
     let s = [];
     if (it.cura) s.push(t("item.cura", { n: it.cura }));
     if (it.mana) s.push(t("item.mana", { n: it.mana }));
+    if (it.stamina) s.push(t("item.stamina", { n: it.stamina }));
     if (it.vaciar) s.push(t("item.vaciar", { n: it.vaciar }));
+    if (it.llena) {
+      const raw = t("item.llena", { n: it.llena });
+      s.push(it.llena > 0 ? raw : raw.replace(/^\+/, ""));
+    }
     return s.join(", ");
   }
   if (it.tipo === "arma") return t("item.weapon", { d: it.dano, r: it.rango, stat: t("stat." + it.stat + ".abbr"), texto: L(it.texto) });
-  if (it.tipo === "armadura") return t("item.armor", { n: it.def, texto: L(it.texto) });
+  if (it.tipo === "armadura") {
+    const bonuses = ["FUE","AGI","INT","AGU","EST"].filter(k => it["bonus"+k]).map(k => `+${it["bonus"+k]} ${k}`).join(" ");
+    return t("item.armor", { n: it.def, texto: L(it.texto) }) + (bonuses ? " · " + bonuses : "");
+  }
   if (it.tipo === "material") return L(it.sabor);
   return "";
 }

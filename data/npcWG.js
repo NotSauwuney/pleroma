@@ -190,6 +190,66 @@ GD.npcWG = {
   },
 
   /* ----------------------------------------------------------
+     VADAK — Salamandra gigante, cueva del pantano
+     Antiguo depredador que devoró un mago y no volvió a ser
+     lo mismo. Dejó de cazar. Su cuerpo, sin el gasto constante
+     de la caza, empezó a crecer. Ya lleva años sin moverse
+     mucho, pensando, y aceptando lo que le traigan.
+  ---------------------------------------------------------- */
+  vadak: {
+    especie: "salamandra gigante",
+    color: "verde grisácea con manchas oscuras",
+    pesoBase: 0,
+    wgPorPaso: 4.0,
+    estados: [
+      {
+        label: "@@npcWG.vadak.estados.0.label",
+        desc: "@@npcWG.vadak.estados.0.desc",
+      },
+      {
+        label: "@@npcWG.vadak.estados.1.label",
+        desc: "@@npcWG.vadak.estados.1.desc",
+      },
+      {
+        label: "@@npcWG.vadak.estados.2.label",
+        desc: "@@npcWG.vadak.estados.2.desc",
+      },
+      {
+        label: "@@npcWG.vadak.estados.3.label",
+        desc: "@@npcWG.vadak.estados.3.desc",
+      },
+      {
+        label: "@@npcWG.vadak.estados.4.label",
+        desc: "@@npcWG.vadak.estados.4.desc",
+      },
+    ],
+    favFoods: ["festin", "guiso", "cocina_guiso_granja", "cocina_gloria_glotona"],
+    receptivo: ["dia", "noche"],
+    cooldownBase: 10,
+    bondThresholds: [0, 5, 15, 35, 65],
+    bondNames: [
+      "@@npcWG.vadak.bondNames.0",
+      "@@npcWG.vadak.bondNames.1",
+      "@@npcWG.vadak.bondNames.2",
+      "@@npcWG.vadak.bondNames.3",
+      "@@npcWG.vadak.bondNames.4",
+    ],
+    feedFlavor: [
+      "@@npcWG.vadak.feedFlavor.0",
+      "@@npcWG.vadak.feedFlavor.1",
+      "@@npcWG.vadak.feedFlavor.2",
+    ],
+    feedFavFlavor: [
+      "@@npcWG.vadak.feedFavFlavor.0",
+      "@@npcWG.vadak.feedFavFlavor.1",
+    ],
+    avanceFlavor: [
+      "@@npcWG.vadak.avanceFlavor.0",
+      "@@npcWG.vadak.avanceFlavor.1",
+    ],
+  },
+
+  /* ----------------------------------------------------------
      VELLA — Zorra roja, mercader de Solace Ford
      Mantiene las apariencias como parte del negocio. Pero
      tiene sus debilidades, y alguien con el ítem correcto

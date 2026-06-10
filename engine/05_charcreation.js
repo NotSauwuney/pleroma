@@ -59,7 +59,7 @@ function renderCreacion() {
     if (c.especie === "custom") { renderCreacionCustom(); return; }
     const filas = STAT_KEYS.map((k) => `
       <div class="ptrow">
-        <span class="ptname">${t("stat." + k + ".abbr")} — ${t("stat." + k + ".name")}</span>
+        <span class="ptname">${t("stat." + k + ".abbr")} — ${t("stat." + k + ".name")}<span class="ptdesc">${t("stat." + k + ".desc")}</span></span>
         <button class="ptbtn" data-k="${k}" data-d="-1">−</button>
         <b class="ptval">${c.base[k]}</b>
         <button class="ptbtn" data-k="${k}" data-d="1">＋</button>
@@ -95,7 +95,7 @@ function renderCreacionCustom() {
   const total = STAT_KEYS.reduce((s, k) => s + c.customBase[k], 0);
   const filas = STAT_KEYS.map((k) => `
     <div class="ptrow">
-      <span class="ptname">${t("stat." + k + ".abbr")} — ${t("stat." + k + ".name")}</span>
+      <span class="ptname">${t("stat." + k + ".abbr")} — ${t("stat." + k + ".name")}<span class="ptdesc">${t("stat." + k + ".desc")}</span></span>
       <button class="ptbtn" data-k="${k}" data-d="-1">−</button>
       <b class="ptval">${c.customBase[k]}</b>
       <button class="ptbtn" data-k="${k}" data-d="1">＋</button>
@@ -210,6 +210,15 @@ function comenzar() {
   S.player.spells = [];
   S.player.mejoras = {};
   S.player.npcWG = {};
+  S.player.logros = {};
+  S.player.lifetimeStats = {
+    enemiesDevoured: 0,
+    grapplesSurvived: 0,
+    highestWeight: 0,
+    highestFat: 0,
+    timesObese: 0,
+    mealsConsumed: 0,
+  };
   S.player.hea = maxHea();
   S.player.mana = maxMana();
   S.player.sta = maxSta();

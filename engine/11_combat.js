@@ -28,6 +28,38 @@ function iniciarCombate(enemyId) {
   renderCombate();
 }
 
+/* ============================================================
+   DOMINIO DE DEVORAR  —  tiers + técnicas
+   ============================================================ */
+function nivelDevorar() {
+  const d = (S.player.lifetimeStats && S.player.lifetimeStats.enemiesDevoured) || 0;
+  if (d >= 50) return 3;
+  if (d >= 25) return 2;
+  if (d >= 10) return 1;
+  return 0;
+}
+
+function tieneTecnica(id) {
+  if (id === "engullida") return true;
+  if (id === "absorcion") return S.player.spells && S.player.spells.includes("absorcion");
+  if (id === "perfecta")  return nivelDevorar() >= 3;
+  return false;
+}
+
+// Disponibilidad de cada técnica según tier actual
+function dispEngullida(e) {
+  const nv = nivelDevorar();
+  const umbralHp = [0.50, 0.65, 0.80, 1.01][nv]; // 1.01 = sin restricción
+  const estaReq  = [4, 3, 2, 0][nv];
+  return e.hea <= e.vidaMax * umbralHp || stat("EST") >= e.AGU + estaReq;
+}
+
+function dispAbsorcion(e) {
+  const nv = nivelDevorar();
+  const estaReq = [5, 4, 3, 2][nv]; // siempre más exigente que Engullida
+  return stat("EST") >= e.AGU + estaReq;
+}
+
 function renderCombate() {
   S.mode = "combate";
   S.screen = renderCombate;
@@ -52,15 +84,27 @@ function renderCombate() {
     ${c.grapple > 0 ? `<p class="warn">${t("cb.grabbed")}</p>` : ""}
     ${efectosHtml}`;
 
-  const tieneMagia = (p.spells && p.spells.length > 0) || p.mana >= COSTE_FEAST;
+  // Feast ahora es un hechizo más: hay que haberlo aprendido (quest/logro de la
+  // Plenitud) para acceder al menú de magia por su causa, igual que cualquier otro.
+  const tieneMagia = p.spells && p.spells.some(id => {
+    const sp = GD.hechizos[id]; return sp && sp.tipo !== "tecnica_devorar";
+  });
   const acts = [];
   if (c.grapple > 0) {
     acts.push({ label: t("cb.struggle"), cls: "primary", fn: () => accion("forcejear") });
     acts.push({ label: t("cb.useItem"), fn: () => abrirItemsCombate() });
   } else {
     acts.push({ label: t("cb.attack"), cls: "primary", fn: () => accion("atacar") });
-    const dispDevorar = e.hea <= e.vidaMax * 0.5 || stat("EST") >= e.AGU + 4;
-    acts.push({ label: t("cb.devour"), cls: "devour", disabled: !dispDevorar, fn: () => accion("devorar") });
+    const _dispEng  = dispEngullida(e);
+    const _dispAbs  = tieneTecnica("absorcion") && dispAbsorcion(e);
+    const _dispPerf = tieneTecnica("perfecta");
+    const dispDevorar = _dispEng || _dispAbs || _dispPerf;
+    const tieneMenu   = tieneTecnica("absorcion") || tieneTecnica("perfecta");
+    if (tieneMenu) {
+      acts.push({ label: t("cb.devourMenu"), cls: "devour", disabled: !dispDevorar, fn: () => abrirDevorar() });
+    } else {
+      acts.push({ label: t("cb.devour"), cls: "devour", disabled: !dispDevorar, fn: () => accion("devorar", "engullida") });
+    }
     acts.push({ label: t("cb.magia"), cls: "magia", disabled: !tieneMagia, fn: () => abrirMagia() });
     acts.push({ label: t("cb.useItem"), fn: () => abrirItemsCombate() });
     acts.push({ label: t("cb.flee"), fn: () => accion("huir") });
@@ -95,7 +139,7 @@ function actuaPrimero() {
   return stat("AGI") + stat("INT") >= effectiveEnemyAGI() + e.INT;
 }
 
-function accion(tipo) {
+function accion(tipo, opts) {
   const c = S.combate, e = c.e, p = S.player;
   c.turno++;
 
@@ -118,25 +162,36 @@ function accion(tipo) {
   }
 
   else if (tipo === "devorar") {
-    const exito = skillTestRange(stat("AGI") + stat("FUE") + stat("EST") + 40,
-      e.AGI + e.FUE + round(e.hea * 0.6), 5, 92);
-    if (exito) { devorarEnemigo(); return; }
+    const tecnica = opts || "engullida";
+    let checkP, checkE, minP, maxP;
+    if (tecnica === "perfecta") {
+      checkP = stat("AGI") + stat("FUE") + stat("EST") + 20;
+      checkE = e.AGI + e.FUE + round(e.hea * 0.7);
+      minP = 5; maxP = 88;
+    } else if (tecnica === "absorcion") {
+      checkP = stat("FUE") * 2 + stat("EST") + 30;
+      checkE = e.FUE + e.EST + round(e.hea * 0.4);
+      minP = 10; maxP = 85;
+    } else {
+      checkP = stat("AGI") + stat("FUE") + stat("EST") + 40;
+      checkE = e.AGI + e.FUE + round(e.hea * 0.6);
+      minP = 5; maxP = 92;
+    }
+    const exito = skillTestRange(checkP, checkE, minP, maxP);
+    if (exito) { devorarEnemigo(tecnica); return; }
     log(t("log.devourFail", { enemy: L(e.nombre) }), "mal");
-    turnoEnemigo();
-  }
-
-  else if (tipo === "feast") {
-    p.mana -= COSTE_FEAST;
-    const factorVida = round((e.hea / e.vidaMax) * 25);
-    const exito = skillTestRange(stat("INT") * 3 + 20, e.INT + e.AGU + factorVida, 10, 90);
-    if (exito) { feastEnemigo(); return; }
-    log(t("log.feastFail", { enemy: L(e.nombre) }), "mal");
     turnoEnemigo();
   }
 
   else if (tipo === "forcejear") {
     c.grapple -= Math.max(stat("FUE"), stat("AGI"), stat("INT"));
-    if (c.grapple <= 0) { c.grapple = 0; log(t("log.struggleFree"), "bien"); }
+    if (c.grapple <= 0) {
+      c.grapple = 0;
+      log(t("log.struggleFree"), "bien");
+      p.lifetimeStats.grapplesSurvived++;
+      tickQuest("grapple_survive", { zona: S.zona, enemyId: e.id });
+      tickLogro("grapplesSurvived", p.lifetimeStats.grapplesSurvived);
+    }
     else { log(t("log.struggleFail"), "mal"); turnoEnemigo(); }
   }
 
@@ -259,16 +314,43 @@ function turnoEnemigo() {
   log(t("log.enemyAttack", { flavor: flavorRand(e.flavor.ataque), n: d }), "mal");
 }
 
-function devorarEnemigo() {
+function devorarEnemigo(tecnica) {
+  tecnica = tecnica || "engullida";
   const c = S.combate, e = c.e, p = S.player;
-  log(t("log.devourSwallow", { enemy: L(e.nombre) }), "devour");
+  const nv = nivelDevorar();
+
+  // Parámetros de output según técnica y tier
+  const FAT_TIER = [0.12, 0.15, 0.18, 0.22];
+  const XP_TIER  = [1.30, 1.35, 1.40, 1.50];
+  let fatPct, xpMult, logKey;
+  if (tecnica === "absorcion") {
+    fatPct = 0.08;
+    xpMult = 1.8;
+    logKey = "log.devourAbsorcion";
+  } else if (tecnica === "perfecta") {
+    fatPct = FAT_TIER[nv] * 1.5;
+    xpMult = XP_TIER[nv] * 1.2;
+    logKey = "log.devourPerfect";
+  } else {
+    fatPct = FAT_TIER[nv];
+    xpMult = XP_TIER[nv];
+    logKey = "log.devourSwallow";
+  }
+
+  log(t(logKey, { enemy: L(e.nombre) }), "devour");
   p.ful += e.masa;
-  p.fat += e.masa * 0.12;
+  p.fat += e.masa * fatPct;
   log(t("log.bellySwell", { n: e.masa }), "comida");
-  ganarXP(xpZona(round(e.xp * 1.3)));
+  ganarXP(xpZona(round(e.xp * xpMult)));
   p.oro += e.oro;
   log(t("log.goldCarried", { n: e.oro }), "bien");
   tickQuest("kills", { zona: S.zona, enemyId: e.id });
+
+  // Tradición de la Plenitud: estadísticas históricas + quests/logros asociados
+  p.lifetimeStats.enemiesDevoured++;
+  tickQuest("devorar", { zona: S.zona, enemyId: e.id });
+  tickLogro("enemiesDevoured", p.lifetimeStats.enemiesDevoured);
+  trackWeightStats(p);
 
   // Drops de materiales (gota) — mismo trato que una victoria normal
   if (e.gota) {
@@ -415,6 +497,36 @@ function victoriaCombate() {
 
 function finCombate() { S.combate = null; S.mode = "explorar"; }
 
+/* DEVORAR — sub-menú de técnicas */
+function abrirDevorar() {
+  S.screen = abrirDevorar;
+  const e = S.combate.e;
+  const nv = nivelDevorar();
+  const tierKey = ["devour.tier0", "devour.tier1", "devour.tier2", "devour.tier3"][nv];
+
+  const tecnicas = [{ id: "engullida", disp: dispEngullida(e) }];
+  if (tieneTecnica("absorcion")) tecnicas.push({ id: "absorcion", disp: dispAbsorcion(e) });
+  if (tieneTecnica("perfecta"))  tecnicas.push({ id: "perfecta",  disp: true });
+
+  let h = `<h2>${t("devour.menuTitle")}</h2><p class="hint">${t(tierKey)}</p>`;
+  h += `<div class="spellsect">`;
+  tecnicas.forEach(tc => {
+    const legendCls = tc.id === "perfecta" ? " spell-legendary" : "";
+    const prefijo   = tc.id === "perfecta" ? "✦ " : "";
+    h += `<div class="spellrow${legendCls}">
+      <span class="spellname">${prefijo}${t("devour.tech." + tc.id)}</span>
+      <span class="spellinfo">${t("devour.tech." + tc.id + ".desc")}</span>
+      <button class="devour-tech" data-id="${tc.id}" ${tc.disp ? "" : "disabled"}>${t("ui.use")}</button>
+    </div>`;
+  });
+  h += `</div>`;
+  S.story = h;
+  setActions([{ label: t("ui.back"), cls: "primary", fn: renderCombate }]);
+  document.querySelectorAll(".devour-tech").forEach(b => {
+    b.onclick = () => accion("devorar", b.dataset.id);
+  });
+}
+
 function abrirItemsCombate() {
   S.screen = abrirItemsCombate;
   const p = S.player;
@@ -458,18 +570,32 @@ function abrirMagia() {
   const p = S.player;
   let h = `<h2>${t("spell.menuTitle")}</h2>`;
 
-  // Feast siempre disponible como opción base
-  h += `<p><b>✦ ${t("feast.title")}</b> — ${t("spell.feastDesc", { n: COSTE_FEAST })}</p>`;
-
   const aprendidos = p.spells || [];
-  if (aprendidos.length) {
+  // Hechizos superados: si el jugador tiene tanto el base como su evolución,
+  // ocultar el base en el menú de combate (la evolución lo reemplaza visualmente).
+  const superados = new Set(aprendidos.map(id => {
+    const sp = GD.hechizos[id];
+    return (sp && sp.upgradeDe) ? sp.upgradeDe : null;
+  }).filter(Boolean));
+
+  const visibles = aprendidos.filter(id => {
+    const sp = GD.hechizos[id];
+    if (!sp) return false;
+    if (sp.sinMenu) return false;         // técnicas internas (devorar, etc.)
+    if (superados.has(id)) return false;  // superado por una evolución aprendida
+    return true;
+  });
+
+  if (visibles.length) {
     h += `<div class="spellsect"><h3>${t("spell.known")}</h3>`;
-    aprendidos.forEach((id) => {
+    visibles.forEach((id) => {
       const sp = GD.hechizos[id];
-      if (!sp) return;
       const sinMana = p.mana < sp.costoMana;
-      h += `<div class="spellrow">
-        <span class="spellname">${L(sp.nombre)}</span>
+      const esEvo = !!sp.upgradeDe;
+      const legendCls = sp.legendario ? " spell-legendary" : (esEvo ? " spell-evolved" : "");
+      const prefix = sp.legendario ? "✦ " : (esEvo ? "◈ " : "");
+      h += `<div class="spellrow${legendCls}">
+        <span class="spellname">${prefix}${L(sp.nombre)}</span>
         <span class="spellinfo">${L(sp.desc)} · ${t("spell.manaCost", { n: sp.costoMana })}</span>
         <button class="spellbuy" data-id="${id}" ${sinMana ? "disabled" : ""}>${t("spell.cast")}</button>
       </div>`;
@@ -480,7 +606,6 @@ function abrirMagia() {
   }
   S.story = h;
   setActions([
-    { label: t("cb.feast", { n: COSTE_FEAST }), cls: "feast", disabled: p.mana < COSTE_FEAST, fn: () => accion("feast") },
     { label: t("ui.back"), cls: "primary", fn: renderCombate },
   ]);
   document.querySelectorAll(".spellbuy").forEach((b) => {
@@ -493,6 +618,22 @@ function lanzarHechizo(id) {
   const p = S.player;
   const c = S.combate;
   if (!sp || p.mana < sp.costoMana) { log(t("spell.noMana"), "mal"); renderCombate(); return; }
+
+  // Feast tiene flujo propio (chequeo de habilidad + transforma al enemigo en
+  // comida, termina el combate por su cuenta): no sigue el patrón genérico de
+  // "gastar maná, aplicar efecto, pasar turno, resolver".
+  if (sp.tipo === "feast") {
+    p.mana -= sp.costoMana;
+    const e = c.e;
+    const factorVida = round((e.hea / e.vidaMax) * 25);
+    const exito = skillTestRange(stat("INT") * 3 + 20, e.INT + e.AGU + factorVida, 10, 90);
+    if (exito) { feastEnemigo(); return; }
+    log(t("log.feastFail", { enemy: L(e.nombre) }), "mal");
+    turnoEnemigo();
+    if (S.mode === "muerte") return;
+    resolverCombate();
+    return;
+  }
 
   p.mana -= sp.costoMana;
   log(t("spell.castLog", { hechizo: L(sp.nombre) }), "bien");
@@ -517,7 +658,7 @@ function lanzarHechizo(id) {
 
   } else if (sp.tipo === "drain") {
     const dano = round(xdy(sp.dano, sp.rango) + stat("INT") * 0.4);
-    const cura = round(dano * 0.5);
+    const cura = round(dano * (sp.drainPct || 0.5));
     c.e.hea -= dano;
     p.hea = Math.min(maxHea(), p.hea + cura);
     log(t("spell.drainHit", { n: dano, cura }), "bien");

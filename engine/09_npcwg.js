@@ -172,18 +172,37 @@ function trabajar(jobId, loc) {
   abrirTienda(loc);
 }
 
-// Herrería: mejorar el filo de tus armas (hasta 10 niveles, +%/nivel según tipo)
+// Coste de la próxima mejora de una armadura (escala más barato que armas, más materiales)
+function costoMejoraArmadura(it, nl) { return round((12 + it.precio * 0.2) * (nl + 1)); }
+
+// Verifica si el jugador tiene los materiales necesarios para la siguiente mejora de armadura
+function puedeMejorarArmadura(it, nl) {
+  if (!it.mejoraMats) return true; // sin requisito de material
+  for (const [mat, cant] of Object.entries(it.mejoraMats)) {
+    if (cantMaterial(mat) < cant) return false;
+  }
+  return true;
+}
+
+// Herrería: mejorar armas (hasta 10 niveles) y armaduras (hasta 5 niveles con materiales)
 function abrirMejora(loc) {
   S.screen = () => abrirMejora(loc);
   const p = S.player;
+
   const armas = p.inv.filter((x) => {
     const it = resolveItem(x.id);
     return it && it.tipo === "arma" && it.id !== "garras" && it.mejorable !== false;
   });
+  const armaduras = p.inv.filter((x) => {
+    const it = resolveItem(x.id);
+    return it && it.tipo === "armadura" && it.mejorable !== false && it.id !== "sinArmar";
+  });
+
   let h = `<h2>${t("mejora.title")}</h2><p>${t("shop.yourGold", { n: p.oro })}</p>`;
-  if (!armas.length) h += `<p>${t("mejora.none")}</p>`;
-  else {
-    h += `<div class="shoplist">`;
+
+  // --- Armas ---
+  if (armas.length) {
+    h += `<h3>${t("mejora.armas")}</h3><div class="shoplist">`;
     armas.forEach((entry) => {
       const it = resolveItem(entry.id);
       const nl = p.mejoras[it.id] || 0;
@@ -193,17 +212,60 @@ function abrirMejora(loc) {
       const pct = Math.round((it.mejoraRate || 0.05) * 100);
       h += `<div class="shoprow">
         <span class="shopname">${nombreItem(it)}</span>
-        <span class="invinfo">${t("mejora.level", { n: nl })} · +${pct}%/nivel</span>
-        <button class="shopbuy" data-id="${it.id}" ${maxed || caro ? "disabled" : ""}>${maxed ? t("mejora.maxed") : t("mejora.cost", { n: costo })}</button>
+        <span class="invinfo">${t("mejora.levelArma", { n: nl })} · +${pct}%/lvl</span>
+        <button class="shopbuy" data-upgrade="arma" data-id="${it.id}" ${maxed || caro ? "disabled" : ""}>${maxed ? t("mejora.maxed") : t("mejora.cost", { n: costo })}</button>
       </div>`;
     });
     h += `</div>`;
+  } else {
+    h += `<p>${t("mejora.noneArmas")}</p>`;
   }
+
+  // --- Armaduras ---
+  h += `<h3>${t("mejora.armaduras")}</h3>`;
+  if (armaduras.length) {
+    h += `<div class="shoplist">`;
+    armaduras.forEach((entry) => {
+      const it = resolveItem(entry.id);
+      const nl = p.mejoras[it.id] || 0;
+      const maxed = nl >= 5;
+      const costoOro = costoMejoraArmadura(it, nl);
+      const caroOro = p.oro < costoOro;
+      const tieneMats = puedeMejorarArmadura(it, nl);
+      const sinRecursos = caroOro || !tieneMats;
+      // Texto de materiales requeridos
+      let matsLabel = "";
+      if (it.mejoraMats) {
+        matsLabel = " · " + Object.entries(it.mejoraMats).map(([mat, cant]) => {
+          const tiene = cantMaterial(mat);
+          const color = tiene >= cant ? "var(--good)" : "var(--bad)";
+          const item = GD.items[mat];
+          return `<span style="color:${color}">${L(item.nombre)} ${tiene}/${cant}</span>`;
+        }).join(", ");
+      }
+      const bonuses = ["FUE","AGI","INT","AGU","EST"].filter(k => it["bonus"+k]).map(k => `+${it["bonus"+k]} ${k}`).join(" ");
+      const defActual = it.def + (nl > 0 ? Math.floor(nl * (it.mejoraRateDef || 0.5)) : 0);
+      h += `<div class="shoprow">
+        <div style="flex:1">
+          <span class="shopname">${L(it.nombre)}${nl > 0 ? " +" + nl : ""}</span>
+          <div class="invinfo">${t("mejora.defLine", { def: defActual })}${bonuses ? " · " + bonuses : ""}${matsLabel}</div>
+        </div>
+        <button class="shopbuy" data-upgrade="armadura" data-id="${it.id}" ${maxed || sinRecursos ? "disabled" : ""}>${maxed ? t("mejora.maxed") : t("mejora.costArmadura", { n: costoOro })}</button>
+      </div>`;
+    });
+    h += `</div>`;
+    h += `<p class="hint">${t("mejora.hintArmadura")}</p>`;
+  } else {
+    h += `<p>${t("mejora.noneArmaduras")}</p>`;
+  }
+
   h += `<p class="hint">${t("mejora.hint")}</p>`;
   S.story = h;
   setActions([{ label: t("ui.back"), cls: "primary", fn: () => abrirTienda(loc) }]);
-  document.querySelectorAll(".shopbuy").forEach((b) => { b.onclick = () => mejorarArma(b.dataset.id, loc); });
+  document.querySelectorAll(".shopbuy[data-upgrade='arma']").forEach((b) => { b.onclick = () => mejorarArma(b.dataset.id, loc); });
+  document.querySelectorAll(".shopbuy[data-upgrade='armadura']").forEach((b) => { b.onclick = () => mejorarArmadura(b.dataset.id, loc); });
 }
+
 function mejorarArma(id, loc) {
   const p = S.player, it = resolveItem(id), nl = p.mejoras[id] || 0;
   if (nl >= 10) return;
@@ -212,6 +274,26 @@ function mejorarArma(id, loc) {
   p.oro -= costo;
   p.mejoras[id] = nl + 1;
   log(t("mejora.done", { arma: L(it.nombre), n: nl + 1 }), "bien");
+  abrirMejora(loc);
+}
+
+function mejorarArmadura(id, loc) {
+  const p = S.player, it = resolveItem(id), nl = p.mejoras[id] || 0;
+  if (nl >= 5) return;
+  const costoOro = costoMejoraArmadura(it, nl);
+  if (p.oro < costoOro) return;
+  if (!puedeMejorarArmadura(it, nl)) return;
+  p.oro -= costoOro;
+  // Consumir materiales
+  if (it.mejoraMats) {
+    for (const [mat, cant] of Object.entries(it.mejoraMats)) {
+      for (let i = 0; i < cant; i++) quitarItem(mat);
+    }
+  }
+  p.mejoras[id] = nl + 1;
+  log(t("mejora.doneArmadura", { armadura: L(it.nombre), n: nl + 1 }), "bien");
+  // Si el jugador lleva esta armadura puesta, actualizarla en la referencia activa
+  if (p.armadura && p.armadura.id === id) p.armadura = it;
   abrirMejora(loc);
 }
 

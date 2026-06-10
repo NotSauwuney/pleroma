@@ -44,7 +44,9 @@ function stat(key) {
   const p = S.player;
   const sp = especieDe(p);
   const tmp = p.tempStats[key] || 0;
-  return p.base[key] + sp.stats[STAT[key]] + tmp;
+  // Bonus de stat de armadura (ej: bonusINT en armaduras de mago, bonusFUE en brutales)
+  const armorBonus = (p.armadura && p.armadura["bonus" + key]) || 0;
+  return p.base[key] + sp.stats[STAT[key]] + tmp + armorBonus;
 }
 function maxHea() { return 40 + stat("AGU") * 6 + S.player.nivel * 5; }
 function maxFul() { return round((60 + stat("EST") * 10) * rasgo("panzaMult", 1)); }
@@ -104,12 +106,44 @@ function inmovil() {
   const p = S.player;
   return p.fat + p.ful * 1.2 > stat("FUE") * 16 * rasgo("umbralPesoMult", 1);
 }
-function defensa() { return S.player.armadura.def; }
+function defensa() {
+  const p = S.player;
+  const arm = p.armadura;
+  if (!arm) return 0;
+  const nl = (p.mejoras && p.mejoras[arm.id]) || 0;
+  // Armaduras: mejoraRateDef puntos de def por nivel (default 0.5, redondeado al entero)
+  const bonus = nl > 0 ? Math.floor(nl * (arm.mejoraRateDef || 0.5)) : 0;
+  return arm.def + bonus;
+}
 
 /* Etiqueta corta de cuerpo = el nombre del estado actual (unificado con Chequear estado). */
 function etiquetaGordura() {
   const st = GD.estadosJugador[estadoCuerpoJugador()];
   return st ? L(st.label) : "";
+}
+
+/* ---- Tracking de estadísticas históricas de peso (Tradición de la Plenitud) ----
+   Llamar después de cualquier mutación relevante de p.fat / p.ful (devorar, comer, feast).
+   Actualiza highestWeight/highestFat, detecta transiciones a estados "obesos" para
+   timesObese (solo cuenta el cruce, no cada turno que el jugador permanece ahí), y
+   dispara las quests/logros asociados. */
+const ESTADOS_OBESOS = ["obeso", "morbido", "super", "ultra", "coloso", "leviatan", "monumento", "singularidad"];
+function trackWeightStats(p) {
+  const ls = p.lifetimeStats;
+  if (!ls) return;
+  const w = round(peso()), f = round(p.fat);
+  if (w > ls.highestWeight) { ls.highestWeight = w; tickLogro("highestWeight", w); }
+  if (f > ls.highestFat) { ls.highestFat = f; tickLogro("highestFat", f); }
+
+  const esObeso = ESTADOS_OBESOS.includes(estadoCuerpoJugador());
+  if (esObeso && !p._fueObeso) {
+    ls.timesObese++;
+    tickQuest("times_obese", { valor: ls.timesObese });
+    tickLogro("timesObese", ls.timesObese);
+  }
+  p._fueObeso = esObeso;
+
+  tickQuest("reach_weight", { valor: f });
 }
 
 /* ---- Conversión de unidades para mostrar (interno siempre métrico) ---- */

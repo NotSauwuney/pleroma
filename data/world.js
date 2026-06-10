@@ -92,7 +92,8 @@ GD.world = {
         "@@world.zonas.claro.descripcion.2",
       ],
       salidas: [
-        { a: "senda", texto: "@@world.zonas.claro.salidas.0.texto" },
+        { a: "senda",      texto: "@@world.zonas.claro.salidas.0.texto" },
+        { a: "cueva_vadak", texto: "@@world.zonas.claro.salidas.1.texto" },
       ],
       lugares: ["descanso", "forrajear"],
       materialForajeo: ["baba_pantano", "escama_hidra"],
@@ -100,6 +101,26 @@ GD.world = {
         "@@world.zonas.claro.eventos.0",
         "@@world.zonas.claro.eventos.1",
         "@@world.zonas.claro.eventos.2",
+      ],
+    },
+
+    cueva_vadak: {
+      id: "cueva_vadak", bioma: null, encuentro: 0,
+      nombre: "@@world.zonas.cueva_vadak.nombre",
+      descripcion: [
+        "@@world.zonas.cueva_vadak.descripcion.0",
+        "@@world.zonas.cueva_vadak.descripcion.1",
+        "@@world.zonas.cueva_vadak.descripcion.2",
+      ],
+      salidas: [
+        { a: "claro", texto: "@@world.zonas.cueva_vadak.salidas.0.texto" },
+      ],
+      lugares: ["escuela_plenitud", "descanso"],
+      eventos: [
+        "@@world.zonas.cueva_vadak.eventos.0",
+        "@@world.zonas.cueva_vadak.eventos.1",
+        "@@world.zonas.cueva_vadak.eventos.2",
+        "@@world.zonas.cueva_vadak.eventos.3",
       ],
     },
 

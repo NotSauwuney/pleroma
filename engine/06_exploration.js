@@ -37,9 +37,10 @@ function accionesZona() {
     if (lug === "posada") acts.push({ label: t("ex.inn"), fn: () => abrirTienda("posada") });
     if (lug === "tienda") acts.push({ label: t("ex.shop"), fn: () => abrirTienda("tienda") });
     if (lug === "herreria") acts.push({ label: t("ex.herreria"), fn: () => abrirTienda("herreria") });
-    if (lug === "escuela_blanca") acts.push({ label: t("ex.escuelaBl"), fn: () => abrirTienda("escuela_blanca") });
-    if (lug === "escuela_gris")   acts.push({ label: t("ex.escuelaGr"), fn: () => abrirTienda("escuela_gris") });
-    if (lug === "escuela_negra")  acts.push({ label: t("ex.escuelaNg"), fn: () => abrirTienda("escuela_negra") });
+    if (lug === "escuela_blanca")   acts.push({ label: t("ex.escuelaBl"),  fn: () => abrirTienda("escuela_blanca") });
+    if (lug === "escuela_gris")     acts.push({ label: t("ex.escuelaGr"),  fn: () => abrirTienda("escuela_gris") });
+    if (lug === "escuela_negra")    acts.push({ label: t("ex.escuelaNg"),  fn: () => abrirTienda("escuela_negra") });
+    if (lug === "escuela_plenitud") acts.push({ label: t("ex.escuelaPl"),  fn: () => abrirTienda("escuela_plenitud") });
     if (lug === "descanso") acts.push({ label: t("ex.rest"), fn: descansar });
     if (lug === "forrajear") acts.push({ label: t(z.forrajeoGranja ? "ex.recolectar" : "ex.forage"), fn: z.forrajeoGranja ? () => forrajearGranja(z) : forrajear });
     if (lug === "granja") acts.push({ label: t("ex.granja"), fn: abrirGranja });

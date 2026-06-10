@@ -101,11 +101,17 @@ GD.i18n.es = {
 
   /* ---- Stats: abreviatura, nombre, descripción ---- */
   "stat.FUE.abbr": "FUE", "stat.FUE.name": "Fuerza",
+  "stat.FUE.desc": "Daño físico en combate. Más FUE también reduce la penalización de movimiento al engordar.",
   "stat.AGI.abbr": "AGI", "stat.AGI.name": "Agilidad",
+  "stat.AGI.desc": "Velocidad. Determina quién golpea primero y tu probabilidad de esquivar ataques.",
   "stat.INT.abbr": "INT", "stat.INT.name": "Ingenio",
+  "stat.INT.desc": "Maná máximo y potencia arcana. Necesario para lanzar hechizos y usar Feast.",
   "stat.AGU.abbr": "AGU", "stat.AGU.name": "Aguante",
+  "stat.AGU.desc": "Vida máxima. A más AGU, más golpes aguantás antes de caer.",
   "stat.EST.abbr": "EST", "stat.EST.name": "Estómago",
+  "stat.EST.desc": "Cuánto podés comer antes de llenarte. También amplía la reserva de comida mágica (Feast).",
   "stat.TAM.abbr": "TAM", "stat.TAM.name": "Tamaño",
+  "stat.TAM.desc": "Masa base del cuerpo. Más TAM = empezás más grande, más pesado y con más stamina inicial.",
 
   /* ---- Etiquetas de cuerpo (gordura) ---- */
   "body.fat.esbelto": "esbelto",
@@ -133,6 +139,7 @@ GD.i18n.es = {
   "ex.escuelaBl": "✦ Escuela de la Luz",
   "ex.escuelaGr": "◈ Escuela del Flujo",
   "ex.escuelaNg": "☽ Escuela de las Profundidades",
+  "ex.escuelaPl": "🕯 La Cueva del Antiguo",
   "ex.rest": "💤 Descansar",
   "ex.forage": "🌿 Forrajear comida",
   "ex.backpack": "🎒 Mochila",
@@ -230,6 +237,8 @@ GD.i18n.es = {
   "shop.grisDesc": "Una sala circular con el piso cubierto de diagramas de flujo grabados en la piedra. El aire zumba levemente. En el centro, un cuenco de agua levita a media altura y nadie parece sorprendido.",
   "shop.negraName": "Escuela de las Profundidades",
   "shop.negraDesc": "Paredes cubiertas de estantes con frascos de contenido indescifrable. La iluminación viene de fuentes que no encontrás. El silencio acá pesa de una manera particular: como si absorbiera el sonido en vez de simplemente no tenerlo.",
+  "shop.plenitudName": "Cueva del Antiguo",
+  "shop.plenitudDesc": "La guarida de Vadak. Oscura, cálida, sin pretensiones académicas. En el fondo, una masa enorme y tranquila que sabe exactamente qué sos y qué podés ser.",
 
   /* ---- Locales de la zona segura ---- */
   "shop.innName": "Posada del Vado",
@@ -250,18 +259,27 @@ GD.i18n.es = {
   "shop.talk": "💬 Hablar",
   "shop.talkMore": "Seguir hablando",
   "shop.work": "🛠️ Trabajar ({n} stam)",
-  "shop.upgrade": "⚒️ Mejorar arma",
+  "shop.upgrade": "⚒️ Mejorar equipo",
   "shop.tooTired": "Estás sin aliento, tu cuerpo gordo y pesado protestando. Descansá antes de ponerte a trabajar.",
   "shop.earned": "Cobrás la jornada: +{n} de oro.",
 
-  /* ---- Mejora de armas (herrería) ---- */
-  "mejora.title": "Mejorar armas",
+  /* ---- Mejora de armas y armaduras (herrería) ---- */
+  "mejora.title": "Taller de mejoras",
+  "mejora.armas": "⚔ Armas",
+  "mejora.armaduras": "🛡 Armaduras",
+  "mejora.levelArma": "Nivel {n}/10",
   "mejora.level": "Nivel {n}/10",
   "mejora.cost": "Mejorar — {n} oro",
+  "mejora.costArmadura": "{n} oro + materiales",
   "mejora.maxed": "Al máximo",
+  "mejora.noneArmas": "No tenés armas para mejorar (las garras no cuentan; comprá un arma primero).",
+  "mejora.noneArmaduras": "No tenés armaduras para mejorar. Comprá una en la tienda o forjala en la herrería.",
   "mejora.none": "No tenés armas para mejorar (las garras no cuentan; comprá un arma primero).",
+  "mejora.defLine": "DEF {def}",
   "mejora.done": "Durn trabaja el filo de tu {arma}: ahora nivel {n}.",
-  "mejora.hint": "Cada nivel suma daño según el tipo de arma (acero pesado +6%, ágil +5%, arcano +4%). Máximo 10 niveles.",
+  "mejora.doneArmadura": "Durn refuerza tu {armadura}: ahora nivel {n}. La defensa aumentó.",
+  "mejora.hint": "Armas: cada nivel suma daño (+4–7% según tipo). Máximo 10 niveles.",
+  "mejora.hintArmadura": "Armaduras: cada nivel suma DEF con materiales del mundo. Máximo 5 niveles.",
 
   /* ---- Combate ---- */
   "cb.title": "¡Combate!",
@@ -269,6 +287,7 @@ GD.i18n.es = {
   "cb.grabbed": "¡Estás agarrado! Forcejeá para zafar.",
   "cb.attack": "⚔ Atacar",
   "cb.devour": "🦷 Devorar",
+  "cb.devourMenu": "🦷 Devorar ▸",
   "cb.feast": "✦ Feast ({n} maná)",
   "cb.useItem": "🎒 Usar item",
   "cb.flee": "🏃 Huir",
@@ -298,9 +317,22 @@ GD.i18n.es = {
 
   /* ---- Devorar ---- */
   "log.devourSwallow": "Abrís las fauces y te tragás a {enemy} entero. Baja pataleando, abultando tu garganta antes de caer pesadamente en tu estómago.",
+  "log.devourAbsorcion": "No te limitás a tragarlo: lo absorbés. {enemy} se disuelve en fuerza pura dentro de tu masa, alimentando músculo y hambre a partes iguales.",
+  "log.devourPerfect": "Con la autoridad de un Maestro, abrís las fauces y reclamás a {enemy} sin ceremonias. No hay resistencia que importe a esta escala.",
   "log.bellySwell": "Tu panza se hincha violentamente hacia afuera, creciendo enorme y tirante (+{n} llenura).",
   "devour.title": "Festín",
   "devour.done": "{enemy} ya no es un problema. Solo es más peso acolchando tu ya gigantesca panza.",
+  "devour.menuTitle": "Técnica de Devorar",
+  "devour.tier0": "Dominio Novato — El hambre existe. El refinamiento todavía no.",
+  "devour.tier1": "Dominio Aprendiz — La garganta ya sabe lo que quiere.",
+  "devour.tier2": "Dominio Practicante — Tu masa habla antes que tus dientes.",
+  "devour.tier3": "Dominio Maestro — Nada se niega a ser tragado.",
+  "devour.tech.engullida": "Engullida",
+  "devour.tech.engullida.desc": "Técnica base. Tragás al enemigo en bruto. Masa y XP escalados por tu dominio actual.",
+  "devour.tech.absorcion": "Absorción",
+  "devour.tech.absorcion.desc": "Menos grasa, más poder. Requiere superioridad física. El XP ganado es considerablemente mayor.",
+  "devour.tech.perfecta": "Engullida Perfecta",
+  "devour.tech.perfecta.desc": "Sin restricciones de estado. El trago definitivo: masa máxima, XP máximo. Solo para Maestros.",
 
   /* ---- Feast ---- */
   "log.feastCast": "Pronunciás Feast. Tu maná envuelve a {enemy} y lo pliega en un banquete humeante y rico. Ya no pelea: ahora es comida perfecta y caliente para tu panza glotona.",
@@ -356,10 +388,12 @@ GD.i18n.es = {
   "spell.effectEnd": "El efecto de {hechizo} se disipó.",
   "spell.activeEffects": "Efectos activos:",
   "spell.shopSection": "Hechizos de la escuela",
+  "spell.evolSection": "◈ Evoluciones disponibles",
   "spell.alreadyLearned": "Ya aprendido",
   "spell.missionRequired": "Requiere misión",
   "spell.buy": "Aprender — {n} oro",
   "spell.bought": "Aprendiste {hechizo}. El hechizo ya está disponible en combate.",
+  "spell.upgradeOf": "Evolución de {base}",
 
   /* ---- Misiones escolares ---- */
   "shop.missions": "📜 Misiones",
@@ -369,6 +403,15 @@ GD.i18n.es = {
   "quest.reward": "Recompensa",
   "quest.progress": "{n} / {total}",
   "quest.complete": "¡Misión completada! Hechizo desbloqueado: {hechizo}.",
+  "quest.completeNR": "¡Misión completada!",
+  "logro.unlocked": "✦ Logro legendario: {nombre}. {desc}",
+  "logro.unlockedSpell": "✦ Logro legendario: {nombre}. {desc} Hechizo desbloqueado: {hechizo}.",
+
+  /* ---- logros legendarios (Tradición de la Plenitud) ---- */
+  "logro.tradicionPlenitud.nombre": "La Comprensión Final",
+  "logro.tradicionPlenitud.desc": "Devoraste a 50 criaturas y aprendiste, por fin, a leer el hambre del mundo. Ya no comés para sobrevivir: comprendés.",
+  "logro.cuerpoVasto.nombre": "Cuerpo Vasto",
+  "logro.cuerpoVasto.desc": "Tu masa alcanzó cifras que ya no se explican con anatomía común. El mundo empieza a medirse en relación a vos.",
 
   /* ---- Drops de materiales ---- */
   "drop.got": "✦ Encontrás: {item}.",
@@ -395,6 +438,23 @@ GD.i18n.es = {
   "forja.done": "Forjaste {arma}. La encontrás en la mochila.",
   "forja.legendTitle": "✦ Forja sagrada",
   "forja.legendDesc": "Algo cambia en la fragua cuando los materiales se unen. No es solo un arma. Es {arma}. Una de las tres forjas que el mundo no sabía que podían existir.",
+
+  /* ---- Guardado múltiple ---- */
+  "save.title": "Guardar partida",
+  "save.slot": "Ranura {n}",
+  "save.slotEmpty": "Vacío",
+  "save.saveHere": "Guardar aquí",
+  "save.exportBtn": "⬇ Exportar a archivo",
+  "save.exportHint": "Los archivos exportados sobreviven una limpieza de caché del navegador. Esta es la opción recomendada para no perder tu partida.",
+  "save.exportTooltip": "Recomendado: el archivo se guarda en tu computadora y no se pierde si limpiás el historial o los datos del navegador.",
+  "save.recommended": "(★ Recomendado)",
+  "save.exported": "Partida exportada al archivo.",
+  "save.saved": "Guardado en ranura {n}.",
+  "load.title": "Cargar partida",
+  "load.loadBtn": "Cargar",
+  "load.importBtn": "📂 Cargar desde archivo",
+  "load.importHint": "Cargá un archivo de partida exportado previamente.",
+  "load.legacySlot": "Partida anterior (guardar en ranura para migrar)",
 };
 
 
@@ -528,6 +588,20 @@ GD.content.es = {
   "items.cota.texto": "Pesada pero firme. Aguanta golpes.",
   "items.placas.nombre": "Armadura de placas",
   "items.placas.texto": "Acero macizo de la fragua de Durn. Una muralla portátil.",
+  "items.armadura_brutal.nombre": "Coraza brutal",
+  "items.armadura_brutal.texto": "Acero grueso con tachuelas de colmillo. Te hace más lento para correr pero más peligroso para todo lo demás. +4 FUE.",
+  "items.cuero_veloz.nombre": "Cuero veloz",
+  "items.cuero_veloz.texto": "Cuero ligero reforzado con garra de puma. Se mueve con vos, no en contra. +5 AGI.",
+  "items.tunica_mago.nombre": "Túnica arcana",
+  "items.tunica_mago.texto": "Tejida con baba del pantano endurecida. Protección mínima, pero sintonizada con el flujo de maná. +2 INT.",
+  "items.manto_mago.nombre": "Manto del mago",
+  "items.manto_mago.texto": "Capas de escama de hidra cosidas sobre lino de alta calidad. La magia fluye con menos resistencia. +4 INT.",
+  "items.vestidura_arcana.nombre": "Vestidura arcana",
+  "items.vestidura_arcana.texto": "Fragmento de coloso fundido en tela reforzada. Máxima defensa para un mago, sin sacrificar del todo el ingenio. +3 INT.",
+  "items.manto_arcano.nombre": "Manto arcano mayor",
+  "items.manto_arcano.texto": "Cristal de escarcha tejido en baba del pantano destilada. Casi nada de protección física, todo para el maná. +9 INT.",
+  "items.tunica_flujo.nombre": "Túnica del flujo",
+  "items.tunica_flujo.texto": "Escama de hidra sobre cuero de puma. Para el mago que también necesita moverse. +5 INT, +3 AGI.",
 
   /* ---- recetas ---- */
   "recetas.garrote_nudoso.nombre": "Forjar garrote nudoso",
@@ -538,6 +612,12 @@ GD.content.es = {
   "recetas.leviatan.nombre": "Despertar el Leviatán",
   "recetas.sombra_veloz.nombre": "Forjar la Sombra veloz",
   "recetas.vacio_eterno.nombre": "Sellar el Vacío eterno",
+  "recetas.placas.nombre": "Forjar armadura de placas",
+  "recetas.armadura_brutal.nombre": "Forjar coraza brutal",
+  "recetas.cuero_veloz.nombre": "Forjar cuero veloz",
+  "recetas.vestidura_arcana.nombre": "Forjar vestidura arcana",
+  "recetas.manto_arcano.nombre": "Forjar manto arcano mayor",
+  "recetas.tunica_flujo.nombre": "Forjar túnica del flujo",
 
   /* ---- recetasCocina ---- */
   "recetasCocina.sopa_raices.nombre": "Sopa de raíces",
@@ -815,6 +895,7 @@ GD.content.es = {
   "world.zonas.claro.descripcion.1": "Charcos tibios burbujean entre juncos del grosor de un brazo. Algo se mueve bajo el agua marrón, lento y enorme. El barro chupa cada paso que das.",
   "world.zonas.claro.descripcion.2": "El claro hiede a fermento y a panza llena. Formas anchas y blandas descansan medio sumergidas, demasiado pesadas para moverse... hasta que tenés la mala suerte de acercarte.",
   "world.zonas.claro.salidas.0.texto": "Retroceder a la senda",
+  "world.zonas.claro.salidas.1.texto": "Seguir por el barro hacia la cueva",
   "world.zonas.claro.eventos.0": "El barro hace el sonido de algo soltándose con cada paso. El pantano no quiere que avances.",
   "world.zonas.claro.eventos.1": "A través de la superficie marrón del agua, algo grande cambia de posición. Despacio. Sin urgencia. Lleva un rato siguiéndote.",
   "world.zonas.claro.eventos.2": "Un sapo del tamaño de una roca se sienta en el camino y no se mueve. {PronS} y el sapo se miran. El sapo parpadea. Después se va.",
@@ -859,6 +940,16 @@ GD.content.es = {
   "world.zonas.catacumba.descripcion.0": "Un edificio bajo y sin ventanas al borde del camino que sale de La Confluencia. La piedra de afuera es más oscura que el granito del pueblo; no sabés si es el material o lo que pasó adentro.",
   "world.zonas.catacumba.descripcion.1": "El frío acá es diferente al del paso: no es temperatura, es ausencia. Algo adentro absorbe el calor con la misma naturalidad con que una pared absorbe la luz.",
   "world.zonas.catacumba.descripcion.2": "La entrada no tiene cartel ni emblema. La única señal de que es una escuela es la figura sentada afuera leyendo, que levanta la vista cuando llegás y vuelve a leer antes de que abras la boca.",
+  "world.zonas.cueva_vadak.nombre": "Cueva del Antiguo",
+  "world.zonas.cueva_vadak.descripcion.0": "La boca de la cueva se esconde entre juncos del grosor de un muslo y raíces que bajan desde la roca como dedos. El suelo de barro guarda huellas enormes, hundidas, viejas. El olor que sale es denso: algo salvaje que lleva años sin moverse del todo.",
+  "world.zonas.cueva_vadak.descripcion.1": "Adentro hace más calor que afuera, y el olor cambia: no es solo pantano, es cuerpo. Una presencia enorme y quieta en la oscuridad. Cuando los ojos se acostumbran, distinguís la silueta de Vadak, vasta y sin prisa.",
+  "world.zonas.cueva_vadak.descripcion.2": "La cueva tiene la temperatura de algo que nunca se enfría. Vadak ocupa el rincón del fondo como ocupa todo lo demás: completamente, sin disculparse. Hay huesos viejos en las paredes. No como decoración. Como historial.",
+  "world.zonas.cueva_vadak.salidas.0.texto": "Salir al Claro del Glotón",
+  "world.zonas.cueva_vadak.eventos.0": "Algo cruje en la oscuridad — el sonido de una masa enorme reacomodándose. Vadak. Respira despacio.",
+  "world.zonas.cueva_vadak.eventos.1": "La cueva conserva el frío del pantano afuera y el calor de Vadak adentro. El resultado es una temperatura extraña: la misma que tiene el interior de algo vivo.",
+  "world.zonas.cueva_vadak.eventos.2": "Restos viejos en las paredes. No trofeos, no decoración. Solo lo que queda de cosas que fueron comidas antes de que vos llegaras, y no necesitás pensar demasiado en eso.",
+  "world.zonas.cueva_vadak.eventos.3": "Vadak te sigue con los ojos sin girar la cabeza. Cuando te movés, los ojos se mueven. Cuando te quedás quieto, los ojos se quedan quietos. Te está estudiando.",
+
   "world.zonas.catacumba.salidas.0.texto": "Volver a La Confluencia",
 
   /* ---- pesos ---- */
@@ -969,6 +1060,13 @@ GD.content.es = {
   "npcs.cocinera.dialogos.1": "«La manteca buena viene de las vacas de Bosk. La miel buena viene de sus colmenas. En Solaz no se importa nada que pueda crecer acá.»",
   "npcs.cocinera.dialogos.2": "«Hay una diferencia entre comer para llenarse y comer para crecer. La receta entiende cuál es cuál. No la engañés.»",
   "npcs.cocinera.dialogos.3": "«Los aventureros que pasan por acá siempre quieren saber si el fogón tiene pociones o ventajas de combate. Les digo que sí, que se llaman 'calorías' y que funcionan a largo plazo.»",
+  "npcs.vadak.nombre": "Vadak, el Antiguo",
+  "npcs.vadak.saludo.0": "Vadak no se mueve cuando entrás. Sus ojos, tranquilos y amarillos, te encuentran en la oscuridad. «Otra vez.»",
+  "npcs.vadak.saludo.1": "El peso de su mirada llega antes que sus palabras. Vadak exhala despacio, algo entre un suspiro y un rumble. «Pasá.»",
+  "npcs.vadak.dialogos.0": "«Devoraste cosas. Lo sé, lo veo en vos. La pregunta no es si podés hacerlo — es si entendés qué pasa después.»",
+  "npcs.vadak.dialogos.1": "«No enseño teoría. No tengo libros. Lo que tengo es memoria: doscientos años de masa ajena que aprendí a conocer desde adentro.»",
+  "npcs.vadak.dialogos.2": "«Feast no es magia. Es lo que hago yo desde que nací, pero consciente. Cuando entiendas la diferencia, ya sabés que estás listo.»",
+  "npcs.vadak.dialogos.3": "«La masa que tomás se vuelve tuya. La masa que dejás ir se vuelve del pantano. Nada se pierde. Solo cambia de dueño.»",
   "npcs.archimagaVexara.nombre": "Vexara, la Tejedora",
   "npcs.archimagaVexara.saludo.0": "La figura al fondo de la sala no se mueve cuando entrás. Tarda un momento en hablar, como si terminara un pensamiento largo. «Sé a qué venís.»",
   "npcs.archimagaVexara.saludo.1": "Vexara te mira desde atrás de una mesa cubierta de fórmulas que no alcanzás a leer bien. «La Esencia no se aprende. Se acepta.»",
@@ -990,6 +1088,8 @@ GD.content.es = {
   "trabajos.estudiarFlujo.desc.1": "Kor te pone a canalizar corrientes frías a través de una forma de agua. Al terminar, los dedos entumecidos, el maná más ordenado.",
   "trabajos.asistirVexara.desc.0": "Asistís a Vexara en sus fórmulas. No te dice qué hace exactamente. No te conviene preguntar. Al terminar, algo en el aire de la sala pesa más.",
   "trabajos.asistirVexara.desc.1": "Transcribís símbolos de un texto que no podés leer. La pluma pesa raro hacia el final. Vexara no comenta. El pago llega solo.",
+  "trabajos.practicarPlenitud.desc.0": "Pasás un rato en la cueva practicando lo que Vadak llama 'conocimiento del peso': cargar piedras grandes, sentir la masa en el cuerpo, comer en quietud y prestarle atención a lo que pasa. No tiene nombre oficial. Funciona.",
+  "trabajos.practicarPlenitud.desc.1": "Vadak te guía a través de algo que no se explica bien con palabras. Más físico que conceptual: el peso como herramienta, no como carga. Salís con los músculos cargados y algo más que no sabés nombrar todavía.",
   "trabajos.labrar.desc.0": "Pasás la mañana dándole al azadón en los campos de Bosk. La tierra es dura, el sol es pesado, y al terminar tenés la espalda como si te hubieran golpeado con esa misma tierra.",
   "trabajos.labrar.desc.1": "Surco a surco, hora tras hora, hasta que el campo queda ordenado y la tierra suelta y oscura. Bosk asiente en silencio: su manera de decir que hiciste bien.",
   "trabajos.labrar.desc.2": "Cargas tierra, rompes terrones, empujas el arado donde el suelo se niega. Al final del turno, los brazos tiemblan y las manos huelen a campo fértil.",
@@ -1080,6 +1180,30 @@ GD.content.es = {
   "npcWG.mercader.avanceFlavor.0": "Vella tuvo que ajustar el chaleco un punto esta mañana. Lo hizo en privado y no lo comenta. Sus libros siguen perfectos; solo su silueta tiene una nueva variable que no estaba en el presupuesto.",
   "npcWG.mercader.avanceFlavor.1": "La mercader ocupa un poco más de espacio detrás del mostrador. Lo maneja con la misma eficiencia con que maneja todo. El precio de los ítems, sin embargo, no ha variado. Eso sí se mantiene.",
 
+  /* ---- npcWG: Vadak ---- */
+  "npcWG.vadak.estados.0.label": "Robusto",
+  "npcWG.vadak.estados.0.desc": "Un cuerpo enorme y denso, de depredador retirado. La masa es predominantemente magra, acumulada en décadas de caza; los flancos son sólidos como cuero mojado, el vientre ancho pero plano, el cuello grueso como un tronco. La quietud que tiene no es lentitud: es elección.",
+  "npcWG.vadak.estados.1.label": "Acomodado",
+  "npcWG.vadak.estados.1.desc": "El reposo tiene sus consecuencias. Una capa blanda empezó a instalarse sobre la solidez de antes: los flancos se redondearon, el vientre cuelga levemente bajo la línea del esternón, la papada tiene una suavidad nueva. Sigue siendo enorme y denso, pero hay más carne de la que el músculo explica.",
+  "npcWG.vadak.estados.2.label": "Voluminoso",
+  "npcWG.vadak.estados.2.desc": "La masa se estableció. La barriga cuelga con peso propio y se apoya en el suelo cuando descansa; las lonjas de los costados marcaron territorio. El movimiento se volvió deliberado, cada desplazamiento una decisión. El tamaño ocupa el espacio de otra manera ahora: no como amenaza, sino como hecho.",
+  "npcWG.vadak.estados.3.label": "Masivo",
+  "npcWG.vadak.estados.3.desc": "Enorme de una manera que ya supera la biología del depredador. La panza es una curva permanente y colgante, los flancos se apilan en lonjas densas y anchas. Se mueve poco y despacio; el cuerpo tarda varios segundos en redistribuirse cada vez que cambia de posición. La cueva se adaptó al nuevo perímetro.",
+  "npcWG.vadak.estados.4.label": "Colosal",
+  "npcWG.vadak.estados.4.desc": "La mole llegó a algo que no es tanto cuerpo como territorio. La panza descansa plena en el suelo, flanqueada por lonjas que se apilan hasta la mitad de la espalda; los brazos reposan hacia afuera, separados del torso por la propia masa. El movimiento quedó reducido a lo estrictamente necesario. La cueva se construyó alrededor de esta forma, o esta forma alrededor de la cueva — ya nadie distingue cuál.",
+  "npcWG.vadak.bondNames.0": "Presa potencial",
+  "npcWG.vadak.bondNames.1": "Tolerable",
+  "npcWG.vadak.bondNames.2": "Conocido",
+  "npcWG.vadak.bondNames.3": "Compañero de mesa",
+  "npcWG.vadak.bondNames.4": "El que alimenta",
+  "npcWG.vadak.feedFlavor.0": "Vadak lo acepta sin comentario, lo baja en un movimiento único. Las mandíbulas se cierran y la comida desaparece.",
+  "npcWG.vadak.feedFlavor.1": "El lagarto mastica despacio, pensativo. Cada comida parece procesarla como información, no solo como sustento.",
+  "npcWG.vadak.feedFlavor.2": "Vadak registra la comida con un gesto mínimo — un descenso lento del hocico, una exhalación. Aceptación silenciosa.",
+  "npcWG.vadak.feedFavFlavor.0": "Por primera vez, algo cambia en su expresión. Solo un instante. Las mandíbulas se cierran sobre la comida favorita y Vadak emite un sonido grave y profundo que hace vibrar el suelo de la cueva. «Sí.»",
+  "npcWG.vadak.feedFavFlavor.1": "Vadak tarda más de lo habitual. La comida favorita desaparece en turnos lentos, sin prisa. Es la primera vez que lo ves comer como si lo disfrutara en lugar de solo procesarlo.",
+  "npcWG.vadak.avanceFlavor.0": "La masa de Vadak creció lo suficiente para ser apreciable incluso para alguien que ya era enorme. Se reacomoda en la cueva despacio, con el sonido de algo masivo que se instala en un nuevo equilibrio. «La panza sabe lo que hace», dice, sin más.",
+  "npcWG.vadak.avanceFlavor.1": "Vadak ocupa más espacio en la cueva ahora. La diferencia es visible: flancos más amplios, el vientre más bajo, el movimiento más deliberado. Lo acepta con la misma calma con que acepta todo lo demás. La cueva también.",
+
   /* ---- hechizos ---- */
   "hechizos.curar.nombre": "Curación",
   "hechizos.curar.desc": "Restaura el 40% de tu vida máxima. La Luz no pregunta; solo repara.",
@@ -1093,6 +1217,23 @@ GD.content.es = {
   "hechizos.drenaje.desc": "Extrae vida del enemigo y te la transfiere. 2d6 de daño; la mitad vuelve como vida tuya.",
   "hechizos.entropia.nombre": "Entropía",
   "hechizos.entropia.desc": "Inflige el 12% de la vida máxima del rival por turno durante 5 turnos. Siempre impacta. Ignora defensa. El rival siempre perece — solo es cuestión de cuánto tarde.",
+  "hechizos.feast.nombre": "Feast",
+  "hechizos.feast.desc": "Convierte al rival en comida. Una comprensión extrema de las reglas de Pléroma: lo que puede comerse, deja de poder herirte.",
+  "hechizos.absorcion.nombre": "Absorción",
+  "hechizos.absorcion.desc": "Técnica de Devorar. En lugar de engullir en bruto, absorbés la fuerza del rival. Ganás mucho más XP pero menos grasa.",
+  /* ---- hechizos evolucionados ---- */
+  "hechizos.curar_mayor.nombre": "Curación Mayor",
+  "hechizos.curar_mayor.desc": "Restaura el 70% de tu vida máxima de un golpe. La Luz en su forma más pura y generosa.",
+  "hechizos.escudo_mayor.nombre": "Escudo de Luz Mayor",
+  "hechizos.escudo_mayor.desc": "Reduce el daño recibido en un 60% durante 5 turnos. La Luz se convierte en fortaleza.",
+  "hechizos.rafaga_mayor.nombre": "Tormenta Elemental",
+  "hechizos.rafaga_mayor.desc": "Cuatro dados de fuerza elemental. El Flujo desbordado no pregunta cuánta armadura tenés.",
+  "hechizos.ralentizar_mayor.nombre": "Parálisis del Flujo",
+  "hechizos.ralentizar_mayor.desc": "Interrumpe el Flujo hasta las raíces: Agilidad −10 durante 5 turnos. El rival queda a tu merced.",
+  "hechizos.drenaje_mayor.nombre": "Gran Drenaje",
+  "hechizos.drenaje_mayor.desc": "Extrae vida con voracidad plena. 4d6 de daño; el 70% vuelve como vida tuya. No hay defensa contra la sed.",
+  "hechizos.entropia_mayor.nombre": "Entropía Total",
+  "hechizos.entropia_mayor.desc": "El 18% de la vida máxima del rival por turno durante 7 turnos. Siempre impacta. Toda cosa decae; vos solo lo acelerás.",
 
   /* ---- quests ---- */
   "quests.q_luz1.nombre": "Primeros Pasos en la Luz",
@@ -1107,6 +1248,14 @@ GD.content.es = {
   "quests.q_negra1.desc": "Derrotá 15 enemigos en el Paso de la Escarcha. Vexara quiere saber si llegás hasta aquí por algo más que curiosidad.",
   "quests.q_negra2.nombre": "El Precio del Vacío",
   "quests.q_negra2.desc": "Derrotá 3 Gigantes de la Escarcha. Son la prueba más honesta que el Paso ofrece.",
+
+  /* ---- Tradición de la Plenitud ---- */
+  "quests.q_absorcion.nombre": "El Primer Trago Consciente",
+  "quests.q_absorcion.desc": "Devorá a 20 enemigos. Hay una diferencia entre engullir por hambre y engullir porque ya dominás el acto. Cuando cruces esa línea, vas a sentirlo.",
+  "quests.q_plenitud2.nombre": "Panza Vacía",
+  "quests.q_plenitud2.desc": "Sobreviví a 5 forcejeos. El cuerpo que aprende a soportar el peso ajeno empieza a entender el propio.",
+  "quests.q_plenitud3.nombre": "La Gran Transmutación",
+  "quests.q_plenitud3.desc": "Alcanzá un estado obeso en 3 ocasiones distintas. Solo quien conoce la plenitud desde adentro puede transmutarla en otros.",
 
   /* ---- miniEventos ---- */
   "miniEventos.ruinas_bosque.intro": "Entre los árboles asoma una estructura de piedra cubierta de musgo. Una ruina que el bosque lleva siglos tragándose.",

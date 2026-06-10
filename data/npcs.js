@@ -122,6 +122,26 @@ GD.npcs = {
       "@@npcs.archimagaVexara.dialogos.3",
     ],
   },
+
+  /* ----------------------------------------------------------
+     VADAK — Salamandra gigante, antiguo devorador reformado.
+     Habita la cueva al fondo del claro pantanoso.
+     Maestro no académico de la Tradición de la Plenitud:
+     su conocimiento es puro historial de masa ajena digerida.
+  ---------------------------------------------------------- */
+  vadak: {
+    nombre: "@@npcs.vadak.nombre",
+    saludo: [
+      "@@npcs.vadak.saludo.0",
+      "@@npcs.vadak.saludo.1",
+    ],
+    dialogos: [
+      "@@npcs.vadak.dialogos.0",
+      "@@npcs.vadak.dialogos.1",
+      "@@npcs.vadak.dialogos.2",
+      "@@npcs.vadak.dialogos.3",
+    ],
+  },
 };
 
 GD.trabajos = {
@@ -181,6 +201,13 @@ GD.trabajos = {
       "@@trabajos.arrear_vacas.desc.0",
       "@@trabajos.arrear_vacas.desc.1",
       "@@trabajos.arrear_vacas.desc.2",
+    ],
+  },
+  practicarPlenitud: {
+    loc: "escuela_plenitud", stat: "EST", costoSta: 25, turnos: 4, base: 14, var: 8, statBonus: 0.6,
+    desc: [
+      "@@trabajos.practicarPlenitud.desc.0",
+      "@@trabajos.practicarPlenitud.desc.1",
     ],
   },
 };

@@ -99,13 +99,19 @@ GD.i18n.en = {
   "unit.in": "{n} in",
   "unit.m": "{n} m",
 
-  /* ---- Stats: abbreviation, name ---- */
+  /* ---- Stats: abbreviation, name, description ---- */
   "stat.FUE.abbr": "STR", "stat.FUE.name": "Strength",
+  "stat.FUE.desc": "Physical damage in combat. More STR also reduces the movement penalty as you fatten up.",
   "stat.AGI.abbr": "DEX", "stat.AGI.name": "Dexterity",
+  "stat.AGI.desc": "Speed. Determines who strikes first and your chance to dodge attacks.",
   "stat.INT.abbr": "WIT", "stat.INT.name": "Wits",
+  "stat.INT.desc": "Max mana and arcane power. Needed for spells and Feast.",
   "stat.AGU.abbr": "END", "stat.AGU.name": "Endurance",
+  "stat.AGU.desc": "Max health. More END, more hits you can take before going down.",
   "stat.EST.abbr": "STO", "stat.EST.name": "Stomach",
+  "stat.EST.desc": "How much you can eat before filling up. Also expands your magic food reserve (Feast).",
   "stat.TAM.abbr": "SIZ", "stat.TAM.name": "Size",
+  "stat.TAM.desc": "Base body mass. More SIZ = bigger, heavier, and more starting stamina.",
 
   /* ---- Body labels (fatness) ---- */
   "body.fat.esbelto": "lean",
@@ -133,6 +139,7 @@ GD.i18n.en = {
   "ex.escuelaBl": "✦ School of Light",
   "ex.escuelaGr": "◈ School of Flow",
   "ex.escuelaNg": "☽ School of the Depths",
+  "ex.escuelaPl": "🕯 The Ancient's Cave",
   "ex.rest": "💤 Rest",
   "ex.forage": "🌿 Forage for food",
   "ex.backpack": "🎒 Backpack",
@@ -230,6 +237,8 @@ GD.i18n.en = {
   "shop.grisDesc": "A circular room with the floor covered in flow diagrams carved into the stone. The air hums faintly. At the center, a water bowl floats at waist height and no one seems surprised.",
   "shop.negraName": "School of the Depths",
   "shop.negraDesc": "Walls lined with shelves of indecipherable jars. The light comes from sources you can't find. The silence here has a particular weight: as if it absorbs sound rather than simply lacking it.",
+  "shop.plenitudName": "The Ancient's Cave",
+  "shop.plenitudDesc": "Vadak's den. Dark, warm, no academic pretensions. In the back, an enormous, quiet mass that knows exactly what you are and what you could become.",
 
   /* ---- Safe-zone locations ---- */
   "shop.innName": "Ford Inn",
@@ -250,18 +259,27 @@ GD.i18n.en = {
   "shop.talk": "💬 Talk",
   "shop.talkMore": "Keep talking",
   "shop.work": "🛠️ Work ({n} stam)",
-  "shop.upgrade": "⚒️ Upgrade weapon",
+  "shop.upgrade": "⚒️ Upgrade gear",
   "shop.tooTired": "You're out of breath, your heavy fat body protesting. Rest before you start working.",
   "shop.earned": "You collect your day's pay: +{n} gold.",
 
-  /* ---- Weapon upgrades (forge) ---- */
-  "mejora.title": "Upgrade weapons",
+  /* ---- Weapon & armor upgrades (forge) ---- */
+  "mejora.title": "Upgrade workshop",
+  "mejora.armas": "⚔ Weapons",
+  "mejora.armaduras": "🛡 Armor",
+  "mejora.levelArma": "Level {n}/10",
   "mejora.level": "Level {n}/10",
   "mejora.cost": "Upgrade — {n} gold",
+  "mejora.costArmadura": "{n} gold + materials",
   "mejora.maxed": "Maxed out",
+  "mejora.noneArmas": "You have no weapons to upgrade (claws don't count; buy a weapon first).",
+  "mejora.noneArmaduras": "You have no armor to upgrade. Buy some at the shop or forge it here.",
   "mejora.none": "You have no weapons to upgrade (claws don't count; buy a weapon first).",
+  "mejora.defLine": "DEF {def}",
   "mejora.done": "Durn works the edge of your {arma}: now level {n}.",
-  "mejora.hint": "Each level adds damage based on weapon type (heavy steel +6%, agile +5%, arcane +4%). Max 10 levels.",
+  "mejora.doneArmadura": "Durn reinforces your {armadura}: now level {n}. Defense increased.",
+  "mejora.hint": "Weapons: each level adds damage (+4–7% by type). Max 10 levels.",
+  "mejora.hintArmadura": "Armor: each level adds DEF using materials from the world. Max 5 levels.",
 
   /* ---- Combat ---- */
   "cb.title": "Combat!",
@@ -269,6 +287,7 @@ GD.i18n.en = {
   "cb.grabbed": "You're grabbed! Struggle to break free.",
   "cb.attack": "⚔ Attack",
   "cb.devour": "🦷 Devour",
+  "cb.devourMenu": "🦷 Devour ▸",
   "cb.feast": "✦ Feast ({n} mana)",
   "cb.useItem": "🎒 Use item",
   "cb.flee": "🏃 Flee",
@@ -298,9 +317,22 @@ GD.i18n.en = {
 
   /* ---- Devour ---- */
   "log.devourSwallow": "You open wide and swallow {enemy} whole. It slides down your throat, kicking and bulging your throat before dropping heavily into your stomach.",
+  "log.devourAbsorcion": "You don't just swallow it — you absorb it. {enemy} dissolves into raw strength inside your mass, feeding muscle and hunger in equal measure.",
+  "log.devourPerfect": "With a Master's authority, you open wide and claim {enemy} without ceremony. No resistance matters at this scale.",
   "log.bellySwell": "Your belly surges outward violently, swelling huge and tight (+{n} fullness).",
   "devour.title": "Feasting",
   "devour.done": "{enemy} is no longer a problem. It's just more weight padding your already massive gut.",
+  "devour.menuTitle": "Devour Technique",
+  "devour.tier0": "Novice Mastery — The hunger is there. The skill is not.",
+  "devour.tier1": "Apprentice Mastery — Your throat knows what it wants.",
+  "devour.tier2": "Practitioner Mastery — Your mass speaks before your teeth do.",
+  "devour.tier3": "Master Mastery — Nothing refuses to be swallowed.",
+  "devour.tech.engullida": "Swallow",
+  "devour.tech.engullida.desc": "Base technique. Swallow the enemy raw. Mass and XP scale with your current mastery.",
+  "devour.tech.absorcion": "Absorption",
+  "devour.tech.absorcion.desc": "Less fat, more power. Requires physical dominance. XP gained is considerably higher.",
+  "devour.tech.perfecta": "Perfect Swallow",
+  "devour.tech.perfecta.desc": "No health restrictions. The ultimate gulp: maximum mass, maximum XP. Masters only.",
 
   /* ---- Feast ---- */
   "log.feastCast": "You speak Feast. Your mana wraps around {enemy} and folds it into a steaming, rich banquet. It no longer fights: now it's perfect, hot food for your greedy belly.",
@@ -356,10 +388,12 @@ GD.i18n.en = {
   "spell.effectEnd": "The effect of {hechizo} faded.",
   "spell.activeEffects": "Active effects:",
   "spell.shopSection": "School spells",
+  "spell.evolSection": "◈ Available evolutions",
   "spell.alreadyLearned": "Already learned",
   "spell.missionRequired": "Quest required",
   "spell.buy": "Learn — {n} gold",
   "spell.bought": "You learned {hechizo}. The spell is now available in combat.",
+  "spell.upgradeOf": "Evolution of {base}",
 
   /* ---- School quests ---- */
   "shop.missions": "📜 Quests",
@@ -369,6 +403,15 @@ GD.i18n.en = {
   "quest.reward": "Reward",
   "quest.progress": "{n} / {total}",
   "quest.complete": "Quest complete! Spell unlocked: {hechizo}.",
+  "quest.completeNR": "Quest complete!",
+  "logro.unlocked": "✦ Legendary unlock: {nombre}. {desc}",
+  "logro.unlockedSpell": "✦ Legendary unlock: {nombre}. {desc} Spell unlocked: {hechizo}.",
+
+  /* ---- legendary unlocks (Plenitude Tradition) ---- */
+  "logro.tradicionPlenitud.nombre": "The Final Understanding",
+  "logro.tradicionPlenitud.desc": "You devoured 50 creatures and finally learned to read the world's hunger. You no longer eat to survive — you understand.",
+  "logro.cuerpoVasto.nombre": "Vast Body",
+  "logro.cuerpoVasto.desc": "Your mass reached figures no longer explained by common anatomy. The world starts measuring itself against you.",
 
   /* ---- Material drops ---- */
   "drop.got": "✦ You find: {item}.",
@@ -395,6 +438,23 @@ GD.i18n.en = {
   "forja.done": "You forged {arma}. Check your bag.",
   "forja.legendTitle": "✦ Sacred forge",
   "forja.legendDesc": "Something shifts in the forge when the materials come together. It's not just a weapon. It's {arma}. One of three forges the world didn't know could exist.",
+
+  /* ---- Multi-slot saving ---- */
+  "save.title": "Save game",
+  "save.slot": "Slot {n}",
+  "save.slotEmpty": "Empty",
+  "save.saveHere": "Save here",
+  "save.exportBtn": "⬇ Export to file",
+  "save.exportHint": "Exported files survive browser cache clearing. This is the recommended option to keep your save safe.",
+  "save.exportTooltip": "Recommended: the file is saved to your computer and won't be lost if you clear browser data or cache.",
+  "save.recommended": "(★ Recommended)",
+  "save.exported": "Game exported to file.",
+  "save.saved": "Saved to slot {n}.",
+  "load.title": "Load game",
+  "load.loadBtn": "Load",
+  "load.importBtn": "📂 Load from file",
+  "load.importHint": "Load a previously exported save file.",
+  "load.legacySlot": "Previous save (load to migrate to a slot)",
 };
 
 
@@ -528,6 +588,20 @@ GD.content.en = {
   "items.cota.texto": "Heavy but solid. Takes a beating.",
   "items.placas.nombre": "Plate armor",
   "items.placas.texto": "Solid steel from Durn's forge. A portable wall.",
+  "items.armadura_brutal.nombre": "Brutal cuirass",
+  "items.armadura_brutal.texto": "Thick steel with tusk rivets. Slows your run but makes you more dangerous for everything else. +4 STR.",
+  "items.cuero_veloz.nombre": "Swift leather",
+  "items.cuero_veloz.texto": "Light leather reinforced with cougar claw. Moves with you, not against you. +5 AGI.",
+  "items.tunica_mago.nombre": "Arcane tunic",
+  "items.tunica_mago.texto": "Woven with hardened marsh slime. Minimal protection, but tuned to mana flow. +2 WIT.",
+  "items.manto_mago.nombre": "Mage's mantle",
+  "items.manto_mago.texto": "Layers of hydra scale stitched over high-quality linen. Magic flows with less resistance. +4 WIT.",
+  "items.vestidura_arcana.nombre": "Arcane vestment",
+  "items.vestidura_arcana.texto": "Colossus fragment fused into reinforced cloth. Maximum defense for a mage, without sacrificing all the wit. +3 WIT.",
+  "items.manto_arcano.nombre": "Greater arcane mantle",
+  "items.manto_arcano.texto": "Frost crystal woven into distilled marsh slime. Almost no physical protection — everything goes to mana. +9 WIT.",
+  "items.tunica_flujo.nombre": "Flow tunic",
+  "items.tunica_flujo.texto": "Hydra scale over cougar leather. For the mage who also needs to move. +5 WIT, +3 AGI.",
 
   /* ---- recetas ---- */
   "recetas.garrote_nudoso.nombre": "Forge gnarled club",
@@ -538,6 +612,12 @@ GD.content.en = {
   "recetas.leviatan.nombre": "Awaken the Leviathan",
   "recetas.sombra_veloz.nombre": "Forge the Swift shadow",
   "recetas.vacio_eterno.nombre": "Seal the Eternal void",
+  "recetas.placas.nombre": "Forge plate armor",
+  "recetas.armadura_brutal.nombre": "Forge brutal cuirass",
+  "recetas.cuero_veloz.nombre": "Forge swift leather",
+  "recetas.vestidura_arcana.nombre": "Forge arcane vestment",
+  "recetas.manto_arcano.nombre": "Forge greater arcane mantle",
+  "recetas.tunica_flujo.nombre": "Forge flow tunic",
 
   /* ---- recetasCocina ---- */
   "recetasCocina.sopa_raices.nombre": "Root soup",
@@ -815,6 +895,7 @@ GD.content.en = {
   "world.zonas.claro.descripcion.1": "Warm puddles bubble among reeds as thick as your arm. Something stirs under the brown water, slow and enormous. The mud sucks at every step you take.",
   "world.zonas.claro.descripcion.2": "The clearing reeks of ferment and full bellies. Wide, soft shapes rest half-submerged, too heavy to move... until you have the bad luck to come close.",
   "world.zonas.claro.salidas.0.texto": "Back to the path",
+  "world.zonas.claro.salidas.1.texto": "Follow the mud toward the cave",
   "world.zonas.claro.eventos.0": "The mud makes a releasing sound with every step. The swamp doesn't want you to advance.",
   "world.zonas.claro.eventos.1": "Through the brown surface of the water, something large shifts position. Slowly. Without urgency. It's been following you for a while.",
   "world.zonas.claro.eventos.2": "A toad the size of a rock sits in the path and doesn't move. {PronS} and the toad stare at each other. The toad blinks. Then it leaves.",
@@ -859,6 +940,16 @@ GD.content.en = {
   "world.zonas.catacumba.descripcion.0": "A low, windowless building at the edge of the road leaving La Confluencia. The outside stone is darker than the town's granite; you're not sure if it's the material or what happened inside.",
   "world.zonas.catacumba.descripcion.1": "The cold here is different from the pass: it's not temperature, it's absence. Something inside absorbs warmth the same way a wall absorbs light.",
   "world.zonas.catacumba.descripcion.2": "The entrance has no sign or emblem. The only sign it's a school is the figure sitting outside reading, who looks up when you arrive and goes back to reading before you open your mouth.",
+  "world.zonas.cueva_vadak.nombre": "The Ancient's Cave",
+  "world.zonas.cueva_vadak.descripcion.0": "The cave mouth hides behind reeds thick as a thigh and roots that hang from the rock like fingers. The mud floor holds enormous, sunken, old tracks. The smell coming out is dense: something wild that hasn't moved from this spot in years.",
+  "world.zonas.cueva_vadak.descripcion.1": "It's warmer inside than out, and the smell changes: not just swamp, but body. A vast, still presence in the darkness. When your eyes adjust, you make out Vadak's silhouette — vast, unhurried.",
+  "world.zonas.cueva_vadak.descripcion.2": "The cave holds the temperature of something that never cools down. Vadak occupies the back corner the way it occupies everything else: completely, without apology. Old bones line the walls. Not as decoration. As records.",
+  "world.zonas.cueva_vadak.salidas.0.texto": "Back out to the Glutton's Clearing",
+  "world.zonas.cueva_vadak.eventos.0": "Something cracks in the dark — the sound of a vast mass readjusting. Vadak. It breathes slowly.",
+  "world.zonas.cueva_vadak.eventos.1": "The cave holds the swamp's cold outside and Vadak's warmth inside. The result is an odd temperature: the same as the inside of something alive.",
+  "world.zonas.cueva_vadak.eventos.2": "Old remains along the walls. Not trophies, not decoration. Just what's left of things that were eaten before you arrived, and you don't need to think too hard about that.",
+  "world.zonas.cueva_vadak.eventos.3": "Vadak tracks you with its eyes without turning its head. When you move, the eyes move. When you stop, the eyes stop. It's studying you.",
+
   "world.zonas.catacumba.salidas.0.texto": "Return to La Confluencia",
 
   /* ---- pesos ---- */
@@ -969,6 +1060,13 @@ GD.content.en = {
   "npcs.cocinera.dialogos.1": "\"Good butter comes from Bosk's cows. Good honey comes from his hives. In Solaz we don't import anything that can grow here.\"",
   "npcs.cocinera.dialogos.2": "\"There's a difference between eating to fill up and eating to grow. The recipe understands which is which. Don't fool it.\"",
   "npcs.cocinera.dialogos.3": "\"Adventurers who pass through always want to know if the hearth has potions or combat bonuses. I tell them yes, they're called 'calories' and they work long-term.\"",
+  "npcs.vadak.nombre": "Vadak, the Ancient",
+  "npcs.vadak.saludo.0": "Vadak doesn't move when you enter. Its eyes, calm and yellow, find you in the dark. \"Again.\"",
+  "npcs.vadak.saludo.1": "The weight of its gaze arrives before any words. Vadak exhales slowly, something between a sigh and a rumble. \"Come in.\"",
+  "npcs.vadak.dialogos.0": "\"You've devoured things. I can see it in you. The question isn't whether you can — it's whether you understand what happens after.\"",
+  "npcs.vadak.dialogos.1": "\"I don't teach theory. I have no books. What I have is memory: two hundred years of other creatures' mass that I learned from the inside.\"",
+  "npcs.vadak.dialogos.2": "\"Feast isn't magic. It's what I've done since I was born, but conscious. When you understand the difference, you'll know you're ready.\"",
+  "npcs.vadak.dialogos.3": "\"The mass you take in becomes yours. The mass you release becomes the swamp's. Nothing is lost. It just changes ownership.\"",
   "npcs.archimagaVexara.nombre": "Vexara, the Weaver",
   "npcs.archimagaVexara.saludo.0": "The figure at the far end of the room doesn't move when you enter. She takes a moment to speak, as if finishing a long thought. \"I know why you're here.\"",
   "npcs.archimagaVexara.saludo.1": "Vexara looks at you from behind a desk covered in formulas you can't quite read. \"The Essence isn't learned. It's accepted.\"",
@@ -990,6 +1088,8 @@ GD.content.en = {
   "trabajos.estudiarFlujo.desc.1": "Kor has you channeling cold currents through a water shape. When done, fingers numb, mana more ordered.",
   "trabajos.asistirVexara.desc.0": "You assist Vexara with her formulas. She doesn't say exactly what she's doing. You'd rather not ask. When done, something in the room's air weighs more.",
   "trabajos.asistirVexara.desc.1": "You transcribe symbols from a text you can't read. The quill feels odd toward the end. Vexara doesn't comment. Payment arrives on its own.",
+  "trabajos.practicarPlenitud.desc.0": "You spend time in the cave practicing what Vadak calls 'knowledge of weight': carrying large stones, feeling mass in the body, eating in stillness and paying attention to what happens. It has no official name. It works.",
+  "trabajos.practicarPlenitud.desc.1": "Vadak guides you through something that doesn't translate well into words. More physical than conceptual: weight as a tool, not a burden. You leave with your muscles loaded and something else you can't name yet.",
   "trabajos.labrar.desc.0": "You spend the morning driving Bosk's hoe through the fields. The earth is hard, the sun is heavy, and by the end your back feels like someone beat you with the same dirt.",
   "trabajos.labrar.desc.1": "Row by row, hour by hour, until the field is neat and the soil loose and dark. Bosk nods once: his way of saying you did well.",
   "trabajos.labrar.desc.2": "You haul dirt, break clods, push the plow where the soil refuses. By the end of the shift, your arms tremble and your hands smell of fertile earth.",
@@ -1080,6 +1180,30 @@ GD.content.en = {
   "npcWG.mercader.avanceFlavor.0": "Vella had to adjust her vest a notch this morning. She did it in private and doesn't mention it. Her ledgers are still perfect; only her silhouette has a new variable that wasn't in the budget.",
   "npcWG.mercader.avanceFlavor.1": "The merchant takes up a little more space behind the counter. She handles it with the same efficiency she handles everything. The price of items, however, has not changed. That, at least, holds steady.",
 
+  /* ---- npcWG: Vadak ---- */
+  "npcWG.vadak.estados.0.label": "Sturdy",
+  "npcWG.vadak.estados.0.desc": "An enormous, dense body — a retired predator's frame. The mass is mostly lean, built over decades of hunting; flanks solid as wet leather, belly wide but flat, neck thick as a trunk. The stillness it holds isn't slowness: it's choice.",
+  "npcWG.vadak.estados.1.label": "Settled",
+  "npcWG.vadak.estados.1.desc": "Rest has its consequences. A soft layer has started to settle over the old solidity: flanks rounded out, belly hanging slightly below the sternum, a new softness to the chin. Still enormous and dense, but there's more flesh here than the muscle accounts for.",
+  "npcWG.vadak.estados.2.label": "Voluminous",
+  "npcWG.vadak.estados.2.desc": "The mass has established itself. The gut hangs with its own weight and rests on the floor when still; flanks have staked their territory in rolls. Movement has become deliberate — each shift a decision. The size occupies space differently now: not as a threat, but as a fact.",
+  "npcWG.vadak.estados.3.label": "Massive",
+  "npcWG.vadak.estados.3.desc": "Enormous in a way that exceeds the predator's original biology. The belly is a permanent, hanging curve; flanks pile into thick, wide rolls. It moves little and slowly — the body takes several seconds to redistribute each time it shifts. The cave adapted to the new perimeter.",
+  "npcWG.vadak.estados.4.label": "Colossal",
+  "npcWG.vadak.estados.4.desc": "The mass has become something less like a body and more like territory. The belly rests flat on the floor, flanked by rolls that stack halfway up the back; arms rest outward, pushed away from the torso by the mass itself. Movement is reduced to the strictly necessary. The cave was built around this form, or this form around the cave — no one can tell which anymore.",
+  "npcWG.vadak.bondNames.0": "Potential prey",
+  "npcWG.vadak.bondNames.1": "Tolerated",
+  "npcWG.vadak.bondNames.2": "Known",
+  "npcWG.vadak.bondNames.3": "Dining companion",
+  "npcWG.vadak.bondNames.4": "The one who feeds",
+  "npcWG.vadak.feedFlavor.0": "Vadak accepts it without comment, swallows in one motion. The jaws close and the food disappears.",
+  "npcWG.vadak.feedFlavor.1": "The lizard chews slowly, thoughtful. Each meal seems to be processed as information, not just sustenance.",
+  "npcWG.vadak.feedFlavor.2": "Vadak registers the food with a minimal gesture — a slow lowering of the snout, an exhale. Silent acceptance.",
+  "npcWG.vadak.feedFavFlavor.0": "For the first time, something changes in its expression. Just a moment. The jaws close over the favorite food and Vadak produces a deep, low sound that makes the cave floor vibrate. \"Yes.\"",
+  "npcWG.vadak.feedFavFlavor.1": "Vadak takes longer than usual. The favorite food disappears in slow turns, unhurried. It's the first time you've seen it eat as if it were enjoying something rather than just processing it.",
+  "npcWG.vadak.avanceFlavor.0": "Vadak's mass has grown enough to be appreciable even on a frame that was already enormous. It resettles in the cave slowly, with the sound of something vast finding a new equilibrium. \"The belly knows what it's doing,\" it says. Nothing more.",
+  "npcWG.vadak.avanceFlavor.1": "Vadak takes up more space in the cave now. The difference is visible: wider flanks, a lower belly, more deliberate movement. It accepts it with the same calm with which it accepts everything else. The cave does too.",
+
   /* ---- hechizos ---- */
   "hechizos.curar.nombre": "Heal",
   "hechizos.curar.desc": "Restores 40% of your max health. The Light doesn't ask; it just repairs.",
@@ -1093,6 +1217,23 @@ GD.content.en = {
   "hechizos.drenaje.desc": "Draws life from the enemy and transfers it to you. 2d6 damage; half returns as your health.",
   "hechizos.entropia.nombre": "Entropy",
   "hechizos.entropia.desc": "Deals 12% of the enemy's max health per turn for 5 turns. Always hits. Ignores defense. The rival always perishes — it's just a matter of how long it takes.",
+  "hechizos.feast.nombre": "Feast",
+  "hechizos.feast.desc": "Turns the rival into food. An extreme understanding of Pléroma's rules: what can be eaten can no longer hurt you.",
+  "hechizos.absorcion.nombre": "Absorption",
+  "hechizos.absorcion.desc": "Devour technique. Instead of swallowing raw, you absorb the rival's strength. You gain much more XP but much less fat.",
+  /* ---- evolved spells ---- */
+  "hechizos.curar_mayor.nombre": "Greater Heal",
+  "hechizos.curar_mayor.desc": "Restores 70% of your max health in one surge. The Light in its purest, most generous form.",
+  "hechizos.escudo_mayor.nombre": "Greater Light Shield",
+  "hechizos.escudo_mayor.desc": "Reduces incoming damage by 60% for 5 turns. The Light becomes a fortress.",
+  "hechizos.rafaga_mayor.nombre": "Elemental Storm",
+  "hechizos.rafaga_mayor.desc": "Four dice of elemental force. Overflow Flow doesn't ask how much armor you have.",
+  "hechizos.ralentizar_mayor.nombre": "Flow Paralysis",
+  "hechizos.ralentizar_mayor.desc": "Disrupts the Flow to its roots: Agility −10 for 5 turns. The enemy is at your mercy.",
+  "hechizos.drenaje_mayor.nombre": "Grand Drain",
+  "hechizos.drenaje_mayor.desc": "Draws life with full voracity. 4d6 damage; 70% returns as your health. There is no defense against thirst.",
+  "hechizos.entropia_mayor.nombre": "Total Entropy",
+  "hechizos.entropia_mayor.desc": "18% of the enemy's max health per turn for 7 turns. Always hits. All things decay; you just speed it up.",
 
   /* ---- quests ---- */
   "quests.q_luz1.nombre": "First Steps in the Light",
@@ -1107,6 +1248,14 @@ GD.content.en = {
   "quests.q_negra1.desc": "Defeat 15 enemies in the Frost Pass. Vexara wants to know if you came this far for more than curiosity.",
   "quests.q_negra2.nombre": "The Price of the Void",
   "quests.q_negra2.desc": "Defeat 3 Frost Giants. They're the most honest test the Pass offers.",
+
+  /* ---- Plenitude Tradition ---- */
+  "quests.q_absorcion.nombre": "The First Conscious Gulp",
+  "quests.q_absorcion.desc": "Devour 20 enemies. There's a difference between swallowing out of hunger and swallowing because you've mastered the act. When you cross that line, you'll feel it.",
+  "quests.q_plenitud2.nombre": "Empty Belly",
+  "quests.q_plenitud2.desc": "Survive 5 grapples. A body that learns to bear another's weight starts to understand its own.",
+  "quests.q_plenitud3.nombre": "The Great Transmutation",
+  "quests.q_plenitud3.desc": "Reach an obese state on 3 separate occasions. Only one who knows plenitude from within can transmute it in others.",
 
   /* ---- miniEventos ---- */
   "miniEventos.ruinas_bosque.intro": "Between the trees, a moss-covered stone structure juts out. A ruin the forest has been swallowing for centuries.",

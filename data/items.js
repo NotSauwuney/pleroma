@@ -286,23 +286,92 @@ GD.items = {
   // ---- ARMADURA ----
   sinArmar: {
     id: "sinArmar", tipo: "armadura", def: 0, precio: 0,
+    mejorable: false,
     nombre: "@@items.sinArmar.nombre",
     texto: "@@items.sinArmar.texto",
   },
+
+  // --- No-mago: progresión lineal (tier 1 y 2) ---
   cuero: {
     id: "cuero", tipo: "armadura", def: 2, precio: 30,
+    mejoraRateDef: 0.5, mejoraMats: { zarpa_osa: 1 },
     nombre: "@@items.cuero.nombre",
     texto: "@@items.cuero.texto",
   },
   cota: {
     id: "cota", tipo: "armadura", def: 4, precio: 70,
+    mejoraRateDef: 0.5, mejoraMats: { colmillo_lobo: 1 },
     nombre: "@@items.cota.nombre",
     texto: "@@items.cota.texto",
   },
+
+  // --- No-mago: tier 3 (tres ramas en herrería) ---
   placas: {
-    id: "placas", tipo: "armadura", def: 6, precio: 150,
+    // Defensiva pura: máxima reducción de daño
+    id: "placas", tipo: "armadura", def: 7, precio: 180,
+    mejoraRateDef: 1, mejoraMats: { fragmento_coloso: 1 },
     nombre: "@@items.placas.nombre",
     texto: "@@items.placas.texto",
+  },
+  armadura_brutal: {
+    // Ofensiva: menos def, pero +FUE para más daño y movilidad con grasa
+    id: "armadura_brutal", tipo: "armadura", def: 5, precio: 180,
+    bonusFUE: 4,
+    mejoraRateDef: 0.5, mejoraMats: { colmillo_jabali: 1 },
+    nombre: "@@items.armadura_brutal.nombre",
+    texto: "@@items.armadura_brutal.texto",
+  },
+  cuero_veloz: {
+    // Ágil: def moderada, +AGI para esquiva y prioridad en combate
+    id: "cuero_veloz", tipo: "armadura", def: 3, precio: 160,
+    bonusAGI: 5,
+    mejoraRateDef: 0.5, mejoraMats: { garra_puma: 1 },
+    nombre: "@@items.cuero_veloz.nombre",
+    texto: "@@items.cuero_veloz.texto",
+  },
+
+  // --- Mago: progresión lineal (tier 1 y 2) ---
+  tunica_mago: {
+    // Protección básica con sintonía arcana
+    id: "tunica_mago", tipo: "armadura", def: 1, precio: 40,
+    bonusINT: 2,
+    mejoraRateDef: 0.5, mejoraMats: { baba_pantano: 1 },
+    nombre: "@@items.tunica_mago.nombre",
+    texto: "@@items.tunica_mago.texto",
+  },
+  manto_mago: {
+    // Manto de flujo: def y maná estable
+    id: "manto_mago", tipo: "armadura", def: 2, precio: 100,
+    bonusINT: 4,
+    mejoraRateDef: 0.5, mejoraMats: { escama_hidra: 1 },
+    nombre: "@@items.manto_mago.nombre",
+    texto: "@@items.manto_mago.texto",
+  },
+
+  // --- Mago: tier 3 (tres ramas en herrería) ---
+  vestidura_arcana: {
+    // Tanque arcano: máxima def para un mago, INT moderada
+    id: "vestidura_arcana", tipo: "armadura", def: 5, precio: 240,
+    bonusINT: 3,
+    mejoraRateDef: 1, mejoraMats: { fragmento_coloso: 1, escama_hidra: 1 },
+    nombre: "@@items.vestidura_arcana.nombre",
+    texto: "@@items.vestidura_arcana.texto",
+  },
+  manto_arcano: {
+    // Maestro arcano: INT máxima, def baja — maximiza maná y daño de hechizos
+    id: "manto_arcano", tipo: "armadura", def: 1, precio: 240,
+    bonusINT: 9,
+    mejoraRateDef: 0.5, mejoraMats: { baba_pantano: 1, cristal_escarcha: 1 },
+    nombre: "@@items.manto_arcano.nombre",
+    texto: "@@items.manto_arcano.texto",
+  },
+  tunica_flujo: {
+    // Equilibrio: INT + AGI para un mago que también se mueve
+    id: "tunica_flujo", tipo: "armadura", def: 3, precio: 240,
+    bonusINT: 5, bonusAGI: 3,
+    mejoraRateDef: 0.5, mejoraMats: { escama_hidra: 1, garra_puma: 1 },
+    nombre: "@@items.tunica_flujo.nombre",
+    texto: "@@items.tunica_flujo.texto",
   },
 };
 
@@ -355,6 +424,38 @@ GD.recetas = {
     nombre: "@@recetas.vacio_eterno.nombre",
     requiereArma: "bastón_pantano", requiereNivel: 10,
     materiales: { escama_hidra: 1, cristal_escarcha: 1, nucleo_pantano: 1 },
+  },
+
+  // ---- RECETAS DE ARMADURAS TIER 3 ----
+  placas: {
+    id: "placas", resultado: "placas",
+    nombre: "@@recetas.placas.nombre",
+    materiales: { fragmento_coloso: 2, cuerno_toro: 1 },
+  },
+  armadura_brutal: {
+    id: "armadura_brutal", resultado: "armadura_brutal",
+    nombre: "@@recetas.armadura_brutal.nombre",
+    materiales: { colmillo_jabali: 2, zarpa_osa: 2 },
+  },
+  cuero_veloz: {
+    id: "cuero_veloz", resultado: "cuero_veloz",
+    nombre: "@@recetas.cuero_veloz.nombre",
+    materiales: { garra_puma: 2, colmillo_lobo: 1 },
+  },
+  vestidura_arcana: {
+    id: "vestidura_arcana", resultado: "vestidura_arcana",
+    nombre: "@@recetas.vestidura_arcana.nombre",
+    materiales: { fragmento_coloso: 1, escama_hidra: 2, nucleo_pantano: 1 },
+  },
+  manto_arcano: {
+    id: "manto_arcano", resultado: "manto_arcano",
+    nombre: "@@recetas.manto_arcano.nombre",
+    materiales: { baba_pantano: 2, cristal_escarcha: 2 },
+  },
+  tunica_flujo: {
+    id: "tunica_flujo", resultado: "tunica_flujo",
+    nombre: "@@recetas.tunica_flujo.nombre",
+    materiales: { escama_hidra: 1, garra_puma: 2, escarcha_gigante: 1 },
   },
 };
 
