@@ -27,6 +27,7 @@ GD.world = {
         { a: "senda",   texto: "@@world.zonas.vado.salidas.0.texto" },
         { a: "llano",   texto: "@@world.zonas.vado.salidas.1.texto" },
         { a: "granjas", texto: "@@world.zonas.vado.salidas.2.texto" },
+        { a: "puerto",  texto: "@@world.zonas.vado.salidas.3.texto" },
       ],
       lugares: ["posada", "tienda", "herreria", "descanso"],
       eventos: [
@@ -74,6 +75,7 @@ GD.world = {
         { a: "claro", texto: "@@world.zonas.senda.salidas.1.texto" },
       ],
       lugares: ["descanso", "forrajear"],
+      forrajeoComida: ["bayas_bosque", "hongo_silvestre", "agua", "bayas_bosque", null, null, null],
       materialForajeo: ["zarpa_osa", "colmillo_lobo"],
       eventos: [
         "@@world.zonas.senda.eventos.0",
@@ -96,6 +98,7 @@ GD.world = {
         { a: "cueva_vadak", texto: "@@world.zonas.claro.salidas.1.texto" },
       ],
       lugares: ["descanso", "forrajear"],
+      forrajeoComida: ["raiz_pantano", "hongo_silvestre", "agua", null, null, null, null],
       materialForajeo: ["baba_pantano", "escama_hidra"],
       eventos: [
         "@@world.zonas.claro.eventos.0",
@@ -137,6 +140,7 @@ GD.world = {
         { a: "colina", texto: "@@world.zonas.llano.salidas.1.texto" },
       ],
       lugares: ["descanso", "forrajear"],
+      forrajeoComida: ["conejo_asado", "fruta_silvestre", "agua", "pan", null, null],
       materialForajeo: ["colmillo_jabali", "cuerno_toro"],
       eventos: [
         "@@world.zonas.llano.eventos.0",
@@ -159,6 +163,7 @@ GD.world = {
         { a: "paso_norte", texto: "@@world.zonas.colina.salidas.1.texto" },
       ],
       lugares: ["descanso", "forrajear"],
+      forrajeoComida: ["fruta_silvestre", "nuez_pino", "agua", null, null, null],
       materialForajeo: ["fragmento_coloso", "zarpa_osa"],
       eventos: [
         "@@world.zonas.colina.eventos.0",
@@ -181,6 +186,7 @@ GD.world = {
         { a: "confluencia", texto: "@@world.zonas.paso_norte.salidas.1.texto" },
       ],
       lugares: ["descanso", "forrajear"],
+      forrajeoComida: ["nuez_pino", "agua", null, null, null, null],
       materialForajeo: ["escarcha_gigante", "garra_puma"],
       eventos: [
         "@@world.zonas.paso_norte.eventos.0",
@@ -206,6 +212,48 @@ GD.world = {
       lugares: ["escuela_blanca", "escuela_gris", "descanso"],
     },
 
+    puerto: {
+      id: "puerto", bioma: null, encuentro: 0,
+      nombre: "@@world.zonas.puerto.nombre",
+      descripcion: [
+        "@@world.zonas.puerto.descripcion.0",
+        "@@world.zonas.puerto.descripcion.1",
+        "@@world.zonas.puerto.descripcion.2",
+      ],
+      salidas: [
+        { a: "vado",  texto: "@@world.zonas.puerto.salidas.0.texto" },
+        { a: "playa", texto: "@@world.zonas.puerto.salidas.1.texto" },
+      ],
+      lugares: ["puerto_bote", "entrenamiento_puerto", "descanso"],
+      eventos: [
+        "@@world.zonas.puerto.eventos.0",
+        "@@world.zonas.puerto.eventos.1",
+        "@@world.zonas.puerto.eventos.2",
+      ],
+    },
+
+    playa: {
+      id: "playa", bioma: "playa", encuentro: 0.65, nivelMax: 15,
+      nombre: "@@world.zonas.playa.nombre",
+      descripcion: [
+        "@@world.zonas.playa.descripcion.0",
+        "@@world.zonas.playa.descripcion.1",
+        "@@world.zonas.playa.descripcion.2",
+      ],
+      salidas: [
+        { a: "puerto", texto: "@@world.zonas.playa.salidas.0.texto" },
+      ],
+      lugares: ["descanso", "forrajear"],
+      forrajeoComida: ["pez_abisal", "pez_abisal", "calamar_ahumado", "agua", null, null],
+      materialForajeo: ["escama_marina", "concha_calamar"],
+      eventos: [
+        "@@world.zonas.playa.eventos.0",
+        "@@world.zonas.playa.eventos.1",
+        "@@world.zonas.playa.eventos.2",
+        "@@world.zonas.playa.eventos.3",
+      ],
+    },
+
     catacumba: {
       id: "catacumba", bioma: null, encuentro: 0,
       nombre: "@@world.zonas.catacumba.nombre",
@@ -218,6 +266,45 @@ GD.world = {
         { a: "confluencia", texto: "@@world.zonas.catacumba.salidas.0.texto" },
       ],
       lugares: ["escuela_negra", "descanso"],
+    },
+
+    // ---- ZONAS NUEVAS: destinos del barco ----
+    arenales_solakh: {
+      id: "arenales_solakh", bioma: "desierto", encuentro: 0.75, nivelMin: 10,
+      nombre: "@@world.zonas.arenales_solakh.nombre",
+      descripcion: [
+        "@@world.zonas.arenales_solakh.descripcion.0",
+        "@@world.zonas.arenales_solakh.descripcion.1",
+        "@@world.zonas.arenales_solakh.descripcion.2",
+      ],
+      salidas: [],  // La salida es solo el puerto de isla (sin combate)
+      lugares: ["descanso", "forrajear", "puesto_solakh", "puerto_isla"],
+      forrajeoComida: ["datiles_melosos", "te_cactus", "agua", null, null],
+      materialForajeo: ["veneno_escorpion", "escama_calor"],
+      eventos: [
+        "@@world.zonas.arenales_solakh.eventos.0",
+        "@@world.zonas.arenales_solakh.eventos.1",
+        "@@world.zonas.arenales_solakh.eventos.2",
+      ],
+    },
+
+    gran_manto: {
+      id: "gran_manto", bioma: "megaflora", encuentro: 0.75, nivelMin: 10,
+      nombre: "@@world.zonas.gran_manto.nombre",
+      descripcion: [
+        "@@world.zonas.gran_manto.descripcion.0",
+        "@@world.zonas.gran_manto.descripcion.1",
+        "@@world.zonas.gran_manto.descripcion.2",
+      ],
+      salidas: [],  // La salida es solo el puerto de isla (sin combate)
+      lugares: ["descanso", "forrajear", "nido_raices", "puerto_isla"],
+      forrajeoComida: ["fruto_manto", "nectar_esporas", "hongo_relleno", "fruto_manto", null],
+      materialForajeo: ["savia_antigua", "esporo_gigante"],
+      eventos: [
+        "@@world.zonas.gran_manto.eventos.0",
+        "@@world.zonas.gran_manto.eventos.1",
+        "@@world.zonas.gran_manto.eventos.2",
+      ],
     },
   },
 };

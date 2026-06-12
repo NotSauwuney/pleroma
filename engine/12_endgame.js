@@ -8,42 +8,53 @@ function morir(causa) {
   if (S.mode === "muerte") return;   // ya muerto: no re-aplicar penalizaciones
   const p = S.player;
   S.combate = null;
+  S.miniEvento = null;   // abortar mini-evento activo al morir
   p.xp = Math.floor(p.xp * 0.5);                       // -50% del progreso al siguiente nivel
   if (causa !== "inanicion") p.oro = Math.floor(p.oro * 0.5);  // el desmayo por hambre no te roba oro
-  mostrarMuerte(causa);
+  // Si el jugador caía en viaje por el océano, el rescate naval tiene flavor especial,
+  // pero la CAUSA de muerte se muestra igual (antes se salteaba directo al puerto:
+  // ni pantalla de muerte ni curación — bug de "me mandó al spawn sin causa").
+  const enBarco = !!S.barco;
+  if (enBarco) S.barco = null;
+  mostrarMuerte(causa, enBarco);
 }
 
-function mostrarMuerte(causa) {
+function mostrarMuerte(causa, enBarco) {
   S.mode = "muerte";
-  S.screen = () => mostrarMuerte(causa);
+  S.screen = () => mostrarMuerte(causa, enBarco);
   const p = S.player;
   const penaltyKey = causa === "inanicion" ? "death.penaltyStarved" : "death.penalty";
+  const rescate = enBarco ? `<p>${t("barco.rescate")}</p>` : "";
   S.story = `<h2>${t("death.title")}</h2>
     <p>${t("death." + causa)}</p>
+    ${rescate}
     <p class="hint">${t(penaltyKey, { xp: p.xp, oro: p.oro })}</p>`;
-  setActions([{ label: t("death.wakeBtn"), cls: "primary", fn: () => revivir(causa) }]);
+  setActions([{ label: t(enBarco ? "death.wakeBtnPuerto" : "death.wakeBtn"), cls: "primary", fn: () => revivir(causa, enBarco) }]);
 }
 
-function revivir(causa) {
+function revivir(causa, enBarco) {
   const p = S.player;
   p.tempStats = {};
   p.accionesVacio = 0;
   p.hea = maxHea();
   p.mana = maxMana();
   p.sta = maxSta();
-  let wakeKey = "death.wake";
+  let wakeKey = enBarco ? "death.wakePuerto" : "death.wake";
   if (causa === "inanicion") {
-    p.ful = 40;                              // el hospital te da de comer
-    p.fat = Math.max(p.fat, FAT_FLOOR + 8);  // y te recompone algo de reservas
-    wakeKey = "death.wakeStarved";
+    p.ful = 40;                                                     // el hospital (o la enfermería naval) te da de comer
+    p.fat = Math.max(p.fat, FAT_FLOOR + 8);                        // y te recompone algo de reservas
+    p.leanLoss = Math.max(0, (p.leanLoss || 0) - 3);               // el tratamiento reconstituye masa magra
+    if (!enBarco) wakeKey = "death.wakeStarved";
   } else {
     p.ful = 0;                               // despertás hambriento; la grasa (peso) se conserva
   }
   S.combate = null;
   S.mode = "explorar";
-  S.zona = GD.world.inicio;
+  // Muerte en el mar -> los soldados de Solakh te dejan en el puerto, no en el Vado.
+  S.zona = enBarco ? "puerto" : GD.world.inicio;
+  const zonaId = S.zona;
   const pintar = () => {
-    const town = L(GD.world.zonas[GD.world.inicio].nombre);
+    const town = L(GD.world.zonas[zonaId].nombre);
     S.story = `<h2>${town}</h2><p>${t(wakeKey, { town })}</p>`;
     accionesZona();
   };
@@ -98,6 +109,7 @@ function _aplicarSave(d) {
   S.player.pronombres = S.player.pronombres || { s: "they", o: "them", p: "their" };
   S.player.accionesDesdeEvento = S.player.accionesDesdeEvento || 0;
   S.player.npcWG = S.player.npcWG || {};
+  S.player.cheats = S.player.cheats || {};
   S.player.quests = S.player.quests || {};
   S.player.spells = S.player.spells || [];
   S.player.logros = S.player.logros || {};
@@ -122,6 +134,30 @@ function _guardarEnSlot(i) {
     log(t("save.saved", { n: i + 1 }), "bien");
   } catch (e) { log(t("menu.saveFail"), "mal"); }
   guardarPantalla(_guardarPantallaVolverA);
+}
+
+function _confirmarSobreescribir(i) {
+  S.screen = () => _confirmarSobreescribir(i);
+  S.story = `<h2>${t("save.overwriteTitle")}</h2><p>${t("save.overwriteBody", { n: i + 1 })}</p>`;
+  setActions([
+    { label: t("save.overwriteYes"), fn: () => _guardarEnSlot(i) },
+    { label: t("save.overwriteNo"), cls: "primary", fn: () => guardarPantalla(_guardarPantallaVolverA) },
+  ]);
+}
+
+function _borrarSlot(i) {
+  try { localStorage.removeItem(_slotKey(i)); log(t("save.deleted", { n: i + 1 }), "bien"); }
+  catch (e) { log(t("menu.saveFail"), "mal"); }
+  guardarPantalla(_guardarPantallaVolverA);
+}
+
+function _confirmarBorrarSlot(i) {
+  S.screen = () => _confirmarBorrarSlot(i);
+  S.story = `<h2>${t("save.deleteTitle")}</h2><p>${t("save.deleteBody", { n: i + 1 })}</p>`;
+  setActions([
+    { label: t("save.deleteYes"), fn: () => _borrarSlot(i) },
+    { label: t("save.deleteNo"), cls: "primary", fn: () => guardarPantalla(_guardarPantallaVolverA) },
+  ]);
 }
 
 function _exportarSave() {
@@ -152,10 +188,14 @@ function guardarPantalla(volverA) {
     const info = meta
       ? `<b>${meta.nombre}</b> · Nv.${meta.nivel} · <span class="hint">${meta.fecha}</span>`
       : `<span class="hint">${t("save.slotEmpty")}</span>`;
+    const deletebtn = meta
+      ? `<button class="act slotbtn-delete" data-slot="${i}" style="color:var(--mal,#c44);">${t("save.deleteBtn")}</button>`
+      : "";
     h += `<div class="saveslot">
       <span class="slotnum">${t("save.slot", { n: i + 1 })}</span>
       <span class="slotinfo">${info}</span>
       <button class="act slotbtn-save" data-slot="${i}">${t("save.saveHere")}</button>
+      ${deletebtn}
     </div>`;
   }
   h += `</div>
@@ -171,7 +211,11 @@ function guardarPantalla(volverA) {
     if (_guardarPantallaVolverA === "combate") renderCombate(); else mostrarZona();
   }}]);
   document.querySelectorAll(".slotbtn-save").forEach((b) => {
-    b.onclick = () => _guardarEnSlot(+b.dataset.slot);
+    const i = +b.dataset.slot;
+    b.onclick = () => _slotMeta(i) ? _confirmarSobreescribir(i) : _guardarEnSlot(i);
+  });
+  document.querySelectorAll(".slotbtn-delete").forEach((b) => {
+    b.onclick = () => _confirmarBorrarSlot(+b.dataset.slot);
   });
   const btnEx = document.getElementById("btnExportSave");
   if (btnEx) btnEx.onclick = _exportarSave;
@@ -261,8 +305,97 @@ function cargarPantalla() {
 function guardar() { if (S.player) guardarPantalla(); }
 
 /* ============================================================
+   CHEATS  —  pantalla de trucos (botón en la topbar)
+   ------------------------------------------------------------
+   Códigos instantáneos:
+     makemerich     -> +10.000 de oro
+     makemestronger -> +1 nivel (con sus 3 puntos de stat)
+   Toggles persistentes (S.player.cheats, viajan en el save):
+     makemeweightless -> ninguna acción gasta stamina
+     makemeravenous   -> nunca morís por empacho
+     makemeeternal    -> nunca morís por hambre ni por daño
+   ============================================================ */
+let _cheatsAnterior = null;
+function pantallaCheats() {
+  if (!S.player) return;
+  // Guardar la pantalla previa solo al ENTRAR (no al re-render dentro de cheats),
+  // para que "Volver" no quede atrapado apuntando a la propia pantalla de cheats.
+  if (S.mode !== "cheats") _cheatsAnterior = S.screen;
+  S.mode = "cheats";
+  S.screen = pantallaCheats;
+  const p = S.player;
+  p.cheats = p.cheats || {};
+  const estado = (k) => p.cheats[k]
+    ? `<b style="color:var(--good)">[${t("cheat.on")}]</b>`
+    : `<span class="hint">[${t("cheat.off")}]</span>`;
+  S.story = `<h2>${t("cheat.title")}</h2>
+    <p class="hint">${t("cheat.hint")}</p>
+    <p><input id="inpCheat" type="text" maxlength="32" placeholder="${t("cheat.placeholder")}"></p>
+    <ul class="train-list">
+      <li><b>makemerich</b> — ${t("cheat.desc.rich")}</li>
+      <li><b>makemestronger</b> — ${t("cheat.desc.stronger")}</li>
+      <li><b>makemeweightless</b> — ${t("cheat.desc.weightless")} ${estado("weightless")}</li>
+      <li><b>makemeravenous</b> — ${t("cheat.desc.ravenous")} ${estado("ravenous")}</li>
+      <li><b>makemeeternal</b> — ${t("cheat.desc.eternal")} ${estado("eternal")}</li>
+    </ul>`;
+  setActions([
+    { label: t("cheat.apply"), cls: "primary", fn: () => {
+        const inp = $("#inpCheat");
+        aplicarCheat(((inp && inp.value) || "").trim().toLowerCase());
+        pantallaCheats();
+    }},
+    { label: t("ui.back"), fn: () => {
+        const volver = _cheatsAnterior;
+        _cheatsAnterior = null;
+        S.mode = "explorar";   // la pantalla anterior re-establece su propio modo
+        if (volver) { S.screen = volver; volver(); } else { mostrarZona(); }
+    }},
+  ]);
+}
+
+function aplicarCheat(code) {
+  const p = S.player;
+  if (!code) return;
+  p.cheats = p.cheats || {};
+  if (code === "makemerich") {
+    p.oro += 10000;
+    log(t("cheat.rich"), "bien");
+    return;
+  }
+  if (code === "makemestronger") {
+    p.nivel++;
+    p.puntos += 3;
+    p.xpSig = round(p.xpSig * 1.4);
+    p.hea = maxHea();
+    p.mana = maxMana();
+    log(t("cheat.stronger", { n: p.nivel }), "bien");
+    return;
+  }
+  const toggles = { makemeweightless: "weightless", makemeravenous: "ravenous", makemeeternal: "eternal" };
+  if (toggles[code]) {
+    const k = toggles[code];
+    p.cheats[k] = !p.cheats[k];
+    log(t(p.cheats[k] ? "cheat.toggleOn" : "cheat.toggleOff", { cheat: code }), p.cheats[k] ? "bien" : "normal");
+    return;
+  }
+  log(t("cheat.unknown"), "mal");
+}
+
+/* ============================================================
    MENÚ PRINCIPAL  +  ARRANQUE
    ============================================================ */
+function confirmarMenu() {
+  // Si no hay partida activa, ir directo al menú sin preguntar
+  if (!S.player || S.mode === "menu") { menuPrincipal(); return; }
+  const anterior = S.screen;
+  S.screen = confirmarMenu;
+  S.story = `<h2>${t("ui.menuConfirmTitle")}</h2><p>${t("ui.menuConfirmBody")}</p>`;
+  setActions([
+    { label: t("ui.menuConfirmYes"), fn: menuPrincipal },
+    { label: t("ui.menuConfirmNo"), cls: "primary", fn: () => { S.screen = anterior; anterior && anterior(); } },
+  ]);
+}
+
 function menuPrincipal() {
   S.mode = "menu";
   S.screen = menuPrincipal;
@@ -272,13 +405,15 @@ function menuPrincipal() {
     <p>${t("menu.intro")}</p>`;
   setActions([
     { label: t("menu.new"), cls: "primary", fn: nuevaPartida },
-    { label: t("menu.continue"), fn: cargarPantalla, disabled: !haySave() },
+    { label: t("menu.continue"), fn: cargarPantalla },
   ]);
 }
 
 function renderTopbar() {
   $("#btnGuardar").textContent = t("ui.save");
   $("#btnMenu").textContent = t("ui.menu");
+  const bCh = $("#btnCheats");
+  if (bCh) bCh.textContent = t("ui.cheats");
   $("#btnUnidades").textContent = GD.unidades === "imperial" ? t("ui.imperial") : t("ui.metric");
   $("#lblLang").textContent = t("ui.language") + ":";
   $("#lblLog").textContent = t("ui.logHeader");
@@ -294,7 +429,9 @@ function bindTopbar() {
       guardarPantalla(va);
     }
   };
-  $("#btnMenu").onclick = menuPrincipal;
+  $("#btnMenu").onclick = confirmarMenu;
+  const bCh = $("#btnCheats");
+  if (bCh) bCh.onclick = () => { if (S.player) pantallaCheats(); };
   $("#btnUnidades").onclick = toggleUnidades;
   $("#selLang").onchange = (ev) => { setLang(ev.target.value); renderTopbar(); };
 

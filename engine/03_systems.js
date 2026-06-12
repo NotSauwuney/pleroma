@@ -43,7 +43,7 @@ function comer(item, silencioso, tiempo) {
     if (p.ful > max * 1.3) {
       const dmg = round((p.ful - max * 1.3) * 0.3);
       p.hea = Math.max(1, p.hea - dmg);
-      if (!silencioso && dmg > 0) log(t("log.overstuffHurt", { n: dmg }), "mal");
+      if (!silencioso && dmg > 0) log(tPeso("log.overstuffHurt", { n: dmg }), "mal");
     }
   }
   if (!silencioso && item.sabor) log(L(item.sabor), "comida");
@@ -54,7 +54,15 @@ function comer(item, silencioso, tiempo) {
   if (p.ful >= EMPTY_THRESHOLD) p.accionesVacio = 0;
 
   // Muerte por sobrepasar la capacidad en +75%
-  if (p.ful > max * 1.75) { morir("empacho"); return true; }
+  // Truco "makemeravenous": el estómago aguanta lo que le tires, jamás revienta.
+  if (p.ful > max * 1.75) {
+    if (cheatOn("ravenous")) {
+      if (!silencioso) log(t("cheat.ravenousSave"), "bien");
+    } else {
+      morir("empacho");
+      return true;
+    }
+  }
 
   // Si la acción consumió tiempo, recién ahora se resuelve la inanición (post-comida)
   if (tiempo) {
@@ -82,8 +90,17 @@ function avanzarTiempo(turnos, sinInanicion) {
       p.momento = p.momento === "dia" ? "noche" : "dia";
       if (p.momento === "dia") p.dia++;
     }
-    if (p.ful >= EMPTY_THRESHOLD) digerir(4 + stat("EST") * 0.4);   // hay comida -> se vuelve peso
-    else p.fat = Math.max(FAT_FLOOR, p.fat - METAB);                // ayuno -> el cuerpo quema grasa
+    if (p.ful >= EMPTY_THRESHOLD) {
+      digerir(4 + stat("EST") * 0.4);                               // hay comida -> se vuelve peso
+      // Con reservas, la masa magra perdida se reconstituye gradualmente
+      if (p.leanLoss > 0) p.leanLoss = Math.max(0, p.leanLoss - LEAN_RECOVERY);
+    } else if (p.fat > FAT_FLOOR) {
+      p.fat = Math.max(FAT_FLOOR, p.fat - METAB);                   // ayuno -> quema grasa primero
+    } else {
+      // Grasa en el piso: inanición profunda, el cuerpo cataboliza masa magra
+      const maxLL = maxLeanLoss();
+      if (maxLL > 0) p.leanLoss = Math.min(maxLL, (p.leanLoss || 0) + LEAN_METAB);
+    }
     if (p.turnos % 3 === 0) p.mana = Math.min(maxMana(), p.mana + 1);
   }
   // Cuando la acción es comer, la inanición se difiere para resolverla tras la comida.
@@ -96,7 +113,12 @@ function resolverInanicion() {
   const p = S.player;
   if (p.ful < EMPTY_THRESHOLD) {
     p.accionesVacio = (p.accionesVacio || 0) + 1;
-    if (p.accionesVacio >= MAX_VACIO) { morir("inanicion"); return; }
+    if (p.accionesVacio >= MAX_VACIO) {
+      // Truco "makemeeternal": el hambre nunca te tumba (el contador se reinicia).
+      if (cheatOn("eternal")) { p.accionesVacio = 0; log(t("cheat.eternalHunger"), "bien"); return; }
+      morir("inanicion");
+      return;
+    }
   } else {
     p.accionesVacio = 0;
   }

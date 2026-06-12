@@ -90,6 +90,20 @@ GD.hechizos = {
     tipo: "feast", legendario: true,
   },
 
+  // ---- Levitación de Plenitud  —  hechizo pasivo de Vadak ----
+  // Tipo "levitacion_feast": pasivo, solo actúa en el overworld.
+  // No aparece en el menú de magia de combate (sinMenu: true).
+  // Disponible directo de Vadak (precio en oro) si el jugador es inmóvil; no requiere quest.
+  // Efecto: anula el límite de acción-única por masa (reflejo de supervivencia) y
+  // reduce el tope de costoMovimiento() cuando el jugador está en estado inmóvil.
+  levitacion_feast: {
+    id: "levitacion_feast", escuela: "escuela_plenitud",
+    nombre: "@@hechizos.levitacion_feast.nombre",
+    desc:   "@@hechizos.levitacion_feast.desc",
+    costoMana: 0, precio: 80,
+    tipo: "levitacion_feast", sinMenu: true,
+  },
+
   // ---- Técnicas de Devorar  —  Tradición de la Plenitud ----
   // Tipo "tecnica_devorar": no se lanza desde el menú de magia (filtrado en abrirMagia).
   // Se desbloquean vía quest y logro; el motor las registra en p.spells como los legendarios.

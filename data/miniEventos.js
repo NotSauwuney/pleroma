@@ -100,4 +100,69 @@ GD.miniEventos = {
     textoFin: "@@miniEventos.campamento_magos.textoFin",
   },
 
+  /* ============================================================
+     MINI-EVENTOS DE LAS ISLAS LEJANAS — jefes + misión secreta
+     Cada cadena termina en el jefe de la isla y deja media pieza
+     del Amuleto de Intimidación (drop único; al juntar las dos
+     mitades se funden solas — ver chequearAmuletoIntimidacion).
+     ============================================================ */
+
+  templo_solakh: {
+    id: "templo_solakh",
+    zona: "arenales_solakh",
+    chance: 0.35,
+    forzado: false,
+    intro: "@@miniEventos.templo_solakh.intro",
+    opcionEntrar: "@@miniEventos.templo_solakh.opcionEntrar",
+    opcionIgnorar: "@@miniEventos.templo_solakh.opcionIgnorar",
+    pasos: [
+      {
+        tipo: "texto",
+        texto: "@@miniEventos.templo_solakh.pasos.0.texto",
+      },
+      { tipo: "combate", enemyId: "escorpion_solakh" },
+      {
+        tipo: "texto",
+        texto: "@@miniEventos.templo_solakh.pasos.2.texto",
+      },
+      { tipo: "combate", enemyId: "hiena_arenosa" },
+      {
+        tipo: "texto",
+        texto: "@@miniEventos.templo_solakh.pasos.4.texto",
+      },
+      { tipo: "combate", enemyId: "gusano_arena", esBoss: true },
+    ],
+    drops: [{ id: "amuleto_mitad_sol", unico: true }],
+    textoFin: "@@miniEventos.templo_solakh.textoFin",
+  },
+
+  corazon_manto: {
+    id: "corazon_manto",
+    zona: "gran_manto",
+    chance: 0.35,
+    forzado: false,
+    intro: "@@miniEventos.corazon_manto.intro",
+    opcionEntrar: "@@miniEventos.corazon_manto.opcionEntrar",
+    opcionIgnorar: "@@miniEventos.corazon_manto.opcionIgnorar",
+    pasos: [
+      {
+        tipo: "texto",
+        texto: "@@miniEventos.corazon_manto.pasos.0.texto",
+      },
+      { tipo: "combate", enemyId: "enredadera_voraz" },
+      {
+        tipo: "texto",
+        texto: "@@miniEventos.corazon_manto.pasos.2.texto",
+      },
+      { tipo: "combate", enemyId: "hongo_andante" },
+      {
+        tipo: "texto",
+        texto: "@@miniEventos.corazon_manto.pasos.4.texto",
+      },
+      { tipo: "combate", enemyId: "guardian_manto", esBoss: true },
+    ],
+    drops: [{ id: "amuleto_mitad_raiz", unico: true }],
+    textoFin: "@@miniEventos.corazon_manto.textoFin",
+  },
+
 };

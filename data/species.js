@@ -12,7 +12,7 @@
    o un objeto {es:"...", en:"..."}. Ver LANG.md.
 
    cobertura: tipo de piel que recubre el cuerpo — "pelaje" | "escamas" |
-     "plumas". Define cómo se nombra (creación) y cómo se describe la
+     "plumas" | "piel". Define cómo se nombra (creación) y cómo se describe la
      superficie del cuerpo en "Chequear estado". Default "pelaje".
    ============================================================ */
 window.GD = window.GD || {};

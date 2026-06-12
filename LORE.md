@@ -57,20 +57,70 @@ El mundo se ordena por **densidad de savia**, que crece a medida que te alejás 
 civilizados hacia lo salvaje. Cada bioma del motor (`data/world.js`) es una franja de esa
 escala:
 
-- **Vado de Solaz** (pueblo neutral) — punto de partida. Posada, tienda, descanso. Acá nadie
-  te juzga por el tamaño del plato. Tierra de los Plenos moderados.
-- **Senda del Bosque** — savia baja, fauna chica y cebada (conejos, lobos flacos, bandidos).
-  Zona de aprendizaje.
-- **Claro del Glotón** (pantano) — savia espesa, dulzona. Hábitat de criaturas que comen sin
-  parar. Primer territorio donde *vos* podés ser la presa.
-- **Llano Abierto** — caza gorda (jabalíes), caminos con bandidos. Savia media.
-- **Colinas del Hartazgo** — savia alta, animales grandes, viento con olor a bestia. El peso
-  se siente acá: la mochila, las patas, el destino.
+- **Vado de Solaz** (`vado`) — punto de partida. Posada, tienda, herrería. Tierra de los
+  Plenos moderados. Acá nadie te juzga por el tamaño del plato.
+- **Granjas de Solaz** (`granjas`) — campos al norte del pueblo. Sin combate; trabajos de
+  campo y forrajeo de ingredientes frescos.
+- **Senda del Bosque** (`senda`) — savia baja, fauna chica y cebada (conejos, lobos, bandidos,
+  osos). Zona de aprendizaje.
+- **Claro del Glotón** (`claro`) — savia espesa, dulzona. Hábitat de glotones, cultistas, sapos
+  e hidras. Primer territorio donde *vos* podés ser la presa.
+- **Cueva de Vadak** (`cueva_vadak`) — cámara al fondo del claro. Sede de la **Tradición de la
+  Plenitud**: el anciano Vadak enseña las técnicas del Devorar como arte sagrado.
+- **Llano Abierto** (`llano`) — caza gorda (jabalíes, carneros, toros), caminos con bandidos.
+  Savia media.
+- **Colinas del Hartazgo** (`colina`) — savia alta, animales grandes (jabalíes, colosos, osos).
+  El peso se siente acá: la mochila, las patas, el destino.
+- **Paso del Norte** (`paso_norte`) — montaña alta. Pumas y gigantes; el territorio más peligroso
+  del mundo conocido.
+- **La Confluencia** (`confluencia`) — nodo de caminos en la montaña. Sede de la **Escuela de
+  la Luz** (maestra Siriel) y la **Escuela del Flujo** (maestro Kor).
+- **La Catacumba** (`catacumba`) — profundidades bajo la Confluencia. Sede de la **Escuela de
+  las Profundidades** (archimaga Vexara).
+- **Puerto de Solaz** (`puerto`) — el borde del mundo conocido. Un solo bote, un barquero que
+  sabe demasiado, y el entrenamiento costero (remar, velas, sondeo, redes).
+- **Playa de los Restos** (`playa`) — costa de combate: anguilas, tiburones, cangrejos
+  acorazados, calamares arcanos.
+- **El Mar de las Fauces** (océano, travesía en barco) — 30 turnos de agua sin promesas.
+  Rayas, pulpos, medusas, serpientes marinas… y el **Titán Marino**, tan gordo que el agua
+  se curva alrededor.
+
+### 3.5. Las Tierras Lejanas (las dos islas)
+
+Al otro lado del Mar de las Fauces hay dos masas de tierra que la gente de Solaz conoce
+sobre todo por rumores. Las dos son, literalmente, **cadáveres de Colosos** — ver §II de
+la Historia (la Era de los Colosos): en Pléroma la geografía es lo que queda de los cuerpos
+más grandes que existieron.
+
+- **Los Arenales de Solakh** (`arenales_solakh`, desierto) — el cuerpo de **Solakh, la
+  Serpiente que Devoró el Sol**. Una Colosa que creció tragando calor y luz hasta que la
+  Gran Hambruna la dejó sin nada que tragar: se desplomó y sus anillos infinitos se
+  volvieron dunas. Por eso la arena nunca se enfría. Tierra adentro gobierna el **Reino de
+  Solakh** (su armada patrulla el Mar de las Fauces y rescata náufragos sin cobrar — el
+  desprecio es gratis); en la costa queda el **Puesto de la Caravanera** (Nyssa), última
+  heredera de las rutas comerciales pre-Hambruna. El **Templo Hundido** que el viento
+  entierra y desentierra guarda la **Mitad Solar del Amuleto**, custodiada por el **Gusano
+  de Arena** — carroñero colosal que lleva generaciones engordando dentro del cuerpo de la
+  Serpiente.
+- **El Gran Manto** (`gran_manto`, megaflora) — el cuerpo de **Vethra, la Enraizada**. La
+  única Colosa que vio venir la Hambruna y eligió lo impensable: dejar de comer y echar
+  raíces, convirtiendo su masa en bosque. El Manto entero es Vethra, todavía viva a su
+  manera — el latido bajo el musgo es suyo. El **Guardián del Manto** es su sistema
+  inmunológico hecho raíces, y custodia la **Mitad Raíz del Amuleto**, incrustada en su
+  árbol-corazón. En las raíces de la costa vive **Yaro** (el **Nido de Raíces**), de un
+  linaje de recolectores que solo toman lo que el Manto suelta.
+
+> **El Amuleto de Intimidación** (misión secreta): un disco partido en dos durante el fin de
+> la Era de los Colosos. Cada mitad carga la *presencia* de su Coloso — sol y raíz. Juntas,
+> el portador huele a algo demasiado viejo y demasiado grande para morder: las criaturas del
+> Mar de las Fauces dejan pasar el barco sin pelear. Las mitades caen de los jefes de los
+> mini-eventos de cada isla y se funden solas al juntarlas.
 
 **Para expandir:** ciudades de cada facción, una capital de los Plenos (mercado de festines),
 un monasterio de los Ligeros (entrenamiento de stats de movilidad), las simas del Cabal del
-Hueco (mazmorra vore endgame), costa/océano (criaturas marinas de TAM enorme), un Altar del
-Devorar donde se sube de "rango" ritualmente.
+Hueco (mazmorra vore endgame), la capital tierra adentro del Reino de Solakh, las copas altas
+del Gran Manto (¿qué vive arriba de la niebla?), un Altar del Devorar donde se sube de
+"rango" ritualmente.
 
 ---
 
@@ -98,19 +148,27 @@ La savia se puede *quemar* en lugar de cargar: ahí nace la magia. Tres escuelas
 - **Gris** — utilidad: acelerar digestión, aligerar el cuerpo temporalmente, sigilo.
 - **Negra** — daño arcano, drenar savia ajena a distancia (vore mágico sin tragar).
 
-El motor ya reserva `maná` y un arma `baston` (escala con INT). El primer hechizo ya existe:
+El motor tiene `maná`, un arma `baston` (escala con INT) y un sistema de magia escolar
+completo (`data/spells.js`). Las tres escuelas del lore están implementadas, más una cuarta:
 
-> **Feast** (escuela Negra/Gris) — la contracara mágica del Devorar. Donde el Devorar usa las
-> mandíbulas para tragar a un rival debilitado, Feast usa el ingenio para *plegar al enemigo en
-> comida* sin importar lo fuerte que sea. Es como un cazador domina a la "montaña inamovible":
-> no la traga, la **transmuta**. La savia no se absorbe de golpe sino que queda condensada en un
-> banquete que podés comer o guardar — pero ningún mago puede acumular comida conjurada sin
-> límite (la reserva escala con INT). En la teología popular, Feast es controvertido: los Plenos
-> lo ven como hacer trampa al ritual sagrado del Devorar; los Ligeros, irónicamente, lo toleran
-> más, porque al menos no exige volverse un coloso para alimentarse.
+> **Escuela de la Luz** (blanca, Confluencia) — sanación y escudos. La maestra Siriel la
+> custodia. Hechizos: Curar · Curar Mayor · Escudo · Escudo Mayor.
+>
+> **Escuela del Flujo** (gris, Confluencia) — daño y debuffs. El maestro Kor la dirige.
+> Hechizos: Ráfaga · Ráfaga Mayor · Ralentizar · Ralentizar Mayor.
+>
+> **Escuela de las Profundidades** (negra, Catacumba) — drenaje y corrupción. La archimaga
+> Vexara la preside. Hechizos: Drenaje · Drenaje Mayor · Entropía · Entropía Mayor · **Feast**.
+>
+> **Tradición de la Plenitud** (legendaria, Cueva de Vadak) — técnicas del Devorar como arte
+> sagrado. No se enseña en escuela: se desbloquea por quests y logros. El anciano Vadak actúa
+> como guía. Hechizos: Feast + técnicas de Absorción.
 
-El siguiente módulo natural es generalizarlo: un `data/spells.js` con la lista completa y una
-acción "Lanzar" que englobe Feast, sanación, daño arcano y drenaje a distancia.
+> **Feast** — la contracara mágica del Devorar. Feast usa el ingenio para *plegar al enemigo
+> en comida* sin importar lo fuerte que sea: no lo traga, lo **transmuta**. La savia queda
+> condensada en un banquete que podés comer o guardar — la reserva escala con INT. En la
+> teología popular, Feast es controvertido: los Plenos lo ven como trampa al ritual sagrado;
+> los Ligeros, irónicamente, lo toleran más, porque no exige volverse un coloso.
 
 ---
 
@@ -132,8 +190,10 @@ decidís vos en tu cabeza, o lo definimos con un sistema de origen/trasfondo má
   de endgame (¿devorarla? ¿liberarla? ¿volverte ella?).
 - **Mercado de savia:** economía donde el peso se puede "vender" (digerir ritualmente por oro) —
   ya implementado en germen con el `digestivo`.
-```
-```
+- **El Reino de Solakh:** una corona que vive sobre el cadáver de una diosa-serpiente y lo
+  sabe. ¿Qué pasa cuando el Gusano de Arena crece más que el recuerdo de Solakh?
+- **Vethra sueña:** el Gran Manto está vivo. Si una Colosa puede volverse bosque, ¿puede un
+  bosque volver a ser Colosa?
 
 ---
 

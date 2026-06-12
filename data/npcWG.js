@@ -33,7 +33,7 @@ GD.npcWG = {
     especie: "oso pardo",
     color: "pardo rojizo",
     pesoBase: 0,
-    wgPorPaso: 3.0,
+    wgPorPaso: 12.0,
     estados: [
       {
         label: "@@npcWG.tabernero.estados.0.label",
@@ -54,7 +54,7 @@ GD.npcWG = {
     ],
     favFoods: ["guiso", "festin", "cocina_guiso_granja", "cocina_festin_cosecha"],
     receptivo: ["dia", "noche"],
-    cooldownBase: 8,
+    cooldownBase: 4,
     bondThresholds: [0, 5, 15, 30, 55],
     bondNames: [
       "@@npcWG.tabernero.bondNames.0",
@@ -89,7 +89,7 @@ GD.npcWG = {
     especie: "jabalí",
     color: "gris oscuro",
     pesoBase: 0,
-    wgPorPaso: 3.0,
+    wgPorPaso: 12.0,
     estados: [
       {
         label: "@@npcWG.granjero.estados.0.label",
@@ -110,7 +110,7 @@ GD.npcWG = {
     ],
     favFoods: ["pan", "cocina_sopa_raices", "cocina_pan_campo", "cocina_guiso_granja"],
     receptivo: ["dia"],
-    cooldownBase: 10,
+    cooldownBase: 5,
     bondThresholds: [0, 5, 15, 30, 55],
     bondNames: [
       "@@npcWG.granjero.bondNames.0",
@@ -144,7 +144,7 @@ GD.npcWG = {
     especie: "rata de campo",
     color: "gris parda",
     pesoBase: 0,
-    wgPorPaso: 3.0,
+    wgPorPaso: 9.0,
     estados: [
       {
         label: "@@npcWG.cocinera.estados.0.label",
@@ -165,7 +165,7 @@ GD.npcWG = {
     ],
     favFoods: ["pastel", "cocina_torta_miel", "cocina_natilla", "cocina_budin_manteca", "cocina_gloria_glotona"],
     receptivo: ["dia", "noche"],
-    cooldownBase: 8,
+    cooldownBase: 4,
     bondThresholds: [0, 5, 15, 30, 55],
     bondNames: [
       "@@npcWG.cocinera.bondNames.0",
@@ -199,8 +199,8 @@ GD.npcWG = {
   vadak: {
     especie: "salamandra gigante",
     color: "verde grisácea con manchas oscuras",
-    pesoBase: 0,
-    wgPorPaso: 4.0,
+    pesoBase: 2,
+    wgPorPaso: 20.0,
     estados: [
       {
         label: "@@npcWG.vadak.estados.0.label",
@@ -222,10 +222,22 @@ GD.npcWG = {
         label: "@@npcWG.vadak.estados.4.label",
         desc: "@@npcWG.vadak.estados.4.desc",
       },
+      {
+        label: "@@npcWG.vadak.estados.5.label",
+        desc: "@@npcWG.vadak.estados.5.desc",
+      },
+      {
+        label: "@@npcWG.vadak.estados.6.label",
+        desc: "@@npcWG.vadak.estados.6.desc",
+      },
+      {
+        label: "@@npcWG.vadak.estados.7.label",
+        desc: "@@npcWG.vadak.estados.7.desc",
+      },
     ],
     favFoods: ["festin", "guiso", "cocina_guiso_granja", "cocina_gloria_glotona"],
     receptivo: ["dia", "noche"],
-    cooldownBase: 10,
+    cooldownBase: 5,
     bondThresholds: [0, 5, 15, 35, 65],
     bondNames: [
       "@@npcWG.vadak.bondNames.0",
@@ -259,7 +271,7 @@ GD.npcWG = {
     especie: "zorra roja",
     color: "roja anaranjada con pecho crema",
     pesoBase: 0,
-    wgPorPaso: 3.0,
+    wgPorPaso: 15.0,
     estados: [
       {
         label: "@@npcWG.mercader.estados.0.label",
@@ -280,7 +292,7 @@ GD.npcWG = {
     ],
     favFoods: ["crema", "pastel", "cocina_natilla", "cocina_gloria_glotona"],
     receptivo: ["dia"],
-    cooldownBase: 12,
+    cooldownBase: 6,
     bondThresholds: [0, 5, 15, 30, 55],
     bondNames: [
       "@@npcWG.mercader.bondNames.0",

@@ -138,9 +138,9 @@ function coberturaCreacion() {
   if (c.especie === "custom") return c.cobertura || "pelaje";
   return GD.speciesById(c.especie).cobertura || "pelaje";
 }
-// Selector de cobertura (solo custom): 3 botones pelaje / escamas / plumas.
+// Selector de cobertura (solo custom): 4 botones pelaje / escamas / plumas / piel.
 function coberturaPickerHtml(cur) {
-  const btns = ["pelaje", "escamas", "plumas"].map((tp) => {
+  const btns = ["pelaje", "escamas", "plumas", "piel"].map((tp) => {
     const sel = tp === cur ? "border-color:var(--accent2);background:#2e251c;" : "";
     return `<button class="hbtn cobbtn" data-cob="${tp}" style="width:auto;padding:0 12px;${sel}">${t("cover." + tp)}</button>`;
   }).join(" ");
@@ -188,7 +188,7 @@ function comenzar() {
     nombre: c.nombre, especie: esCustom ? "custom" : c.especie,
     base: esCustom ? { ...c.customBase } : { ...c.base }, tempStats: {},
     nivel: 1, xp: 0, xpSig: 100, oro: 25, puntos: 0,
-    fat: 6, ful: 10, hea: 0, mana: 0, sta: 0, accionesVacio: 0,
+    fat: 6, ful: 10, leanLoss: 0, hea: 0, mana: 0, sta: 0, accionesVacio: 0,
     inv: [], arma: GD.items.garras, armadura: GD.items.sinArmar, mejoras: {},
     dia: 1, momento: "dia", turnos: 0,
     // Identidad elegida (aplica a cualquier especie)
@@ -210,6 +210,8 @@ function comenzar() {
   S.player.spells = [];
   S.player.mejoras = {};
   S.player.npcWG = {};
+  S.player.cheats = {};      // toggles de la pantalla de Cheats
+  S.player.portStats = {};   // stats ganados por entrenamiento en el puerto
   S.player.logros = {};
   S.player.lifetimeStats = {
     enemiesDevoured: 0,

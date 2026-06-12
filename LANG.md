@@ -58,7 +58,9 @@ falta, se muestra la referencia cruda (`@@…`) para que la caces fácil.
 ### 1. Copiá `data/lang/en.js`
 
 Es la plantilla completa: trae la tabla de UI (`GD.i18n.en`) **y** la tabla de contenido
-(`GD.content.en`) con las ~690 claves traducibles. Duplicalo y renombralo con el **código
+(`GD.content.en`) con las ~900 claves traducibles. Ojo con las claves de UI con sufijo de
+variante corporal (`sb.semiImmobile.bajo` / `.alto` / `.ripped`, etc.): el sufijo es parte
+de la clave y no se traduce. Duplicalo y renombralo con el **código
 ISO 639-1** de tu idioma: `fr`, `de`, `pt`, `ja`, etc. Ejemplo: `data/lang/fr.js`.
 
 ### 2. Cambiá la cabecera de cada tabla

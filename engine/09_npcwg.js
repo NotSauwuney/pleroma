@@ -161,8 +161,8 @@ function alimentarNPC(npcId, itemId, loc) {
 // Trabajar: gana oro a cambio de STAMINA + TIEMPO (no spameable)
 function trabajar(jobId, loc) {
   const job = GD.trabajos[jobId], p = S.player;
-  if (p.sta < job.costoSta) { log(t("shop.tooTired"), "mal"); abrirTienda(loc); return; }
-  p.sta -= job.costoSta;
+  if (p.sta < job.costoSta && !cheatOn("weightless")) { log(tPeso("shop.tooTired"), "mal"); abrirTienda(loc); return; }
+  if (!cheatOn("weightless")) p.sta -= job.costoSta;
   avanzarTiempo(job.turnos);
   if (S.mode === "muerte") return;       // te desmayaste de hambre trabajando
   const pago = job.base + randInt(job.var) + Math.floor(stat(job.stat) * job.statBonus);
@@ -243,7 +243,7 @@ function abrirMejora(loc) {
           return `<span style="color:${color}">${L(item.nombre)} ${tiene}/${cant}</span>`;
         }).join(", ");
       }
-      const bonuses = ["FUE","AGI","INT","AGU","EST"].filter(k => it["bonus"+k]).map(k => `+${it["bonus"+k]} ${k}`).join(" ");
+      const bonuses = ["FUE","AGI","INT","AGU","EST"].filter(k => it["bonus"+k]).map(k => `+${it["bonus"+k]} ${t("stat." + k + ".abbr")}`).join(" ");
       const defActual = it.def + (nl > 0 ? Math.floor(nl * (it.mejoraRateDef || 0.5)) : 0);
       h += `<div class="shoprow">
         <div style="flex:1">

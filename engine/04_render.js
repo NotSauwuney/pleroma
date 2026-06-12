@@ -108,11 +108,12 @@ function renderSidebar() {
     <div>${t("sb.body")}: <b>${etiquetaGordura()}</b></div>
     <div>${t("sb.belly")}: <b>${etiquetaLlenura()}</b></div>
     ${conjuredCount() > 0 ? `<div>${t("sb.magicFood")}: <b>${conjuredCount()}/${conjuredCap()}</b></div>` : ""}
-    ${semiInmovil() ? `<div class="warn">${t("sb.semiImmobile")}</div>` : ""}
+    ${semiInmovil() ? `<div class="warn">${tPeso("sb.semiImmobile")}</div>` : ""}
     ${(p.accionesVacio || 0) >= MAX_VACIO - 8 ? `<div class="warn">${t("sb.starving", { n: p.accionesVacio, max: MAX_VACIO })}</div>` : ""}
-    ${inmovil() ? `<div class="warn">${t("sb.immobile")}</div>` : ""}
+    ${inmovil() ? `<div class="warn">${tPeso("sb.immobile")}</div>` : ""}
   </div>`;
 
+  if (defensa() > 0) h += `<div class="purse">${t("sb.defense")}: <b>${defensa()}</b></div>`;
   h += `<div class="purse">${t("sb.gold")}: <b>${p.oro}</b></div>`;
   h += `<div class="purse">${t("sb.day", { n: p.dia })} · ${p.momento === "dia" ? t("sb.dayTime") : t("sb.nightTime")}</div>`;
   if (p.puntos > 0) h += `<div class="warn">${t("sb.unspent", { n: p.puntos })}</div>`;

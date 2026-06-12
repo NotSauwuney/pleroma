@@ -1,6 +1,6 @@
 {
   "name": "motor",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "description": "Pléroma — RPG por turnos text-based (fatfur/WG), data-driven sin dependencias en runtime.",
   "main": "index.js",
   "scripts": {

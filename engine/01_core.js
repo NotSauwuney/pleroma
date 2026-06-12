@@ -21,6 +21,8 @@ const FAT_FLOOR = 4;          // grasa mínima (esencial): el cuerpo nunca baja 
 const EMPTY_THRESHOLD = 8;    // llenura por debajo de esto = estómago vacío
 const MAX_VACIO = 20;         // acciones con estómago vacío antes del desmayo por inanición
 const METAB = 1.0;            // grasa quemada por turno en ayuno
+const LEAN_METAB = 0.3;       // masa magra quemada por turno en inanición profunda (fat en el piso)
+const LEAN_RECOVERY = 0.15;   // masa magra recuperada por turno cuando hay comida disponible
 const DIF_DANO = 1.75;        // multiplicador de daño enemigo (dificultad +75%)
 const DIF_VIDA = 1.3;         // multiplicador de vida enemiga
 
@@ -28,6 +30,17 @@ const DIF_VIDA = 1.3;         // multiplicador de vida enemiga
 const PRESUPUESTO_CUSTOM = 64;   // total de stats repartibles (equivale a un preset de nivel 1)
 const CUSTOM_MIN = 2;            // mínimo por stat
 const CUSTOM_MAX = 16;           // máximo por stat
+
+/* ---------- Cheats ----------
+   Toggles persistentes en S.player.cheats (viajan en el save):
+     weightless -> ninguna acción gasta stamina (ver costoMovimiento y trabajos)
+     ravenous   -> nunca morís por empacho (ver comer)
+     eternal    -> nunca morís por hambre ni por daño (ver resolverInanicion / resolverCombate)
+   Los códigos puntuales (makemerich, makemestronger) se aplican al instante
+   desde la pantalla de Cheats (engine/12_endgame.js). */
+function cheatOn(k) {
+  return !!(S.player && S.player.cheats && S.player.cheats[k]);
+}
 
 /* ---------- Pronombres ---------- */
 // Devuelve el pronombre del jugador: "s" = sujeto, "o" = objeto, "p" = posesivo.
@@ -128,14 +141,18 @@ function avanzarMiniEvento() {
 function finalizarMiniEvento() {
   const me = GD.miniEventos[S.miniEvento.id];
 
-  // Drops garantizados del mini-evento
+  // Drops garantizados del mini-evento.
+  // d.unico: no se vuelve a otorgar si ya lo tenés (o si ya forjaste el Amuleto
+  // de Intimidación, para las mitades de la misión secreta de las islas).
   if (me.drops && me.drops.length) {
     me.drops.forEach((d) => {
+      if (d.unico && (tieneItem(d.id) || S.player.amuletoForjado)) return;
       darItem(d.id, d.cant || 1);
       const it = GD.items[d.id];
       if (it) log(t("drop.got", { item: L(it.nombre) }), "bien");
     });
   }
+  chequearAmuletoIntimidacion();
 
   S.miniEvento = null;
   const textoFin = me.textoFin ? L(me.textoFin) : "";
@@ -144,6 +161,22 @@ function finalizarMiniEvento() {
     setActions([{ label: t("ui.continue"), cls: "primary", fn: () => entrarZona(S.zona) }]);
   };
   S.screen = pintar; pintar();
+}
+
+/* ---------- Misión secreta: el Amuleto de Intimidación ----------
+   Cada isla lejana esconde media pieza (jefe de su mini-evento). Al juntar las
+   dos mitades se funden solas en el Amuleto de Intimidación: las criaturas del
+   Mar de las Fauces no se atreven a atacar el barco (ver barcoTurno). */
+function chequearAmuletoIntimidacion() {
+  const p = S.player;
+  if (!p || p.amuletoForjado) return;
+  if (tieneItem("amuleto_mitad_sol") && tieneItem("amuleto_mitad_raiz")) {
+    quitarItem("amuleto_mitad_sol");
+    quitarItem("amuleto_mitad_raiz");
+    darItem("amuleto_intimidacion", 1);
+    p.amuletoForjado = true;
+    log(t("amuleto.forjado"), "bien");
+  }
 }
 
 /* ---------- Helpers de azar ---------- */

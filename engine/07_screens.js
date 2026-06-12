@@ -40,7 +40,9 @@ function abrirMochila(volverA) {
   h += `<p class="hint">${t("bag.equipLine", { arma: nombreItem(p.arma), armadura: L(p.armadura.nombre) })}</p>`;
   S.story = h;
   setActions([{ label: t("ui.back"), cls: "primary", fn: () => {
-    if (volverA === "combate") renderCombate(); else mostrarZona();
+    if (volverA === "combate") renderCombate();
+    else if (volverA === "barco") mostrarBarco();
+    else mostrarZona();
   }}]);
   document.querySelectorAll(".invuse").forEach((b) => {
     b.onclick = () => usarItemFuera(b.dataset.id, volverA);
@@ -87,7 +89,7 @@ function itemResumen(it) {
   }
   if (it.tipo === "arma") return t("item.weapon", { d: it.dano, r: it.rango, stat: t("stat." + it.stat + ".abbr"), texto: L(it.texto) });
   if (it.tipo === "armadura") {
-    const bonuses = ["FUE","AGI","INT","AGU","EST"].filter(k => it["bonus"+k]).map(k => `+${it["bonus"+k]} ${k}`).join(" ");
+    const bonuses = ["FUE","AGI","INT","AGU","EST"].filter(k => it["bonus"+k]).map(k => `+${it["bonus"+k]} ${t("stat." + k + ".abbr")}`).join(" ");
     return t("item.armor", { n: it.def, texto: L(it.texto) }) + (bonuses ? " · " + bonuses : "");
   }
   if (it.tipo === "material") return L(it.sabor);
@@ -98,6 +100,12 @@ function usarItemFuera(id, volverA) {
   const it = resolveItem(id);
   if (it.tipo === "arma") { S.player.arma = it; log(t("bag.equipWeapon", { item: L(it.nombre) }), "bien"); }
   else if (it.tipo === "armadura") { S.player.armadura = it; log(t("bag.equipArmor", { item: L(it.nombre) }), "bien"); }
+  else if (it.tipo === "material") {
+    // Los materiales no se "usan": antes caían al flujo de comer y se destruían
+    // (podías comerte un núcleo de jefe o media pieza del amuleto por accidente).
+    log(t("bag.cantUseMaterial", { item: L(it.nombre) }), "normal");
+    return;
+  }
   else {
     const murio = comer(it, false, 1);   // tiempo=1: el turno pasa antes de comer
     quitarItem(id);
@@ -122,7 +130,9 @@ function verEstado(volverA) {
     ${pelajeLine}
     <p>${L(st.desc)}</p>`;
   setActions([{ label: t("ui.back"), cls: "primary", fn: () => {
-    if (volverA === "combate") renderCombate(); else mostrarZona();
+    if (volverA === "combate") renderCombate();
+    else if (volverA === "barco") mostrarBarco();
+    else mostrarZona();
   }}]);
 }
 
@@ -152,7 +162,11 @@ function abrirStats(volverA, draft) {
 
   S.story = `<h2>${t("st.title")}</h2><p>${t("st.points", { n: puntosLibres })}</p><div class="ptgrid">${filas}</div>`;
 
-  const volver = () => { if (volverA === "combate") renderCombate(); else mostrarZona(); };
+  const volver = () => {
+    if (volverA === "combate") renderCombate();
+    else if (volverA === "barco") mostrarBarco();
+    else mostrarZona();
+  };
   const hayCambios = puntosUsados > 0;
 
   setActions([

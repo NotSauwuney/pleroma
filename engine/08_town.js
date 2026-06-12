@@ -12,6 +12,9 @@ const CATALOGOS = {
   escuela_gris:      ["piedraViento", "pocVida", "digestivo"],
   escuela_negra:     ["esenciaVacia", "pocMana"],
   escuela_plenitud:  ["festin", "pocMana", "digestivo"],
+  // Asentamientos de las islas lejanas
+  puesto_solakh: ["te_cactus", "datiles_melosos", "estofado_dunas", "pocVida", "digestivo"],
+  nido_raices:   ["nectar_esporas", "fruto_manto", "hongo_relleno", "pocMana", "pocVida"],
 };
 // Config de cada local: NPC, trabajo, si tiene fragua
 const LUGARES = {
@@ -22,6 +25,9 @@ const LUGARES = {
   escuela_gris:     { npc: "maestroKor",      job: "estudiarFlujo", upgrade: false, nameKey: "shop.grisName",      descKey: "shop.grisDesc" },
   escuela_negra:    { npc: "archimagaVexara", job: "asistirVexara", upgrade: false, nameKey: "shop.negraName",     descKey: "shop.negraDesc" },
   escuela_plenitud: { npc: "vadak",           job: "practicarPlenitud", upgrade: false, nameKey: "shop.plenitudName", descKey: "shop.plenitudDesc" },
+  // Asentamientos de las islas lejanas
+  puesto_solakh: { npc: "caravanera", job: "cargar_caravana", upgrade: false, nameKey: "shop.solakhName", descKey: "shop.solakhDesc" },
+  nido_raices:   { npc: "silvano",    job: "podar_lianas",    upgrade: false, nameKey: "shop.nidoName",   descKey: "shop.nidoDesc" },
 };
 
 // Nombre de un ítem para mostrar (las armas muestran su nivel de mejora +N)
@@ -141,7 +147,7 @@ function abrirTienda(tipo) {
   const job = GD.trabajos[lug.job];
   const acts = [{ label: t("shop.talk"), fn: () => hablarNPC(lug.npc, tipo) }];
   if (isEscuela) acts.push({ label: t("shop.missions"), fn: () => verMisiones(tipo, tipo) });
-  if (job) acts.push({ label: t("shop.work", { n: job.costoSta }), disabled: p.sta < job.costoSta, fn: () => trabajar(lug.job, tipo) });
+  if (job) acts.push({ label: t("shop.work", { n: job.costoSta }), disabled: p.sta < job.costoSta && !cheatOn("weightless"), fn: () => trabajar(lug.job, tipo) });
   acts.push({ label: t("shop.sell"), fn: () => abrirVender(tipo) });
   if (lug.upgrade) acts.push({ label: t("shop.upgrade"), fn: () => abrirMejora(tipo) });
   if (lug.forja) acts.push({ label: t("shop.forja"), fn: () => abrirForja(tipo) });
@@ -320,6 +326,11 @@ function venderItem(id, tipo) {
 
 // Hablar con un NPC (gratis, sin tiempo): rota líneas de diálogo
 function hablarNPC(npcId, loc) {
+  // Vadak tiene un camino especial cuando el jugador está inmóvil y no tiene levitación.
+  if (npcId === "vadak" && inmovil() && !hasLevitacion()) {
+    hablarVadakInmovil(loc);
+    return;
+  }
   S.screen = () => hablarNPC(npcId, loc);
   const npc = GD.npcs[npcId];
   S.story = `${npcSprite(npcId)}<h2>${L(npc.nombre)}</h2><p class="npcline">"${flavorRand(npc.dialogos)}"</p>`;
@@ -332,5 +343,52 @@ function hablarNPC(npcId, loc) {
   }
   acts.push({ label: t("ui.back"), cls: "primary", fn: () => abrirTienda(loc) });
   setActions(acts);
+}
+
+/* ----------------------------------------------------------
+   Vadak reconoce al jugador inmóvil y ofrece Levitación de Plenitud.
+   Disponible aunque el jugador no haya completado ninguna quest de la Plenitud.
+   La compra es directa: 80 de oro, sin requisito de misión.
+   ---------------------------------------------------------- */
+function hablarVadakInmovil(loc) {
+  S.screen = () => hablarVadakInmovil(loc);
+  const npc = GD.npcs.vadak;
+  const p = S.player;
+  const sp = GD.hechizos.levitacion_feast;
+  const yaComprado = tieneHechizo("levitacion_feast");
+  const puedePagar = p.oro >= sp.precio;
+
+  let cuerpo;
+  if (yaComprado) {
+    cuerpo = `<p class="npcline">"${t("vadak.inmovil.tieneHechizo")}"</p>`;
+  } else {
+    cuerpo = `<p class="npcline">"${t("vadak.inmovil.oferta")}"</p>
+      <p>${t("vadak.inmovil.desc", { n: sp.precio })}</p>`;
+  }
+
+  S.story = `${npcSprite("vadak")}<h2>${L(npc.nombre)}</h2>${cuerpo}`;
+
+  const acts = [];
+  if (!yaComprado) {
+    if (puedePagar) {
+      acts.push({ label: t("vadak.inmovil.comprar", { n: sp.precio }), cls: "primary",
+        fn: () => comprarLevitacionVadak(loc) });
+    } else {
+      acts.push({ label: t("vadak.inmovil.sinOro", { n: sp.precio }), disabled: true, fn: () => {} });
+    }
+  }
+  acts.push({ label: t("ui.back"), cls: "primary", fn: () => abrirTienda(loc) });
+  setActions(acts);
+}
+
+function comprarLevitacionVadak(loc) {
+  const p = S.player;
+  const sp = GD.hechizos.levitacion_feast;
+  if (p.oro < sp.precio || tieneHechizo("levitacion_feast")) return;
+  p.oro -= sp.precio;
+  if (!p.spells) p.spells = [];
+  p.spells.push("levitacion_feast");
+  log(t("vadak.inmovil.comprado", { hechizo: L(sp.nombre) }), "bien");
+  hablarVadakInmovil(loc);
 }
 

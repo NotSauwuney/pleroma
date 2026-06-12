@@ -124,6 +124,120 @@ GD.npcs = {
   },
 
   /* ----------------------------------------------------------
+     BARQUERO — Viejo marino que cuida el único bote del puerto.
+     Conoce las mareas y los peligros del océano mejor que nadie.
+     No navega: sabe demasiado bien lo que hay afuera.
+  ---------------------------------------------------------- */
+  barquero: {
+    nombre: "@@npcs.barquero.nombre",
+    saludo: [
+      "@@npcs.barquero.saludo.0",
+      "@@npcs.barquero.saludo.1",
+    ],
+    dialogos: [
+      "@@npcs.barquero.dialogos.0",
+      "@@npcs.barquero.dialogos.1",
+      "@@npcs.barquero.dialogos.2",
+      "@@npcs.barquero.dialogos.3",
+    ],
+    /* Diálogos cuando el mar está demasiado peligroso (nivel < 8) */
+    dialogosBote: [
+      "@@npcs.barquero.dialogosBote.0",
+      "@@npcs.barquero.dialogosBote.1",
+      "@@npcs.barquero.dialogosBote.2",
+    ],
+    /* Diálogos cuando el jugador es suficientemente fuerte (nivel >= 8) */
+    dialogosBoteUnlock: [
+      "@@npcs.barquero.dialogosBoteUnlock.0",
+      "@@npcs.barquero.dialogosBoteUnlock.1",
+    ],
+    /* Conversación de la tripulación durante el viaje en barco */
+    tripulacion: [
+      "@@npcs.barquero.tripulacion.0",
+      "@@npcs.barquero.tripulacion.1",
+      "@@npcs.barquero.tripulacion.2",
+      "@@npcs.barquero.tripulacion.3",
+      "@@npcs.barquero.tripulacion.4",
+      "@@npcs.barquero.tripulacion.5",
+      "@@npcs.barquero.tripulacion.6",
+      "@@npcs.barquero.tripulacion.7",
+    ],
+  },
+
+  /* ----------------------------------------------------------
+     NYSSA — Hiena caravanera, dueña del Puesto de la Caravanera
+     en los Arenales de Solakh. Última heredera de las rutas
+     comerciales que cruzaban el desierto antes de la Hambruna.
+     Gorda de éxito, como manda la tradición mercante de Solakh.
+  ---------------------------------------------------------- */
+  caravanera: {
+    nombre: "@@npcs.caravanera.nombre",
+    saludo: [
+      "@@npcs.caravanera.saludo.0",
+      "@@npcs.caravanera.saludo.1",
+    ],
+    dialogos: [
+      "@@npcs.caravanera.dialogos.0",
+      "@@npcs.caravanera.dialogos.1",
+      "@@npcs.caravanera.dialogos.2",
+      "@@npcs.caravanera.dialogos.3",
+    ],
+  },
+
+  /* ----------------------------------------------------------
+     YARO — Pangolín recolector, guardián del Nido de Raíces
+     en el Gran Manto. Vive entre las raíces del bosque-coloso
+     y comercia con lo que el Manto suelta por voluntad propia.
+  ---------------------------------------------------------- */
+  silvano: {
+    nombre: "@@npcs.silvano.nombre",
+    saludo: [
+      "@@npcs.silvano.saludo.0",
+      "@@npcs.silvano.saludo.1",
+    ],
+    dialogos: [
+      "@@npcs.silvano.dialogos.0",
+      "@@npcs.silvano.dialogos.1",
+      "@@npcs.silvano.dialogos.2",
+      "@@npcs.silvano.dialogos.3",
+    ],
+  },
+
+  /* ----------------------------------------------------------
+     BRUL — Porteador ambulante. Corpulento y sin adornos.
+     No juzga el tamaño de nadie: le pagan, empuja, listo.
+     Aparece cuando el jugador alcanza el estado inmóvil y necesita
+     moverse pero ya agotó su reflejo de supervivencia.
+     Cobra cada N asistencias; sin oro, impone pérdida de peso.
+  ---------------------------------------------------------- */
+  porteador: {
+    nombre: "@@npcs.porteador.nombre",
+    saludo: [
+      "@@npcs.porteador.saludo.0",
+      "@@npcs.porteador.saludo.1",
+    ],
+    dialogos: [
+      "@@npcs.porteador.dialogos.0",
+      "@@npcs.porteador.dialogos.1",
+      "@@npcs.porteador.dialogos.2",
+      "@@npcs.porteador.dialogos.3",
+    ],
+    dialogosPrimero: "@@npcs.porteador.dialogosPrimero",
+    dialogosCobro: [
+      "@@npcs.porteador.dialogosCobro.0",
+      "@@npcs.porteador.dialogosCobro.1",
+    ],
+    dialogosSinOro: [
+      "@@npcs.porteador.dialogosSinOro.0",
+      "@@npcs.porteador.dialogosSinOro.1",
+    ],
+    dialogosVadak: [
+      "@@npcs.porteador.dialogosVadak.0",
+      "@@npcs.porteador.dialogosVadak.1",
+    ],
+  },
+
+  /* ----------------------------------------------------------
      VADAK — Salamandra gigante, antiguo devorador reformado.
      Habita la cueva al fondo del claro pantanoso.
      Maestro no académico de la Tradición de la Plenitud:
@@ -208,6 +322,20 @@ GD.trabajos = {
     desc: [
       "@@trabajos.practicarPlenitud.desc.0",
       "@@trabajos.practicarPlenitud.desc.1",
+    ],
+  },
+  cargar_caravana: {
+    loc: "puesto_solakh", stat: "FUE", costoSta: 30, turnos: 4, base: 16, var: 10, statBonus: 0.7,
+    desc: [
+      "@@trabajos.cargar_caravana.desc.0",
+      "@@trabajos.cargar_caravana.desc.1",
+    ],
+  },
+  podar_lianas: {
+    loc: "nido_raices", stat: "AGI", costoSta: 26, turnos: 4, base: 15, var: 9, statBonus: 0.6,
+    desc: [
+      "@@trabajos.podar_lianas.desc.0",
+      "@@trabajos.podar_lianas.desc.1",
     ],
   },
 };

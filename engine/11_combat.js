@@ -199,10 +199,12 @@ function accion(tipo, opts) {
     if (skillTestRange(25 + stat("AGI") + stat("INT"), e.AGI + e.INT, 10, 80) && !inmovil()) {
       log(t("log.fleeOk"), "bien");
       finCombate();
+      S.miniEvento = null;   // huir cancela el mini-evento activo
+      if (S.barco) { mostrarBarco(); return; }
       entrarZona(S.zona);
       return;
     }
-    log(inmovil() ? t("log.fleeImmobile") : t("log.fleeFail"), "mal");
+    log(inmovil() ? tPeso("log.fleeImmobile") : t("log.fleeFail"), "mal");
     turnoEnemigo();
   }
 
@@ -269,7 +271,7 @@ function turnoEnemigo() {
     const ae = e.ataqueEspecial;
     const defMult = ae.ignoraDef ? 0 : 0.5;
     const d = aplicarVulnerabilidad(Math.max(1, round((xdy(ae.dano || e.dano, ae.rango || e.rango) + e.FUE * 0.4) * DIF_DANO - defensa() * defMult) * dmgMult));
-    p.hea -= d;
+    if (cheatOn("eternal")) { p.hea = Math.min(maxHea(), p.hea + d); } else { p.hea -= d; }
     c.causaDano = "vencido";
     log(t("log.specialAttack", { flavor: flavorRand(ae.flavor), n: d }), "mal");
     return;
@@ -278,17 +280,18 @@ function turnoEnemigo() {
   if (c.grapple > 0 && e.puedeDevorar) {
     if (skillTestRange(e.FUE + e.EST + 30, stat("FUE") + stat("AGI"), 10, 80)) {
       log(flavorRand(e.flavor.victoria), "mal");
+      if (cheatOn("eternal")) { p.hea = Math.min(maxHea(), p.hea + 1); return; }
       morir("devorado");
       return;
     }
     const d = aplicarVulnerabilidad(round(danoEnemigo() * 0.5 * dmgMult));
-    p.hea -= d; c.causaDano = "vencido";
+    if (cheatOn("eternal")) { p.hea = Math.min(maxHea(), p.hea + d); } else { p.hea -= d; } c.causaDano = "vencido";
     log(t("log.enemySwallow", { enemy: L(e.nombre), n: d }), "mal");
     return;
   }
   if (c.grapple > 0) {
     const d = aplicarVulnerabilidad(round(danoEnemigo() * 0.6 * dmgMult));
-    p.hea -= d; c.causaDano = "vencido";
+    if (cheatOn("eternal")) { p.hea = Math.min(maxHea(), p.hea + d); } else { p.hea -= d; } c.causaDano = "vencido";
     log(t("log.enemySqueeze", { enemy: L(e.nombre), n: d }), "mal");
     return;
   }
@@ -309,7 +312,7 @@ function turnoEnemigo() {
     return;
   }
   const d = aplicarVulnerabilidad(round(danoEnemigo() * dmgMult));
-  p.hea -= d;
+  if (cheatOn("eternal")) { p.hea = Math.min(maxHea(), p.hea + d); } else { p.hea -= d; }
   c.causaDano = e.tipoDano === "arcano" ? "magia" : "vencido";
   log(t("log.enemyAttack", { flavor: flavorRand(e.flavor.ataque), n: d }), "mal");
 }
@@ -449,7 +452,16 @@ function mostrarFeast(food) {
 function resolverCombate() {
   const c = S.combate;
   if (!c) return;
-  if (S.player.hea <= 0) { morir(c.causaDano || "vencido"); return; }
+  if (S.player.hea <= 0) {
+    // Truco "makemeeternal": fallback por si hea baja a 0 (no debería pasar).
+    if (cheatOn("eternal")) {
+      S.player.hea = 1;
+      log(t("cheat.eternalDamage"), "bien");
+    } else {
+      morir(c.causaDano || "vencido");
+      return;
+    }
+  }
   if (c.e.hea <= 0) { victoriaCombate(); return; }
   renderCombate();
 }
@@ -488,9 +500,10 @@ function victoriaCombate() {
     return;
   }
 
+  const continuar = S.barco ? mostrarBarco : () => entrarZona(S.zona);
   const pintar = () => {
     S.story = `<h2>${t("victory.title")}</h2><p>${flavorDerrota}</p><p>${t("victory.couldDevour")}</p>`;
-    setActions([{ label: t("ui.continue"), cls: "primary", fn: () => entrarZona(S.zona) }]);
+    setActions([{ label: t("ui.continue"), cls: "primary", fn: continuar }]);
   };
   S.screen = pintar; pintar();
 }

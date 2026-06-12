@@ -30,6 +30,38 @@ GD.items = {
     sabor: "@@items.festin.sabor",
   },
 
+  // ---- COMIDA SILVESTRE (forrajeo por zona) ----
+  bayas_bosque: {
+    id: "bayas_bosque", tipo: "comida", llena: 12, cura: 3, precio: 5,
+    nombre: "@@items.bayas_bosque.nombre",
+    sabor: "@@items.bayas_bosque.sabor",
+  },
+  hongo_silvestre: {
+    id: "hongo_silvestre", tipo: "comida", llena: 22, cura: 5, precio: 8,
+    nombre: "@@items.hongo_silvestre.nombre",
+    sabor: "@@items.hongo_silvestre.sabor",
+  },
+  raiz_pantano: {
+    id: "raiz_pantano", tipo: "comida", llena: 14, precio: 3,
+    nombre: "@@items.raiz_pantano.nombre",
+    sabor: "@@items.raiz_pantano.sabor",
+  },
+  conejo_asado: {
+    id: "conejo_asado", tipo: "comida", llena: 38, cura: 12, precio: 15,
+    nombre: "@@items.conejo_asado.nombre",
+    sabor: "@@items.conejo_asado.sabor",
+  },
+  fruta_silvestre: {
+    id: "fruta_silvestre", tipo: "comida", llena: 16, cura: 6, precio: 6,
+    nombre: "@@items.fruta_silvestre.nombre",
+    sabor: "@@items.fruta_silvestre.sabor",
+  },
+  nuez_pino: {
+    id: "nuez_pino", tipo: "comida", llena: 20, engorda: 1, precio: 7,
+    nombre: "@@items.nuez_pino.nombre",
+    sabor: "@@items.nuez_pino.sabor",
+  },
+
   // ---- BEBIDA ----
   agua: {
     id: "agua", tipo: "bebida", llena: 6, stamina: 20, precio: 2,
@@ -167,6 +199,16 @@ GD.items = {
     nombre: "@@items.escarcha_gigante.nombre",
     sabor: "@@items.escarcha_gigante.sabor",
   },
+  escama_marina: {
+    id: "escama_marina", tipo: "material", precio: 18,
+    nombre: "@@items.escama_marina.nombre",
+    sabor: "@@items.escama_marina.sabor",
+  },
+  concha_calamar: {
+    id: "concha_calamar", tipo: "material", precio: 22,
+    nombre: "@@items.concha_calamar.nombre",
+    sabor: "@@items.concha_calamar.sabor",
+  },
   // Materiales raros (solo de jefes de mini-eventos, drop garantizado)
   esencia_bosque: {
     id: "esencia_bosque", tipo: "material", precio: 45,
@@ -226,6 +268,122 @@ GD.items = {
     sabor: "@@items.sal.sabor",
   },
 
+  // ---- MATERIALES DE ZONAS NUEVAS ----
+  // Océano
+  escama_abisal: {
+    id: "escama_abisal", tipo: "material", precio: 28,
+    nombre: "@@items.escama_abisal.nombre",
+    sabor: "@@items.escama_abisal.sabor",
+  },
+  tentaculo_salado: {
+    id: "tentaculo_salado", tipo: "material", precio: 28,
+    nombre: "@@items.tentaculo_salado.nombre",
+    sabor: "@@items.tentaculo_salado.sabor",
+  },
+  nucleo_titan: {
+    id: "nucleo_titan", tipo: "material", precio: 90,
+    nombre: "@@items.nucleo_titan.nombre",
+    sabor: "@@items.nucleo_titan.sabor",
+  },
+  // Desierto
+  veneno_escorpion: {
+    id: "veneno_escorpion", tipo: "material", precio: 28,
+    nombre: "@@items.veneno_escorpion.nombre",
+    sabor: "@@items.veneno_escorpion.sabor",
+  },
+  escama_calor: {
+    id: "escama_calor", tipo: "material", precio: 28,
+    nombre: "@@items.escama_calor.nombre",
+    sabor: "@@items.escama_calor.sabor",
+  },
+  nucleo_arenoso: {
+    id: "nucleo_arenoso", tipo: "material", precio: 90,
+    nombre: "@@items.nucleo_arenoso.nombre",
+    sabor: "@@items.nucleo_arenoso.sabor",
+  },
+  // Megaflora
+  savia_antigua: {
+    id: "savia_antigua", tipo: "material", precio: 28,
+    nombre: "@@items.savia_antigua.nombre",
+    sabor: "@@items.savia_antigua.sabor",
+  },
+  esporo_gigante: {
+    id: "esporo_gigante", tipo: "material", precio: 28,
+    nombre: "@@items.esporo_gigante.nombre",
+    sabor: "@@items.esporo_gigante.sabor",
+  },
+  corazon_bosque: {
+    id: "corazon_bosque", tipo: "material", precio: 90,
+    nombre: "@@items.corazon_bosque.nombre",
+    sabor: "@@items.corazon_bosque.sabor",
+  },
+  // ---- COMIDA DE LAS ISLAS LEJANAS ----
+  // Arenales de Solakh (Puesto de la Caravanera)
+  datiles_melosos: {
+    id: "datiles_melosos", tipo: "comida", llena: 24, engorda: 5, precio: 14,
+    nombre: "@@items.datiles_melosos.nombre",
+    sabor: "@@items.datiles_melosos.sabor",
+  },
+  estofado_dunas: {
+    id: "estofado_dunas", tipo: "comida", llena: 62, cura: 14, engorda: 6, precio: 34,
+    nombre: "@@items.estofado_dunas.nombre",
+    sabor: "@@items.estofado_dunas.sabor",
+  },
+  te_cactus: {
+    id: "te_cactus", tipo: "bebida", llena: 8, stamina: 45, precio: 12,
+    nombre: "@@items.te_cactus.nombre",
+    sabor: "@@items.te_cactus.sabor",
+  },
+  // Gran Manto (Nido de Raíces)
+  fruto_manto: {
+    id: "fruto_manto", tipo: "comida", llena: 36, cura: 10, engorda: 4, precio: 18,
+    nombre: "@@items.fruto_manto.nombre",
+    sabor: "@@items.fruto_manto.sabor",
+  },
+  nectar_esporas: {
+    id: "nectar_esporas", tipo: "bebida", llena: 10, mana: 5, precio: 28,
+    nombre: "@@items.nectar_esporas.nombre",
+    sabor: "@@items.nectar_esporas.sabor",
+  },
+  hongo_relleno: {
+    id: "hongo_relleno", tipo: "comida", llena: 78, engorda: 14, precio: 40,
+    nombre: "@@items.hongo_relleno.nombre",
+    sabor: "@@items.hongo_relleno.sabor",
+  },
+
+  // ---- MISIÓN SECRETA: EL AMULETO DE INTIMIDACIÓN ----
+  // Cada isla esconde media pieza (drop único del jefe de su mini-evento).
+  // Al juntar ambas mitades se funden solas (chequearAmuletoIntimidacion en
+  // engine/01_core.js). Con el amuleto encima, las criaturas del Mar de las
+  // Fauces no atacan el barco (ver barcoTurno en engine/06_exploration.js).
+  amuleto_mitad_sol: {
+    id: "amuleto_mitad_sol", tipo: "material", precio: 0,
+    nombre: "@@items.amuleto_mitad_sol.nombre",
+    sabor: "@@items.amuleto_mitad_sol.sabor",
+  },
+  amuleto_mitad_raiz: {
+    id: "amuleto_mitad_raiz", tipo: "material", precio: 0,
+    nombre: "@@items.amuleto_mitad_raiz.nombre",
+    sabor: "@@items.amuleto_mitad_raiz.sabor",
+  },
+  amuleto_intimidacion: {
+    id: "amuleto_intimidacion", tipo: "material", precio: 0,
+    nombre: "@@items.amuleto_intimidacion.nombre",
+    sabor: "@@items.amuleto_intimidacion.sabor",
+  },
+
+  // Comida del océano (pesca)
+  pez_abisal: {
+    id: "pez_abisal", tipo: "comida", llena: 30, cura: 8, engorda: 2, precio: 20,
+    nombre: "@@items.pez_abisal.nombre",
+    sabor: "@@items.pez_abisal.sabor",
+  },
+  calamar_ahumado: {
+    id: "calamar_ahumado", tipo: "comida", llena: 45, cura: 5, engorda: 4, precio: 25,
+    nombre: "@@items.calamar_ahumado.nombre",
+    sabor: "@@items.calamar_ahumado.sabor",
+  },
+
   // ---- ARMAS CRAFTABLES (forjadas en la herrería con materiales) ----
   garrote_nudoso: {
     id: "garrote_nudoso", tipo: "arma", dano: 3, rango: 6, stat: "FUE", escala: 0.85, tipoDano: "golpe", precio: 100,
@@ -257,6 +415,26 @@ GD.items = {
     mejoraRate: 0.06, crafteable: true,
     nombre: "@@items.espada_escarcha.nombre",
     texto: "@@items.espada_escarcha.texto",
+  },
+
+  // ---- ARMAS FORANAS (tier intermedio — requieren arma crafteable + materiales de zonas nuevas) ----
+  mazo_mareas: {
+    id: "mazo_mareas", tipo: "arma", dano: 5, rango: 7, stat: "FUE", escala: 0.95, tipoDano: "golpe", precio: 220,
+    mejoraRate: 0.05, crafteable: true,
+    nombre: "@@items.mazo_mareas.nombre",
+    texto: "@@items.mazo_mareas.texto",
+  },
+  filo_exilio: {
+    id: "filo_exilio", tipo: "arma", dano: 4, rango: 9, stat: "AGI", escala: 0.95, tipoDano: "corte", precio: 220,
+    mejoraRate: 0.05, crafteable: true,
+    nombre: "@@items.filo_exilio.nombre",
+    texto: "@@items.filo_exilio.texto",
+  },
+  baculo_primordial: {
+    id: "baculo_primordial", tipo: "arma", dano: 3, rango: 11, stat: "INT", escala: 1.05, tipoDano: "arcano", precio: 220,
+    mejoraRate: 0.04, crafteable: true,
+    nombre: "@@items.baculo_primordial.nombre",
+    texto: "@@items.baculo_primordial.texto",
   },
 
   // ---- ARMAS LEGENDARIAS (secretas) ----
@@ -407,23 +585,46 @@ GD.recetas = {
     nombre: "@@recetas.espada_escarcha.nombre",
     materiales: { escarcha_gigante: 2, garra_puma: 1 },
   },
+  // ---- RECETAS DE ARMAS FORANAS (tier intermedio) ----
+  mazo_mareas: {
+    id: "mazo_mareas", resultado: "mazo_mareas",
+    nombre: "@@recetas.mazo_mareas.nombre",
+    requiereArma: "garrote_nudoso", requiereNivel: 10,
+    materiales: { tentaculo_salado: 2, escama_abisal: 1 },
+  },
+  filo_exilio: {
+    id: "filo_exilio", resultado: "filo_exilio",
+    nombre: "@@recetas.filo_exilio.nombre",
+    requiereArma: "lanza_campo", requiereNivel: 10,
+    materiales: { veneno_escorpion: 2, escama_calor: 1 },
+  },
+  baculo_primordial: {
+    id: "baculo_primordial", resultado: "baculo_primordial",
+    nombre: "@@recetas.baculo_primordial.nombre",
+    requiereArma: "bastón_pantano", requiereNivel: 10,
+    materiales: { savia_antigua: 2, esporo_gigante: 1 },
+  },
+
+  // ---- RECETAS LEGENDARIAS (requieren arma forana al máximo + materiales de jefes) ----
+  // ⚠ requiereNivel debe ser <= 10: la mejora de armas capea en nivel 10
+  // (mejorarArma en engine/09_npcwg.js). Con 14 eran literalmente inalcanzables.
   leviatan: {
     id: "leviatan", resultado: "leviatan", secreto: true,
     nombre: "@@recetas.leviatan.nombre",
-    requiereArma: "garrote_nudoso", requiereNivel: 10,
-    materiales: { zarpa_osa: 1, fragmento_coloso: 1, esencia_bosque: 1 },
+    requiereArma: "mazo_mareas", requiereNivel: 10,
+    materiales: { nucleo_titan: 1, fragmento_coloso: 1, esencia_bosque: 1 },
   },
   sombra_veloz: {
     id: "sombra_veloz", resultado: "sombra_veloz", secreto: true,
     nombre: "@@recetas.sombra_veloz.nombre",
-    requiereArma: "lanza_campo", requiereNivel: 10,
-    materiales: { garra_puma: 1, escarcha_gigante: 1, nucleo_pantano: 1 },
+    requiereArma: "filo_exilio", requiereNivel: 10,
+    materiales: { nucleo_arenoso: 1, garra_puma: 1, nucleo_pantano: 1 },
   },
   vacio_eterno: {
     id: "vacio_eterno", resultado: "vacio_eterno", secreto: true,
     nombre: "@@recetas.vacio_eterno.nombre",
-    requiereArma: "bastón_pantano", requiereNivel: 10,
-    materiales: { escama_hidra: 1, cristal_escarcha: 1, nucleo_pantano: 1 },
+    requiereArma: "baculo_primordial", requiereNivel: 10,
+    materiales: { corazon_bosque: 1, cristal_escarcha: 1, nucleo_pantano: 1 },
   },
 
   // ---- RECETAS DE ARMADURAS TIER 3 ----

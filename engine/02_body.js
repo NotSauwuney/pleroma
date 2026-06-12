@@ -46,7 +46,16 @@ function stat(key) {
   const tmp = p.tempStats[key] || 0;
   // Bonus de stat de armadura (ej: bonusINT en armaduras de mago, bonusFUE en brutales)
   const armorBonus = (p.armadura && p.armadura["bonus" + key]) || 0;
-  return p.base[key] + sp.stats[STAT[key]] + tmp + armorBonus;
+  // Bonus de entrenamiento del puerto (limitado por la fórmula del cap, no conta armadura)
+  const portBonus = (p.portStats && p.portStats[key]) || 0;
+  return p.base[key] + sp.stats[STAT[key]] + tmp + armorBonus + portBonus;
+}
+
+/* Cap de entrenamiento del puerto para un stat dado.
+   Solo cuenta p.base[key] (creación + niveles): no armadura, no portStats mismos.
+   Fórmula: máximo floor(base / 3), con piso de 2 para que siempre haya algo que ganar. */
+function capEntrenamientoPuerto(key) {
+  return Math.max(2, Math.floor(S.player.base[key] / 3));
 }
 function maxHea() { return 40 + stat("AGU") * 6 + S.player.nivel * 5; }
 function maxFul() { return round((60 + stat("EST") * 10) * rasgo("panzaMult", 1)); }
@@ -61,7 +70,19 @@ function altura() { return alturaCm() / 100; }
    - peso magro = masa base por altura + músculo de FUE (se "carga solo", atado a fuerza)
    - peso graso = fat (kg de grasa); es lo que cuesta energía moverse
    - peso total y cintura quedan en valores creíbles; el IMC manda las descripciones. */
-function pesoMagro() { const h = altura(); return round(h * h * 17 + stat("FUE") * 1.8); }
+function pesoMagro() {
+  const h = altura();
+  const base = h * h * 15 + stat("FUE") * 1.8;
+  return round(Math.max(0, base - (S.player.leanLoss || 0)));
+}
+/* Máxima pérdida temporal de masa magra permitida: el piso absoluto es IMC 18.
+   Con fat en FAT_FLOOR, la masa magra nunca puede bajar de (h²×18 − FAT_FLOOR). */
+function maxLeanLoss() {
+  const h = altura();
+  const base = h * h * 15 + stat("FUE") * 1.8;
+  const floorLean = h * h * 18 - FAT_FLOOR;   // masa magra mínima para mantener IMC 18
+  return Math.max(0, base - floorLean);
+}
 function pesoGraso() { return S.player.fat; }
 function peso() { return round(pesoMagro() + pesoGraso() + S.player.ful * 0.25); }
 /* Índice de masa corporal (excluye la comida transitoria en la panza). */
@@ -70,18 +91,28 @@ function imc() { const h = altura(); return (pesoMagro() + pesoGraso()) / (h * h
 function cintura() { return round(68 + S.player.fat * 0.85 + S.player.ful * 0.25); }
 
 /* Energía (stamina) que cuesta una acción de movimiento en el overworld.
-   Sube con la grasa por encima del mínimo; FUE y AGI la compensan. */
+   Sube con la grasa por encima del mínimo; FUE y AGI la compensan.
+   Con Levitación de Plenitud activa y en estado inmóvil, el tope baja a 25% de maxSta
+   (en vez de 45%), permitiendo más acciones antes de quedarse sin aliento. */
 function costoMovimiento() {
+  if (cheatOn("weightless")) return 0;   // truco "makemeweightless": moverse no cuesta nada
   const exceso = Math.max(0, pesoGraso() - FAT_FLOOR);
   let costo = (4 + (exceso * 0.5) / (1 + (stat("FUE") + stat("AGI")) * 0.18)) * rasgo("costoMovMult", 1);
-  costo = Math.min(costo, maxSta() * 0.45);   // tope: un descanso siempre alcanza para moverse
+  // Levitación de Plenitud: si el jugador está inmóvil y tiene el hechizo, el tope de costo baja.
+  // Revisamos spells directamente (tieneHechizo() se define más tarde en engine/10_magic_quests.js).
+  const hasLev = S.player && S.player.spells && S.player.spells.includes("levitacion_feast");
+  const capPct = (inmovil() && hasLev) ? 0.25 : 0.45;
+  costo = Math.min(costo, maxSta() * capPct);   // tope: un descanso siempre alcanza para moverse
   return Math.max(3, round(costo));
 }
 /* Sin aliento: no queda energía para otra acción de movimiento. */
 function semiInmovil() { return S.player.sta < costoMovimiento(); }
 
 /* Estado corporal del jugador (para "Chequear estado").
-   3 estados ripped si la grasa es baja y la fuerza alta; si no, 12 niveles por IMC. */
+   Todos los tiers van por IMC, incluidos los bajos. El IMC ya refleja la pérdida
+   temporal de masa magra (leanLoss) cuando el cuerpo entra en catabolismo, así que
+   los estados "desnutrido" y "flaco" son alcanzables con piso real en IMC 18.
+   Los estados ripped siguen requiriendo grasa baja + fuerza alta. */
 function estadoCuerpoJugador() {
   const fat = pesoGraso(), fue = stat("FUE"), b = imc();
   // Ripped: poca grasa + mucha fuerza (un cuerpo trabajado pesa por músculo, no por grasa)
@@ -90,18 +121,34 @@ function estadoCuerpoJugador() {
     if (fue >= 19) return "ripped2";
     return "ripped1";
   }
-  // Tiers por IMC — umbrales PERMISIVOS, perspectiva fat-fur: lo que clínicamente es
-  // "obesidad mórbida" (IMC ~35) acá es apenas "gordo". Los extremos van a la fantasía WG.
+  // Tiers por IMC — escala completa. Los bajos son alcanzables via catabolismo de masa
+  // magra (leanLoss). Los altos son permisivos (fat-fur): IMC 35 clínico acá es "gordo".
   const tiers = [
-    ["desnutrido", 17], ["flaco", 20], ["esbelto", 24], ["promedio", 27],
-    ["blando", 31], ["rellenito", 35], ["gordo", 48], ["muyGordo", 63],
-    ["obeso", 85], ["morbido", 115], ["super", 150], ["ultra", 200],
+    ["desnutrido", 18.5],  // IMC < 18.5: en/bajo el piso de inanición (floor IMC 18); masa magra comprometida
+    ["flaco",      21],    // IMC 18.5–21
+    ["esbelto",    24],    // IMC 21–24
+    ["promedio",   27],
+    ["blando", 31], ["rellenito", 35], ["gordo", 55], ["muyGordo", 78],
+    ["obeso", 108], ["morbido", 150], ["super", 275], ["ultra", 355],
     // --- Estados puramente estéticos (sin mecánica nueva): solo más IMC ---
-    ["coloso", 270], ["leviatan", 360], ["monumento", 480],
+    ["coloso", 495], ["leviatan", 660], ["monumento", 1200],
   ];
   for (const [id, th] of tiers) if (b < th) return id;
   return "singularidad";
 }
+
+/* ---- Variante de mensaje según el cuerpo actual ----
+   Para los mensajes de "demasiado lleno" / "sin aliento": no siempre sos una mole.
+   Tres voces: "bajo" (cuerpos livianos/medios), "alto" (gordo en adelante) y
+   "ripped" (los 3 estados musculosos). tPeso() resuelve la clave compuesta. */
+const ESTADOS_MSG_ALTO = ["gordo", "muyGordo", "obeso", "morbido", "super", "ultra",
+  "coloso", "leviatan", "monumento", "singularidad"];
+function pesoMsgVariant() {
+  const st = estadoCuerpoJugador();
+  if (st === "ripped1" || st === "ripped2" || st === "ripped3") return "ripped";
+  return ESTADOS_MSG_ALTO.includes(st) ? "alto" : "bajo";
+}
+function tPeso(baseKey, vars) { return t(baseKey + "." + pesoMsgVariant(), vars); }
 function inmovil() {
   const p = S.player;
   return p.fat + p.ful * 1.2 > stat("FUE") * 16 * rasgo("umbralPesoMult", 1);

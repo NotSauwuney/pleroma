@@ -31,8 +31,8 @@ trade-off *es* el juego. Todo lo demás cuelga de ahí.
 El cuerpo dejó de ser un número y pasó a tener **dos categorías de peso** que se calculan
 distinto:
 
-- **Peso magro** (`45 + FUE·5 + TAM·4`) — músculo y contextura. Se "carga solo": atado a la
-  fuerza, casi no penaliza moverte. Subir **FUE** lo aumenta.
+- **Peso magro** (`altura²·15 + FUE·1.8`) — músculo y contextura. Se "carga solo": atado a la
+  altura y la fuerza, casi no penaliza moverte. Subir **FUE** lo aumenta.
 - **Peso graso** (`fat`) — lo que comés y digerís. Es lo que **cuesta energía** mover y lo que
   te empuja a la inmovilidad.
 
@@ -108,6 +108,20 @@ Caer no borra la partida: te llevan "a casa". Cinco causas, cada una con su narr
 restaurados y el estómago vacío. **Excepción:** la inanición no te quita oro (nadie te robó) y
 el hospital te despierta ya alimentado. Todo configurable en `morir()` / `revivir()`.
 
+**Muerte en el mar:** si caés durante la travesía en barco (combate oceánico o hambre a bordo),
+ves la causa de muerte + el rescate del navío militar de Solakh, y despertás **en el puerto**
+(no en el Vado), curado y con el contador de inanición reseteado.
+
+**Estado corporal:** los tiers bajos (`desnutrido`/`flaco`/`esbelto`) se evalúan por **grasa
+directa** (ayunar hasta el piso = desnutrido); los altos, por IMC. Los 3 estados *ripped*
+piden grasa ≤14 y FUE ≥14. Los avisos de cuerpo ("sin aliento", "demasiado lleno", "no podés
+huir") tienen **3 voces** según tu estado: liviano, gordo o musculoso.
+
+**Cheats (topbar):** pantalla de códigos para testeo/juego libre — `makemerich` (+10k oro),
+`makemestronger` (+1 nivel), y los toggles `makemeweightless` / `makemeravenous` /
+`makemeeternal` (sin costo de stamina / sin muerte por empacho / sin muerte por hambre o daño).
+Persisten en el save.
+
 ---
 
 ## 3. Estilos de juego (arquetipos que el motor YA soporta)
@@ -158,18 +172,21 @@ tope. INT abre la puerta; el estómago sigue siendo el cuello de botella.
 
 Cada ítem es un módulo de **pura data + un poco de motor**, sin reescribir nada:
 
-1. **Sistema de hechizos** → `data/spells.js` + acción "Lanzar" en combate. **Feast ya está
-   implementado** como primer hechizo (acción dedicada en combate); el siguiente paso es
-   generalizarlo a una lista de hechizos data-driven y sumar las 3 escuelas del lore. *(Mayor impacto.)*
+1. ✅ **Sistema de hechizos** — `data/spells.js` + acción "Lanzar" en combate. Implementado:
+   4 escuelas (Luz · Flujo · Profundidades · Plenitud), hechizos base + evoluciones +
+   legendarios, quests que los desbloquean, logros por lifetimeStats.
 2. **Estados de combate** → veneno, aturdir, "empacho" (penaliza por sobrellenado), quemadura.
    El motor ya tiene el gancho (`tempStats`, status). Da profundidad táctica al menú.
-3. **NPCs y diálogo** → un `data/npcs.js` con árboles simples. Convierte el Vado en un pueblo vivo.
-4. **Quests con etapas** → estructura `{progreso, listo, completado}` (el original la usaba).
-   Da rumbo entre combate y combate.
-5. **Más biomas y un jefe por región** → cada jefe como un enemigo de `data/enemies.js` con
-   `puedeDevorar: true` y flavor propio. Picos de dificultad y de narrativa.
-6. **Encuentros con elección no-combate** → eventos de texto ("una criatura herida te ofrece
-   savia a cambio de…") tipo gamebook. Variedad fuera de la pelea.
+3. ✅ **NPCs y diálogo** — `data/npcs.js` con saludos y diálogos rotativos. NPCs en posada,
+   tienda, herrería y todas las escuelas; sistema WG en `data/npcWG.js` para NPCs con
+   progresión de peso.
+4. ✅ **Quests con etapas** — `GD.quests` en `data/spells.js` con estructura
+   `{progress, completed}`. Implementadas para las escuelas; los NPCs del pueblo (Borek/
+   Vella/Durn) todavía no dan misiones.
+5. ✅ **Jefes por región** — mini-eventos encadenados (`data/miniEventos.js`) con jefes propios
+   (jefeBandidos, sumoSacerdote, magoCampamento, archimago) y recompensas de crafteo.
+6. ✅ **Encuentros con elección no-combate** — `data/miniEventos.js`: eventos de múltiples pasos
+   con opciones de texto, tipo gamebook.
 7. **Sistema de origen/trasfondo** → modifica stats iniciales y desbloquea diálogos. Da identidad
    al protagonista-lienzo.
 
