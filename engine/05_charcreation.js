@@ -224,6 +224,11 @@ function comenzar() {
   S.player.hea = maxHea();
   S.player.mana = maxMana();
   S.player.sta = maxSta();
+  // TAM influye en el punto de partida: más tamaño = más masa inicial y más capacidad de estómago.
+  // Fórmula: fat base (FAT_FLOOR+2) + 1 por cada punto de TAM por encima de 4.
+  //          ful = 6 + stat("TAM")  (a TAM=4 da 10, el valor anterior hardcodeado).
+  S.player.fat = FAT_FLOOR + 2 + Math.max(0, stat("TAM") - 4);
+  S.player.ful = 6 + stat("TAM");
   darItem("pan", 3); darItem("agua", 2); darItem("pocVida", 1);
   clearLog();
   log(t("log.startAdv", { town: L(GD.world.zonas[GD.world.inicio].nombre) }), "bien");

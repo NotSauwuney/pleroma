@@ -18,6 +18,7 @@ GD.i18n.en = {
   "ui.save": "💾 Save",
   "ui.menu": "☰ Menu",
   "ui.language": "Language",
+  "ui.langUpload": "Load your own language from files",
   "ui.metric": "Metric",
   "ui.imperial": "Imperial",
   "ui.logHeader": "Log",
@@ -208,11 +209,15 @@ GD.i18n.en = {
   "bag.equipLine": "Weapon: <b>{arma}</b> · Armor: <b>{armadura}</b>",
   "bag.equipWeapon": "You equip {item}.",
   "bag.equipArmor": "You put on {item}.",
+  "bag.catEquipped": "Equipped",
+  "bag.unequip": "Unequip",
+  "bag.unequippedWeapon": "You put away {item}. Back to bare claws.",
+  "bag.unequippedArmor": "You take off {item}. No armor now.",
   "bag.catEquip": "Equipment",
   "bag.catFood": "Food",
   "bag.catMat": "Materials",
   "bag.discarded": "You toss out {item}.",
-  "bag.cantDiscardEquipped": "You can't discard what you're wearing. Switch weapons or armor first.",
+  "bag.cantDiscardEquipped": "You can't discard what you're wearing. Unequip it first.",
   "bag.cantUseMaterial": "{item} is a material: it's for the forge, the kitchen, or its own special purpose. Not for eating.",
   "item.llena": "+{n} fullness",
   "item.engorda": "+{n} fat",
@@ -227,6 +232,8 @@ GD.i18n.en = {
   "st.title": "Improve stats",
   "st.points": "Points available: <b>{n}</b>",
   "st.confirm": "✓ Confirm changes",
+  "st.hint": "Shown value includes gear and port training. The <b>base</b> stat only increases with level-up points.",
+  "st.bonusLine": "+ {n} gear/training",
 
   /* ---- Solace Farms ---- */
   "ex.granja": "🌾 Visit the farms",
@@ -439,6 +446,8 @@ GD.i18n.en = {
   "spell.buy": "Learn — {n} gold",
   "spell.bought": "You learned {hechizo}. The spell is now available in combat.",
   "spell.upgradeOf": "Evolution of {base}",
+  "spell.pasivoSection": "Passive Techniques",
+  "spell.pasivoDesc": "Activate automatically in combat — not cast from this menu.",
 
   /* ---- School quests ---- */
   "shop.missions": "📜 Quests",
@@ -449,6 +458,7 @@ GD.i18n.en = {
   "quest.progress": "{n} / {total}",
   "quest.complete": "Quest complete! Spell unlocked: {hechizo}.",
   "quest.completeNR": "Quest complete!",
+  "quest.completeTecnicaPasiva": "Passive technique unlocked. It activates when you devour — no need to cast it.",
   "logro.unlocked": "✦ Legendary unlock: {nombre}. {desc}",
   "logro.unlockedSpell": "✦ Legendary unlock: {nombre}. {desc} Spell unlocked: {hechizo}.",
 
@@ -586,6 +596,8 @@ GD.i18n.en = {
   "cheat.ravenousSave": "Your impossible stomach stretches beyond all reason… and holds. (makemeravenous)",
   "cheat.eternalHunger": "Hunger bites, but something refuses to let you fall. (makemeeternal)",
   "cheat.eternalDamage": "That blow should have dropped you, but something refuses to let you fall. (makemeeternal)",
+
+  "items.sinArmar.textoTpl": "Just {cov}.",
 };
 
 
@@ -1547,9 +1559,9 @@ GD.content.en = {
   "quests.q_absorcion.nombre": "The First Conscious Gulp",
   "quests.q_absorcion.desc": "Devour 20 enemies. There's a difference between swallowing out of hunger and swallowing because you've mastered the act. When you cross that line, you'll feel it.",
   "quests.q_plenitud2.nombre": "Empty Belly",
-  "quests.q_plenitud2.desc": "Survive 5 grapples. A body that learns to bear another's weight starts to understand its own.",
+  "quests.q_plenitud2.desc": "Survive 3 grapples. A body that learns to bear another's weight starts to understand its own.",
   "quests.q_plenitud3.nombre": "The Great Transmutation",
-  "quests.q_plenitud3.desc": "Reach an obese state on 3 separate occasions. Only one who knows plenitude from within can transmute it in others.",
+  "quests.q_plenitud3.desc": "Talk to Vadak while in an obese state or above. Only one who knows plenitude from within can transmute it in others.",
 
   /* ---- miniEventos ---- */
   "miniEventos.ruinas_bosque.intro": "Between the trees, a moss-covered stone structure juts out. A ruin the forest has been swallowing for centuries.",
@@ -1899,4 +1911,14 @@ GD.content.en = {
   "miniEventos.corazon_manto.pasos.2.texto": "The clearing is sown with violet caps. One rises. Then another. The forest is taking your measure.",
   "miniEventos.corazon_manto.pasos.4.texto": "At the center, embedded in the oldest tree you've ever seen, is half a piece of heartwood. When you close your hand around it, the bark opens its eyes.",
   "miniEventos.corazon_manto.textoFin": "The Guardian comes apart into gentle roots and the whole Canopy exhales. It lets you go with the root half of the amulet beating slowly against your palm.",
+
+  /* ---- Legendary unlocks (here so L() can resolve them) ---- */
+  "logro.tradicionPlenitud.nombre": "The Final Understanding",
+  "logro.tradicionPlenitud.desc": "You devoured 50 creatures and finally learned to read the world's hunger. You no longer eat to survive — you understand.",
+  "logro.cuerpoVasto.nombre": "Vast Body",
+  "logro.cuerpoVasto.desc": "Your mass reached figures no longer explained by common anatomy. The world starts measuring itself against you.",
+
+  /* ---- Plenitude Tradition entry quest ---- */
+  "quests.q_plenitud0.nombre": "The First Audience",
+  "quests.q_plenitud0.desc": "Find Vadak in the Marshes. The Tradition isn't taught in words, but the teacher has to know you exist.",
 };

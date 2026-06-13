@@ -101,7 +101,7 @@ GD.hechizos = {
     nombre: "@@hechizos.levitacion_feast.nombre",
     desc:   "@@hechizos.levitacion_feast.desc",
     costoMana: 0, precio: 80,
-    tipo: "levitacion_feast", sinMenu: true,
+    tipo: "levitacion_feast", sinMenu: true, noShop: true,
   },
 
   // ---- Técnicas de Devorar  —  Tradición de la Plenitud ----
@@ -175,6 +175,17 @@ GD.hechizos = {
 };
 
 GD.quests = {
+  // ---- PLENITUD — puerta de entrada (visitar la cueva de Vadak una vez) ----
+  // q_absorcion y el resto de la cadena requieren este paso para que las quests
+  // no empiecen a contar antes de que el jugador haya conocido al maestro.
+  q_plenitud0: {
+    id: "q_plenitud0", escuela: "escuela_plenitud",
+    nombre: "@@quests.q_plenitud0.nombre",
+    desc:   "@@quests.q_plenitud0.desc",
+    tipo: "visitar", escuela: "escuela_plenitud", cantidad: 1,
+    recompensa: null,
+  },
+
   // ---- LUZ ----
   q_luz1: {
     id: "q_luz1", escuela: "escuela_blanca",
@@ -226,24 +237,19 @@ GD.quests = {
     requiere: "q_negra1",
   },
 
-  // ---- TRADICIÓN DE LA PLENITUD (placeholder — infraestructura lista, contenido a definir) ----
-  // Estas entradas existen para validar los nuevos tipos de condición end-to-end
-  // (devorar, grapple_survive, meals, reach_weight, times_obese). El diseño narrativo
-  // final (escuela/NPC/zona, redacción, valores de cantidad/umbral) queda abierto;
-  // por ahora apuntan a "feast" como recompensa simbólica del cierre de Acto III.
-  // q_absorcion: primer escalón — desbloqueá la técnica Absorción (20 devours)
   q_absorcion: {
     id: "q_absorcion", escuela: "escuela_plenitud",
     nombre:  "@@quests.q_absorcion.nombre",
     desc:    "@@quests.q_absorcion.desc",
     tipo: "devorar", cantidad: 20,
     recompensa: "absorcion",
+    requiere: "q_plenitud0",
   },
   q_plenitud2: {
     id: "q_plenitud2", escuela: "escuela_plenitud",
     nombre:  "@@quests.q_plenitud2.nombre",
     desc:    "@@quests.q_plenitud2.desc",
-    tipo: "grapple_survive", cantidad: 5,
+    tipo: "grapple_survive", cantidad: 3,
     recompensa: null, // escalón narrativo — Feast se otorga al completar q_plenitud3
     requiere: "q_absorcion",
   },
@@ -251,9 +257,9 @@ GD.quests = {
     id: "q_plenitud3", escuela: "escuela_plenitud",
     nombre:  "@@quests.q_plenitud3.nombre",
     desc:    "@@quests.q_plenitud3.desc",
-    tipo: "times_obese", umbral: 3, cantidad: 1,
+    tipo: "times_obese", umbral: 1, cantidad: 1,
     recompensa: "feast",
-    requiere: "q_plenitud2",
+    requiere: "q_plenitud0",
   },
 };
 

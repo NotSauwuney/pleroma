@@ -331,6 +331,14 @@ function hablarNPC(npcId, loc) {
     hablarVadakInmovil(loc);
     return;
   }
+  // Vadak: si la quest q_plenitud3 está activa y el jugador ya es mega-obeso, disparar ahora.
+  // Cubre el caso en que el cruce ocurrió antes de que la quest se desbloqueara (_fueMegaObeso ya true).
+  if (npcId === "vadak") {
+    const qd = S.player.quests && S.player.quests["q_plenitud3"];
+    if ((!qd || !qd.completed) && ESTADOS_OBESOS.includes(estadoCuerpoJugador())) {
+      tickQuest("times_obese", { valor: 1 });
+    }
+  }
   S.screen = () => hablarNPC(npcId, loc);
   const npc = GD.npcs[npcId];
   S.story = `${npcSprite(npcId)}<h2>${L(npc.nombre)}</h2><p class="npcline">"${flavorRand(npc.dialogos)}"</p>`;

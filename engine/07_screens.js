@@ -20,10 +20,40 @@ function abrirMochila(volverA) {
   S.screen = () => abrirMochila(volverA);
   const p = S.player;
   let h = `<h2>${t("bag.title")}</h2>`;
-  if (!p.inv.length) h += `<p>${t("bag.empty")}</p>`;
+
+  // ── Sección "Equipados" ─────────────────────────────────────
+  h += `<h3 class="invcat">${t("bag.catEquipped")}</h3><div class="invlist">`;
+  const armaDefault = p.arma.id === "garras";
+  h += `<div class="invrow">
+    <span class="invname">${nombreItem(p.arma)}</span>
+    <span class="invinfo">${itemResumen(p.arma)}</span>
+    ${!armaDefault ? `<button class="invunequip" data-slot="arma">${t("bag.unequip")}</button>` : ""}
+  </div>`;
+  const armaduraDefault = p.armadura.id === "sinArmar";
+  h += `<div class="invrow">
+    <span class="invname">${nombreItem(p.armadura)}</span>
+    <span class="invinfo">${itemResumen(p.armadura)}</span>
+    ${!armaduraDefault ? `<button class="invunequip" data-slot="armadura">${t("bag.unequip")}</button>` : ""}
+  </div>`;
+  h += `</div>`;
+
+  // ── Inventario (oculta lo que ya está en "Equipados") ───────
+  const hayItemsSueltos = p.inv.some((entry) => {
+    const it = resolveItem(entry.id);
+    if (it.tipo === "arma" && p.arma && p.arma.id === entry.id) return false;
+    if (it.tipo === "armadura" && p.armadura && p.armadura.id === entry.id) return false;
+    return true;
+  });
+  if (!hayItemsSueltos) h += `<p>${t("bag.empty")}</p>`;
   else {
     CATEGORIAS_MOCHILA.forEach((cat) => {
-      const entradas = p.inv.filter((entry) => categoriaItem(resolveItem(entry.id)) === cat.id);
+      const entradas = p.inv.filter((entry) => {
+        if (categoriaItem(resolveItem(entry.id)) !== cat.id) return false;
+        const it = resolveItem(entry.id);
+        if (it.tipo === "arma" && p.arma && p.arma.id === entry.id) return false;
+        if (it.tipo === "armadura" && p.armadura && p.armadura.id === entry.id) return false;
+        return true;
+      });
       if (!entradas.length) return;
       h += `<h3 class="invcat">${t(cat.labelKey)}</h3><div class="invlist">`;
       entradas.forEach((entry) => {
@@ -37,7 +67,7 @@ function abrirMochila(volverA) {
       h += `</div>`;
     });
   }
-  h += `<p class="hint">${t("bag.equipLine", { arma: nombreItem(p.arma), armadura: L(p.armadura.nombre) })}</p>`;
+
   S.story = h;
   setActions([{ label: t("ui.back"), cls: "primary", fn: () => {
     if (volverA === "combate") renderCombate();
@@ -49,6 +79,12 @@ function abrirMochila(volverA) {
   });
   document.querySelectorAll(".invdrop").forEach((b) => {
     b.onclick = () => descartarItem(b.dataset.id, volverA);
+  });
+  document.querySelectorAll(".invunequip").forEach((b) => {
+    b.onclick = () => {
+      if (b.dataset.slot === "arma") desequiparArma(volverA);
+      else desequiparArmadura(volverA);
+    };
   });
 }
 
@@ -63,6 +99,22 @@ function descartarItem(id, volverA) {
   }
   log(t("bag.discarded", { item: L(it.nombre) }), "bien");
   quitarItem(id);
+  abrirMochila(volverA);
+}
+
+// Desequipar arma → garras (el ítem vuelve a la sección de equipables)
+function desequiparArma(volverA) {
+  const it = S.player.arma;
+  S.player.arma = GD.items.garras;
+  log(t("bag.unequippedWeapon", { item: L(it.nombre) }), "bien");
+  abrirMochila(volverA);
+}
+
+// Desequipar armadura → sinArmar (el ítem vuelve a la sección de equipables)
+function desequiparArmadura(volverA) {
+  const it = S.player.armadura;
+  S.player.armadura = GD.items.sinArmar;
+  log(t("bag.unequippedArmor", { item: L(it.nombre) }), "bien");
   abrirMochila(volverA);
 }
 
@@ -90,7 +142,10 @@ function itemResumen(it) {
   if (it.tipo === "arma") return t("item.weapon", { d: it.dano, r: it.rango, stat: t("stat." + it.stat + ".abbr"), texto: L(it.texto) });
   if (it.tipo === "armadura") {
     const bonuses = ["FUE","AGI","INT","AGU","EST"].filter(k => it["bonus"+k]).map(k => `+${it["bonus"+k]} ${t("stat." + k + ".abbr")}`).join(" ");
-    return t("item.armor", { n: it.def, texto: L(it.texto) }) + (bonuses ? " · " + bonuses : "");
+    const textoArmadura = it.id === "sinArmar"
+      ? t("items.sinArmar.textoTpl", { cov: t("cover." + coberturaDe(S.player)) })
+      : L(it.texto);
+    return t("item.armor", { n: it.def, texto: textoArmadura }) + (bonuses ? " · " + bonuses : "");
   }
   if (it.tipo === "material") return L(it.sabor);
   return "";
@@ -149,18 +204,21 @@ function abrirStats(volverA, draft) {
 
   const filas = STAT_KEYS.map((k) => {
     const delta = draft[k] || 0;
-    const actual = stat(k);
+    const base  = p.base[k];
+    const bonus = ((p.armadura && p.armadura["bonus" + k]) || 0) + ((p.portStats && p.portStats[k]) || 0);
+    const actual = stat(k);  // base + species + armor + port + temp
+    const bonusHtml = bonus > 0 ? ` <span class="hint">${t("st.bonusLine", { n: bonus })}</span>` : "";
     const deltaHtml = delta > 0 ? ` → <b>${actual + delta}</b>` : "";
     return `
     <div class="ptrow">
-      <span class="ptname">${t("stat." + k + ".abbr")} — ${t("stat." + k + ".name")} (${actual}${deltaHtml})</span>
+      <span class="ptname">${t("stat." + k + ".abbr")} — ${t("stat." + k + ".name")} (${base}${bonusHtml}${deltaHtml})</span>
       <button class="ptminus" data-k="${k}" ${delta <= 0 ? "disabled" : ""}>−</button>
       <b class="ptval">${delta > 0 ? "+" + delta : "—"}</b>
       <button class="ptup"    data-k="${k}" ${puntosLibres <= 0 ? "disabled" : ""}>＋</button>
     </div>`;
   }).join("");
 
-  S.story = `<h2>${t("st.title")}</h2><p>${t("st.points", { n: puntosLibres })}</p><div class="ptgrid">${filas}</div>`;
+  S.story = `<h2>${t("st.title")}</h2><p>${t("st.points", { n: puntosLibres })}</p><p class="hint">${t("st.hint")}</p><div class="ptgrid">${filas}</div>`;
 
   const volver = () => {
     if (volverA === "combate") renderCombate();

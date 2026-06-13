@@ -174,7 +174,8 @@ function etiquetaGordura() {
    Actualiza highestWeight/highestFat, detecta transiciones a estados "obesos" para
    timesObese (solo cuenta el cruce, no cada turno que el jugador permanece ahí), y
    dispara las quests/logros asociados. */
-const ESTADOS_OBESOS = ["obeso", "morbido", "super", "ultra", "coloso", "leviatan", "monumento", "singularidad"];
+const ESTADOS_OBESOS      = ["obeso", "morbido", "super", "ultra", "coloso", "leviatan", "monumento", "singularidad"];
+const ESTADOS_MEGA_OBESOS = [         "morbido", "super", "ultra", "coloso", "leviatan", "monumento", "singularidad"];
 function trackWeightStats(p) {
   const ls = p.lifetimeStats;
   if (!ls) return;
@@ -182,11 +183,16 @@ function trackWeightStats(p) {
   if (w > ls.highestWeight) { ls.highestWeight = w; tickLogro("highestWeight", w); }
   if (f > ls.highestFat) { ls.highestFat = f; tickLogro("highestFat", f); }
 
-  const esObeso = ESTADOS_OBESOS.includes(estadoCuerpoJugador());
+  const estado = estadoCuerpoJugador();
+
+  // Logro: cuenta cualquier cruce a obeso+ (umbral clásico)
+  // Quest q_plenitud3: mismo umbral — se dispara al cruzar a obeso+, una vez completada no vuelve a correr.
+  const esObeso = ESTADOS_OBESOS.includes(estado);
   if (esObeso && !p._fueObeso) {
     ls.timesObese++;
-    tickQuest("times_obese", { valor: ls.timesObese });
     tickLogro("timesObese", ls.timesObese);
+    const qd = p.quests && p.quests["q_plenitud3"];
+    if (!qd || !qd.completed) tickQuest("times_obese", { valor: 1 });
   }
   p._fueObeso = esObeso;
 

@@ -99,6 +99,23 @@ function haySave() {
   return false;
 }
 
+/* Migración de saves viejos: si el jugador ya tiene el hechizo recompensa de una quest,
+   marcarla como completada para que la barra quede llena visualmente. */
+function _migrarQuests(p) {
+  if (!p.quests) p.quests = {};
+  for (const id in GD.quests) {
+    const q = GD.quests[id];
+    if (!q.recompensa) continue;
+    if (p.spells && p.spells.includes(q.recompensa)) {
+      if (!p.quests[id]) p.quests[id] = { progress: 0, completed: false };
+      if (!p.quests[id].completed) {
+        p.quests[id].progress = q.cantidad;
+        p.quests[id].completed = true;
+      }
+    }
+  }
+}
+
 /* Aplica un objeto de partida a S.player y arranca el juego. */
 function _aplicarSave(d) {
   S.player = d.player;
@@ -121,6 +138,7 @@ function _aplicarSave(d) {
     timesObese: 0,
     mealsConsumed: 0,
   }, S.player.lifetimeStats || {});
+  _migrarQuests(S.player);
   clearLog();
   log(t("menu.loaded"), "bien");
   entrarZona(d.zona || GD.world.inicio);
@@ -416,6 +434,7 @@ function renderTopbar() {
   if (bCh) bCh.textContent = t("ui.cheats");
   $("#btnUnidades").textContent = GD.unidades === "imperial" ? t("ui.imperial") : t("ui.metric");
   $("#lblLang").textContent = t("ui.language") + ":";
+  const bUp = $("#btnLangUpload"); if (bUp) bUp.title = t("ui.langUpload");
   $("#lblLog").textContent = t("ui.logHeader");
   const sel = $("#selLang");
   sel.innerHTML = langList().map((c) =>

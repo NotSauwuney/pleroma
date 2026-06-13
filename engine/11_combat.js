@@ -382,7 +382,8 @@ function devorarEnemigo(tecnica) {
 
   const pintar = () => {
     S.story = `<h2>${t("devour.title")}</h2><p>${t("devour.done", { enemy: ename })}</p>`;
-    setActions([{ label: t("ui.continue"), cls: "primary", fn: () => entrarZona(S.zona) }]);
+    const fn = S.barco ? mostrarBarco : () => entrarZona(S.zona);
+    setActions([{ label: t("ui.continue"), cls: "primary", fn }]);
   };
   S.screen = pintar; pintar();
 }
@@ -430,6 +431,7 @@ function mostrarFeast(food) {
   // Mini-evento encadenado: si venimos de un paso de combate, la salida sigue la cadena.
   const continuar = () => {
     if (S.miniEvento) avanzarMiniEvento();
+    else if (S.barco) mostrarBarco();
     else entrarZona(S.zona);
   };
 
@@ -616,6 +618,24 @@ function abrirMagia() {
     h += `</div>`;
   } else {
     h += `<p class="hint">${t("spell.noneKnown")}</p>`;
+  }
+
+  // Técnicas pasivas (sinMenu): se muestran como referencia, no se castean
+  const pasivas = aprendidos.filter(id => {
+    const sp = GD.hechizos[id];
+    return sp && sp.sinMenu && sp.tipo !== "levitacion_feast"; // levitacion es un pasivo de overworld, no de combate
+  });
+  if (pasivas.length) {
+    h += `<div class="spellsect"><h3>${t("spell.pasivoSection")}</h3>`;
+    h += `<p class="hint">${t("spell.pasivoDesc")}</p>`;
+    pasivas.forEach((id) => {
+      const sp = GD.hechizos[id];
+      h += `<div class="spellrow spell-legendary">
+        <span class="spellname">✦ ${L(sp.nombre)}</span>
+        <span class="spellinfo">${L(sp.desc)}</span>
+      </div>`;
+    });
+    h += `</div>`;
   }
   S.story = h;
   setActions([

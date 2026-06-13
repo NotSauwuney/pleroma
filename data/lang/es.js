@@ -18,6 +18,7 @@ GD.i18n.es = {
   "ui.save": "💾 Guardar",
   "ui.menu": "☰ Menú",
   "ui.language": "Idioma",
+  "ui.langUpload": "Cargar tu propio idioma desde archivos",
   "ui.metric": "Métrico",
   "ui.imperial": "Imperial",
   "ui.logHeader": "Registro",
@@ -208,11 +209,15 @@ GD.i18n.es = {
   "bag.equipLine": "Arma: <b>{arma}</b> · Armadura: <b>{armadura}</b>",
   "bag.equipWeapon": "Equipás {item}.",
   "bag.equipArmor": "Te ponés {item}.",
+  "bag.catEquipped": "Equipados",
+  "bag.unequip": "Desequipar",
+  "bag.unequippedWeapon": "Sacás {item}. Volvés a las garras.",
+  "bag.unequippedArmor": "Te sacás {item}. Quedás sin armadura.",
   "bag.catEquip": "Equipables",
   "bag.catFood": "Comida",
   "bag.catMat": "Materiales",
   "bag.discarded": "Descartás {item}.",
-  "bag.cantDiscardEquipped": "No podés descartar lo que tenés puesto. Primero cambiate de arma o armadura.",
+  "bag.cantDiscardEquipped": "No podés descartar lo que tenés puesto. Primero desequipalo.",
   "bag.cantUseMaterial": "{item} es un material: sirve en la forja, la cocina o para su propósito especial. No se come.",
   "item.llena": "+{n} llenura",
   "item.engorda": "+{n} grasa",
@@ -227,6 +232,8 @@ GD.i18n.es = {
   "st.title": "Mejorar stats",
   "st.points": "Puntos disponibles: <b>{n}</b>",
   "st.confirm": "✓ Confirmar cambios",
+  "st.hint": "El valor mostrado incluye equipo y entrenamiento de puerto. El stat <b>base</b> solo sube con puntos de nivel.",
+  "st.bonusLine": "+ {n} eq./ent.",
 
   /* ---- Granjas de Solaz ---- */
   "ex.granja": "🌾 Visitar las granjas",
@@ -439,6 +446,8 @@ GD.i18n.es = {
   "spell.buy": "Aprender — {n} oro",
   "spell.bought": "Aprendiste {hechizo}. El hechizo ya está disponible en combate.",
   "spell.upgradeOf": "Evolución de {base}",
+  "spell.pasivoSection": "Técnicas Pasivas",
+  "spell.pasivoDesc": "Se activan solas durante el combate — no se usan desde este menú.",
 
   /* ---- Misiones escolares ---- */
   "shop.missions": "📜 Misiones",
@@ -449,6 +458,7 @@ GD.i18n.es = {
   "quest.progress": "{n} / {total}",
   "quest.complete": "¡Misión completada! Hechizo desbloqueado: {hechizo}.",
   "quest.completeNR": "¡Misión completada!",
+  "quest.completeTecnicaPasiva": "Técnica pasiva desbloqueada. Se activa sola al devorar — no hace falta lanzarla.",
   "logro.unlocked": "✦ Logro legendario: {nombre}. {desc}",
   "logro.unlockedSpell": "✦ Logro legendario: {nombre}. {desc} Hechizo desbloqueado: {hechizo}.",
 
@@ -586,6 +596,8 @@ GD.i18n.es = {
   "cheat.ravenousSave": "Tu estómago imposible se estira más allá de toda razón… y aguanta. (makemeravenous)",
   "cheat.eternalHunger": "El hambre muerde, pero algo no te deja caer. (makemeeternal)",
   "cheat.eternalDamage": "El golpe debió tumbarte, pero algo no te deja caer. (makemeeternal)",
+
+  "items.sinArmar.textoTpl": "Solo {cov}.",
 };
 
 
@@ -1524,9 +1536,9 @@ GD.content.es = {
   "quests.q_absorcion.nombre": "El Primer Trago Consciente",
   "quests.q_absorcion.desc": "Devorá a 20 enemigos. Hay una diferencia entre engullir por hambre y engullir porque ya dominás el acto. Cuando cruces esa línea, vas a sentirlo.",
   "quests.q_plenitud2.nombre": "Panza Vacía",
-  "quests.q_plenitud2.desc": "Sobreviví a 5 forcejeos. El cuerpo que aprende a soportar el peso ajeno empieza a entender el propio.",
+  "quests.q_plenitud2.desc": "Sobreviví a 3 forcejeos. El cuerpo que aprende a soportar el peso ajeno empieza a entender el propio.",
   "quests.q_plenitud3.nombre": "La Gran Transmutación",
-  "quests.q_plenitud3.desc": "Alcanzá un estado obeso en 3 ocasiones distintas. Solo quien conoce la plenitud desde adentro puede transmutarla en otros.",
+  "quests.q_plenitud3.desc": "Hablá con Vadak estando en estado obeso o superior. Solo quien conoce la plenitud desde adentro puede transmutarla en otros.",
 
   /* ---- miniEventos ---- */
   "miniEventos.ruinas_bosque.intro": "Entre los árboles asoma una estructura de piedra cubierta de musgo. Una ruina que el bosque lleva siglos tragándose.",
@@ -1876,4 +1888,14 @@ GD.content.es = {
   "miniEventos.corazon_manto.pasos.2.texto": "El claro está sembrado de sombreros violetas. Uno se levanta. Después otro. El bosque te está midiendo.",
   "miniEventos.corazon_manto.pasos.4.texto": "En el centro, incrustada en el árbol más viejo que hayas visto, hay media pieza de madera-corazón. Cuando cerrás la mano sobre ella, la corteza abre los ojos.",
   "miniEventos.corazon_manto.textoFin": "El Guardián se deshace en raíces mansas y el Manto entero exhala. Te deja ir con la mitad raíz del amuleto latiendo despacio contra tu palma.",
+
+  /* ---- Logros legendarios (van aquí para que L() los resuelva) ---- */
+  "logro.tradicionPlenitud.nombre": "La Comprensión Final",
+  "logro.tradicionPlenitud.desc": "Devoraste a 50 criaturas y aprendiste, por fin, a leer el hambre del mundo. Ya no comés para sobrevivir: comprendés.",
+  "logro.cuerpoVasto.nombre": "Cuerpo Vasto",
+  "logro.cuerpoVasto.desc": "Tu masa alcanzó cifras que ya no se explican con anatomía común. El mundo empieza a medirse en relación a vos.",
+
+  /* ---- Quest de entrada a la Tradición de la Plenitud ---- */
+  "quests.q_plenitud0.nombre": "La Primera Audiencia",
+  "quests.q_plenitud0.desc": "Buscá a Vadak en las Ciénagas. La Tradición no se enseña con palabras, pero el maestro tiene que saber que existís.",
 };

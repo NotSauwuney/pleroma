@@ -77,6 +77,10 @@ function tickQuest(tipo, opts) {
           if (recompensa.legendario && S.player.spells && !tieneHechizo(recompensa.id)) {
             S.player.spells.push(recompensa.id);
           }
+          // Las técnicas pasivas (sinMenu) no aparecen en el menú de combate: aviso extra.
+          if (recompensa.sinMenu) {
+            log(t("quest.completeTecnicaPasiva"), "bien");
+          }
         } else {
           log(t("quest.completeNR"), "bien"); // misión narrativa sin recompensa de hechizo
         }
@@ -142,6 +146,10 @@ function verMisiones(escuelaId, loc) {
       const rew = q.recompensa ? GD.hechizos[q.recompensa] : null;
       const rewLabel = rew ? L(rew.nombre) : "—";
       h += `<div class="quest-done">${t("quest.done")}${rew ? ` · ${t("quest.reward")}: ${rewLabel}` : ""}</div>`;
+      h += `<div class="quest-bar-wrap">
+        <div class="quest-bar"><div class="quest-bar-fill" style="width:100%"></div></div>
+        <span class="quest-prog">${t("quest.progress", { n: q.cantidad, total: q.cantidad })}</span>
+      </div>`;
     } else {
       h += `<div class="quest-desc">${L(q.desc)}</div>`;
       const pct = clamp((d.progress / q.cantidad) * 100, 0, 100);
