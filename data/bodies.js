@@ -112,13 +112,25 @@ GD.estadosJugador = {
     label: "@@estadosJugador.gordo.label",
     desc: "@@estadosJugador.gordo.desc",
   },
+  cebado: {
+    label: "@@estadosJugador.cebado.label",
+    desc: "@@estadosJugador.cebado.desc",
+  },
   muyGordo: {
     label: "@@estadosJugador.muyGordo.label",
     desc: "@@estadosJugador.muyGordo.desc",
   },
+  corpulento: {
+    label: "@@estadosJugador.corpulento.label",
+    desc: "@@estadosJugador.corpulento.desc",
+  },
   obeso: {
     label: "@@estadosJugador.obeso.label",
     desc: "@@estadosJugador.obeso.desc",
+  },
+  descomunal: {
+    label: "@@estadosJugador.descomunal.label",
+    desc: "@@estadosJugador.descomunal.desc",
   },
   morbido: {
     label: "@@estadosJugador.morbido.label",

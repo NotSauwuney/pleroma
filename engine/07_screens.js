@@ -69,11 +69,7 @@ function abrirMochila(volverA) {
   }
 
   S.story = h;
-  setActions([{ label: t("ui.back"), cls: "primary", fn: () => {
-    if (volverA === "combate") renderCombate();
-    else if (volverA === "barco") mostrarBarco();
-    else mostrarZona();
-  }}]);
+  setActions([{ label: t("ui.back"), cls: "primary", fn: () => volverDesde(volverA) }]);
   document.querySelectorAll(".invuse").forEach((b) => {
     b.onclick = () => usarItemFuera(b.dataset.id, volverA);
   });
@@ -176,7 +172,7 @@ function verEstado(volverA) {
   S.screen = () => verEstado(volverA);
   const st = GD.estadosJugador[estadoCuerpoJugador()] || GD.estadosJugador.promedio;
   const p = S.player;
-  const furFat = ["rellenito","gordo","muyGordo","obeso","morbido","super","ultra","coloso","leviatan","monumento","singularidad"];
+  const furFat = ["rellenito","gordo","cebado","muyGordo","corpulento","obeso","descomunal","morbido","super","ultra","coloso","leviatan","monumento","singularidad"];
   const cob = coberturaDe(p);
   const furKey = `estado.cover.${cob}${furFat.includes(estadoCuerpoJugador()) ? "" : ".thin"}`;
   const pelajeLine = p.pelaje ? `<p class="npcline">${t(furKey, { color: p.pelaje })}</p>` : "";
@@ -184,11 +180,7 @@ function verEstado(volverA) {
     <p class="hint">${L(st.label)} · ${mostrarPeso(peso())} · ${mostrarAltura(alturaCm())} · IMC ${imc().toFixed(1)} — ${t("sb.composition", { magro: mostrarPeso(pesoMagro()), graso: mostrarPeso(pesoGraso()) })}</p>
     ${pelajeLine}
     <p>${L(st.desc)}</p>`;
-  setActions([{ label: t("ui.back"), cls: "primary", fn: () => {
-    if (volverA === "combate") renderCombate();
-    else if (volverA === "barco") mostrarBarco();
-    else mostrarZona();
-  }}]);
+  setActions([{ label: t("ui.back"), cls: "primary", fn: () => volverDesde(volverA) }]);
 }
 
 /* ============================================================
@@ -220,11 +212,7 @@ function abrirStats(volverA, draft) {
 
   S.story = `<h2>${t("st.title")}</h2><p>${t("st.points", { n: puntosLibres })}</p><p class="hint">${t("st.hint")}</p><div class="ptgrid">${filas}</div>`;
 
-  const volver = () => {
-    if (volverA === "combate") renderCombate();
-    else if (volverA === "barco") mostrarBarco();
-    else mostrarZona();
-  };
+  const volver = () => volverDesde(volverA);
   const hayCambios = puntosUsados > 0;
 
   setActions([

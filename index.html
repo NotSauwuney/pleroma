@@ -58,6 +58,51 @@
     float:right; width:120px; margin:0 0 10px 14px; border-radius:8px;
     border:1px solid var(--line); background:var(--panel2);
   }
+  /* ============================================================
+     ESCENA NPC (alt. A): panel de arte dedicado + panel contenido.
+     Lo arma render() envolviendo el sprite y el resto del #story.
+     Flexbox: si el sprite no existe (img se autoelimina), .npc-art
+     queda :empty -> display:none y el contenido ocupa todo el ancho.
+     ============================================================ */
+  #story.scene-npc{ display:flex; gap:22px; align-items:flex-start; }
+  .npc-art{ flex:0 0 36%; max-width:36%; align-self:stretch; }
+  .npc-art:empty{ display:none; }
+  .npc-art .spr-npc{
+    float:none; width:100%; height:auto; margin:0; display:block;
+    aspect-ratio:3/4; object-fit:cover; object-position:top center;
+    max-height:74vh; border:1px solid var(--line); border-radius:10px;
+    background:var(--panel2);
+  }
+  .npc-content{ flex:1 1 0; min-width:0; }
+  .npc-content > h2:first-child,
+  .npc-content > h1:first-child{ margin-top:0; }
+  /* ============================================================
+     ESCENA ENEMIGO (alt. D): retrato centrado y dominante (~65-70%),
+     con el nombre + barra de vida como caption compacto debajo.
+     ============================================================ */
+  #story.scene-enemy{ display:flex; flex-direction:column; align-items:center; text-align:center; }
+  .enemy-art{ width:70%; display:flex; justify-content:center; margin:4px 0 4px; }
+  .enemy-art:empty{ display:none; }
+  .enemy-art .spr-enemy{
+    width:auto; max-width:100%; max-height:70vh; margin:0;
+    image-rendering:pixelated; border-radius:8px;
+  }
+  .enemy-cap{ width:100%; max-width:520px; }
+  .enemy-cap > h2:first-child{ margin-top:6px; }
+  .enemy-cap .bar-wrap{ text-align:left; }
+  /* Landscape mobile: mantener el split, achicar el arte del NPC */
+  @media(max-height:520px) and (orientation:landscape){
+    .npc-art{ flex-basis:30%; max-width:30%; }
+    .enemy-art{ width:55%; }
+    .enemy-art .spr-enemy{ max-height:78vh; }
+  }
+  /* Portrait mobile: apilar arte arriba (tope 40vh) y contenido debajo */
+  @media(max-width:600px) and (orientation:portrait){
+    #story.scene-npc{ flex-direction:column; gap:12px; }
+    .npc-art{ flex-basis:auto; max-width:100%; width:100%; }
+    .npc-art .spr-npc{ max-height:40vh; aspect-ratio:auto; object-fit:contain; }
+    .enemy-art{ width:90%; }
+  }
   @media(max-width:600px){ .spr-npc{ width:90px; } .spr-enemy{ max-width:130px; } }
   #story .tag{color:var(--muted); font-style:italic;}
   #story input[type=text]{
@@ -66,6 +111,7 @@
   }
   .hint{color:var(--muted); font-size:13px; font-style:italic;}
   .npcline{color:var(--accent2); font-style:italic; border-left:2px solid var(--line); padding-left:10px;}
+  .npc-presencia{color:#f0c840; font-style:italic; font-size:14px; margin:6px 0 2px; padding-left:10px;}
   /* Actions */
   #actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px;}
   .act{
@@ -212,6 +258,7 @@
 <script src="data/bodies.js"></script>
 <script src="data/npcs.js"></script>
 <script src="data/npcWG.js"></script>
+<script src="data/dialogTrees.js"></script>
 <script src="data/spells.js"></script>
 <script src="data/miniEventos.js"></script>
 <!-- IDIOMAS (uno por archivo) + capa i18n -->
@@ -225,6 +272,7 @@
 <script src="engine/04_render.js"></script>
 <script src="engine/05_charcreation.js"></script>
 <script src="engine/06_exploration.js"></script>
+<script src="engine/06b_events.js"></script>
 <script src="engine/07_screens.js"></script>
 <script src="engine/08_town.js"></script>
 <script src="engine/09_npcwg.js"></script>

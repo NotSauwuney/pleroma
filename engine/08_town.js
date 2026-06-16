@@ -30,9 +30,9 @@ const LUGARES = {
   nido_raices:   { npc: "silvano",    job: "podar_lianas",    upgrade: false, nameKey: "shop.nidoName",   descKey: "shop.nidoDesc" },
 };
 
-// Nombre de un ítem para mostrar (las armas muestran su nivel de mejora +N)
+// Nombre de un ítem para mostrar (armas y armaduras muestran su nivel de mejora +N)
 function nombreItem(it) {
-  if (it && it.tipo === "arma") {
+  if (it && (it.tipo === "arma" || it.tipo === "armadura")) {
     const nl = (S.player.mejoras && S.player.mejoras[it.id]) || 0;
     return L(it.nombre) + (nl > 0 ? " +" + nl : "");
   }
@@ -42,6 +42,18 @@ function nombreItem(it) {
 function costoMejora(it, nl) { return round((20 + it.precio * 0.3) * (nl + 1)); }
 
 let _lastShopVisit = null;
+
+// Multiplicador de precio según relación del jugador con el NPC de esa tienda
+function _shopPriceMult(tipo) {
+  const lug = LUGARES[tipo];
+  if (!lug) return 1;
+  const npcId = lug.npc;
+  if (!npcId || !GD.npcWG || !GD.npcWG[npcId]) return 1;
+  const wgs = _wgState(npcId);
+  if (wgs.relationship === "enamorado") return 0.5;
+  if (wgs.relationship === "enemistado") return 2.0;
+  return 1;
+}
 
 function abrirTienda(tipo) {
   if (tipo === "granja") { abrirGranja(); return; }
@@ -59,15 +71,28 @@ function abrirTienda(tipo) {
   const npc = GD.npcs[lug.npc];
   let h = `${npcSprite(lug.npc)}<h2>${t(lug.nameKey)}</h2>
     <p>${t(lug.descKey)} ${t("shop.yourGold", { n: p.oro })}</p>
-    <p class="npcline">${flavorRand(npc.saludo)}</p>
-    <div class="shoplist">`;
+    <p class="npcline">${flavorRand(npc.saludo)}</p>`;
+  if (GD.npcWG && GD.npcWG[lug.npc]) {
+    const _pWgs = _wgState(lug.npc);
+    const _pWgd = GD.npcWG[lug.npc];
+    const _pBond = _bondLevel(_pWgs, _pWgd);
+    const _pKey = `shop.${lug.npc}.presencia.b${_pBond}.p${_pWgs.pesoIdx}`;
+    const _pTxt = t(_pKey);
+    if (_pTxt !== _pKey) h += `<p class="npc-presencia">${_pTxt}</p>`;
+  }
+  h += `<div class="shoplist">`;
+  const mult = _shopPriceMult(tipo);
+  if (mult !== 1) {
+    h += `<p class="${mult < 1 ? "hint" : "mal"}">${t(mult < 1 ? "shop.relEnamorado" : "shop.relEnemistado")}</p>`;
+  }
   cat.forEach((id) => {
     const it = GD.items[id];
-    const caro = it.precio > p.oro;
+    const precio = Math.ceil(it.precio * mult);
+    const caro = precio > p.oro;
     h += `<div class="shoprow">
       <span class="shopname">${L(it.nombre)}</span>
       <span class="invinfo">${itemResumen(it)}</span>
-      <button class="shopbuy" data-id="${id}" ${caro ? "disabled" : ""}>${t("shop.buy", { n: it.precio })}</button>
+      <button class="shopbuy" data-id="${id}" ${caro ? "disabled" : ""}>${t("shop.buy", { n: precio })}</button>
     </div>`;
   });
   h += `</div>`;
@@ -269,8 +294,10 @@ function craftearArma(recetaId, loc) {
 
 function comprar(id, tipo) {
   const it = GD.items[id], p = S.player;
-  if (p.oro < it.precio) return;
-  p.oro -= it.precio;
+  const mult = _shopPriceMult(tipo);
+  const precio = Math.ceil(it.precio * mult);
+  if (p.oro < precio) return;
+  p.oro -= precio;
   darItem(id, 1);
   log(t("shop.bought", { item: L(it.nombre) }), "bien");
   abrirTienda(tipo);
@@ -345,9 +372,16 @@ function hablarNPC(npcId, loc) {
   const acts = [
     { label: t("shop.talkMore"), fn: () => hablarNPC(npcId, loc) },
   ];
+  if (GD.dialogTrees && GD.dialogTrees[npcId]) {
+    acts.push({ label: t("npc.conversar"), fn: () => startDialogTree(npcId, loc) });
+  }
   if (GD.npcWG && GD.npcWG[npcId]) {
     acts.push({ label: t("npcwg.observe"), fn: () => verNPCwg(npcId, loc) });
     acts.push({ label: t("npcwg.feed"),    fn: () => menuAlimentarNPC(npcId, loc) });
+    const wgsH = _wgState(npcId);
+    if (wgsH.relationship === "enamorado" && GD.dialogTrees && GD.dialogTrees[npcId]) {
+      acts.push({ label: t("npc.interaccionEnamorado"), fn: () => renderDialogNode(npcId, "enamorado_interacciones", loc) });
+    }
   }
   acts.push({ label: t("ui.back"), cls: "primary", fn: () => abrirTienda(loc) });
   setActions(acts);

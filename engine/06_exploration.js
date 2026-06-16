@@ -62,6 +62,26 @@ function mostrarZona() {
   accionesZona();
 }
 
+/* Mapa lugar-id -> acción de overworld. Reemplaza el viejo if-ladder de accionesZona:
+   agregar un lugar nuevo es ahora una entrada acá, no otra rama. `cls` opcional.
+   (forrajear se resuelve aparte porque su label/fn dependen de la zona.) */
+const LUGARES_ACCION = {
+  posada:           { label: "ex.inn",            fn: () => abrirTienda("posada") },
+  tienda:           { label: "ex.shop",           fn: () => abrirTienda("tienda") },
+  herreria:         { label: "ex.herreria",       fn: () => abrirTienda("herreria") },
+  escuela_blanca:   { label: "ex.escuelaBl",      fn: () => abrirTienda("escuela_blanca") },
+  escuela_gris:     { label: "ex.escuelaGr",      fn: () => abrirTienda("escuela_gris") },
+  escuela_negra:    { label: "ex.escuelaNg",      fn: () => abrirTienda("escuela_negra") },
+  escuela_plenitud: { label: "ex.escuelaPl",      fn: () => abrirTienda("escuela_plenitud") },
+  descanso:         { label: "ex.rest",           fn: descansar },
+  granja:           { label: "ex.granja",         fn: abrirGranja },
+  puerto_bote:      { label: "ex.bote",           fn: hablarBarquero },
+  entrenamiento_puerto: { label: "ex.entrenarPuerto", fn: abrirMenuEntrenamiento },
+  puesto_solakh:    { label: "ex.puestoSolakh",   fn: () => abrirTienda("puesto_solakh") },
+  nido_raices:      { label: "ex.nidoRaices",     fn: () => abrirTienda("nido_raices") },
+  puerto_isla:      { label: "ex.puertoIsla", cls: "primary", fn: volverAlPuerto },
+};
+
 function accionesZona() {
   const z = GD.world.zonas[S.zona];
   const acts = [];
@@ -83,21 +103,13 @@ function accionesZona() {
     acts.push({ label: t("porteador.llamar"), fn: menuPorteador });
   }
   (z.lugares || []).forEach((lug) => {
-    if (lug === "posada") acts.push({ label: t("ex.inn"), fn: () => abrirTienda("posada") });
-    if (lug === "tienda") acts.push({ label: t("ex.shop"), fn: () => abrirTienda("tienda") });
-    if (lug === "herreria") acts.push({ label: t("ex.herreria"), fn: () => abrirTienda("herreria") });
-    if (lug === "escuela_blanca")   acts.push({ label: t("ex.escuelaBl"),  fn: () => abrirTienda("escuela_blanca") });
-    if (lug === "escuela_gris")     acts.push({ label: t("ex.escuelaGr"),  fn: () => abrirTienda("escuela_gris") });
-    if (lug === "escuela_negra")    acts.push({ label: t("ex.escuelaNg"),  fn: () => abrirTienda("escuela_negra") });
-    if (lug === "escuela_plenitud") acts.push({ label: t("ex.escuelaPl"),  fn: () => abrirTienda("escuela_plenitud") });
-    if (lug === "descanso") acts.push({ label: t("ex.rest"), fn: descansar });
-    if (lug === "forrajear") acts.push({ label: t(z.forrajeoGranja ? "ex.recolectar" : "ex.forage"), fn: z.forrajeoGranja ? () => forrajearGranja(z) : forrajear });
-    if (lug === "granja") acts.push({ label: t("ex.granja"), fn: abrirGranja });
-    if (lug === "puerto_bote")        acts.push({ label: t("ex.bote"),           fn: hablarBarquero });
-    if (lug === "entrenamiento_puerto") acts.push({ label: t("ex.entrenarPuerto"), fn: abrirMenuEntrenamiento });
-    if (lug === "puesto_solakh") acts.push({ label: t("ex.puestoSolakh"), fn: () => abrirTienda("puesto_solakh") });
-    if (lug === "nido_raices")   acts.push({ label: t("ex.nidoRaices"),   fn: () => abrirTienda("nido_raices") });
-    if (lug === "puerto_isla") acts.push({ label: t("ex.puertoIsla"), cls: "primary", fn: volverAlPuerto });
+    if (lug === "forrajear") {   // label/fn dependen de si la zona es granja o monte
+      acts.push({ label: t(z.forrajeoGranja ? "ex.recolectar" : "ex.forage"),
+                  fn: z.forrajeoGranja ? () => forrajearGranja(z) : forrajear });
+      return;
+    }
+    const def = LUGARES_ACCION[lug];
+    if (def) acts.push({ label: t(def.label), cls: def.cls, fn: def.fn });
   });
   z.salidas.forEach((s) => acts.push({ label: t("ex.exitPrefix") + L(s.texto), fn: () => viajar(s.a) }));
   acts.push({ label: t("ex.checkStatus"), fn: () => verEstado("explorar") });
@@ -156,7 +168,7 @@ function descansar() {
   p.mana = maxMana();
   limpiarReflejo();
   tickQuest("rest", {});
-  log(vacio ? t("log.restEmpty") : t("log.rest"), vacio ? "mal" : "bien");
+  log(vacio ? tPeso("log.restEmpty") : tPeso("log.rest"), vacio ? "mal" : "bien");
   mostrarZona();
 }
 
@@ -425,15 +437,7 @@ function barcoTurno() {
       const eId = rand() < BARCO_JEFE_CHANCE ? "titan_marino" : choice(GD.enemyPools.oceano);
       const e = GD.enemies[eId];
       log(t("barco.amuletoCalma"), "bien");
-      if (e && e.gota) {
-        e.gota.forEach((g) => {
-          if (rand() < g.chance) {
-            darItem(g.id, 1);
-            const it = GD.items[g.id];
-            if (it) log(t("drop.got", { item: L(it.nombre) }), "bien");
-          }
-        });
-      }
+      otorgarGota(e);   // el amuleto intercepta al enemigo: sus drops caen igual
     }
     return true;
   }
@@ -455,7 +459,7 @@ function barcoDescansar() {
   p.sta = maxSta();
   p.mana = maxMana();
   limpiarReflejo();
-  log(vacio ? t("log.restEmpty") : t("barco.descansoLog"), vacio ? "mal" : "bien");
+  log(vacio ? tPeso("log.restEmpty") : t("barco.descansoLog"), vacio ? "mal" : "bien");
   if (!barcoTurno()) return;
   mostrarBarco();
 }

@@ -171,7 +171,15 @@ function renderCreacionIdentidad() {
   document.querySelectorAll(".hbtn:not(.cobbtn)").forEach((b) => {
     b.onclick = () => {
       snapshotIdentidad();
-      c.alturaCm = clamp(c.alturaCm + (+b.dataset.d), minH, maxH);
+      const d = +b.dataset.d;
+      if (GD.unidades === "imperial") {
+        // Paso de 1 pulgada: convertir a pulgadas, ajustar, volver a cm.
+        // Así cada clic mueve exactamente una pulgada (antes 1cm ≈ 0.39", trababa).
+        const totalIn = Math.round(c.alturaCm / 2.54) + d;
+        c.alturaCm = clamp(totalIn * 2.54, minH, maxH);
+      } else {
+        c.alturaCm = clamp(c.alturaCm + d, minH, maxH);
+      }
       renderCreacion();
     };
   });

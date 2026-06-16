@@ -355,35 +355,17 @@ function devorarEnemigo(tecnica) {
   tickLogro("enemiesDevoured", p.lifetimeStats.enemiesDevoured);
   trackWeightStats(p);
 
-  // Drops de materiales (gota) — mismo trato que una victoria normal
-  if (e.gota) {
-    e.gota.forEach((g) => {
-      if (rand() < g.chance) {
-        darItem(g.id, 1);
-        const it = GD.items[g.id];
-        if (it) log(t("drop.got", { item: L(it.nombre) }), "bien");
-      }
-    });
-  }
+  otorgarGota(e);   // drops de materiales — mismo trato que una victoria normal
 
   finCombate();
   if (comer({}, true)) return;       // empacho por devorar -> muerte
   const ename = L(e.nombre);
 
-  // Mini-evento encadenado: continúa la secuencia en vez de volver a la zona
-  if (S.miniEvento) {
-    S.screen = () => {
-      S.story = `<h2>${t("devour.title")}</h2><p>${t("devour.done", { enemy: ename })}</p>`;
-      setActions([{ label: t("ui.continue"), cls: "primary", fn: () => avanzarMiniEvento() }]);
-    };
-    S.screen();
-    return;
-  }
-
+  // Devorar también es una victoria: mismo flujo de salida que el combate normal.
+  const continuar = fnContinuarCombate();
   const pintar = () => {
-    S.story = `<h2>${t("devour.title")}</h2><p>${t("devour.done", { enemy: ename })}</p>`;
-    const fn = S.barco ? mostrarBarco : () => entrarZona(S.zona);
-    setActions([{ label: t("ui.continue"), cls: "primary", fn }]);
+    S.story = `<h2>${t("devour.title")}</h2><p>${tPeso("devour.done", { enemy: ename })}</p>`;
+    setActions([{ label: t("ui.continue"), cls: "primary", fn: continuar }]);
   };
   S.screen = pintar; pintar();
 }
@@ -397,16 +379,7 @@ function feastEnemigo() {
   if (e.oro) log(t("log.goldGain", { n: e.oro }), "bien");
   tickQuest("kills", { zona: S.zona, enemyId: e.id });
 
-  // Drops de materiales (gota) — mismo trato que una victoria normal
-  if (e.gota) {
-    e.gota.forEach((g) => {
-      if (rand() < g.chance) {
-        darItem(g.id, 1);
-        const it = GD.items[g.id];
-        if (it) log(t("drop.got", { item: L(it.nombre) }), "bien");
-      }
-    });
-  }
+  otorgarGota(e);   // drops de materiales — mismo trato que una victoria normal
 
   // Nombre y sabor bilingües (no atados al idioma activo)
   const food = {
@@ -428,12 +401,8 @@ function mostrarFeast(food) {
     <p class="hint">${t("feast.reserve", { n: conjuredCount(), cap: conjuredCap() })}
       ${puedeGuardar ? t("feast.canStore") : t("feast.capFull")}</p>`;
 
-  // Mini-evento encadenado: si venimos de un paso de combate, la salida sigue la cadena.
-  const continuar = () => {
-    if (S.miniEvento) avanzarMiniEvento();
-    else if (S.barco) mostrarBarco();
-    else entrarZona(S.zona);
-  };
+  // Feast comparte el mismo flujo de salida que cualquier otra victoria.
+  const continuar = fnContinuarCombate();
 
   setActions([
     { label: t("feast.eatNow"), cls: "primary", fn: () => {
@@ -478,39 +447,44 @@ function victoriaCombate() {
   log(t("log.goldGain", { n: e.oro }), "bien");
   tickQuest("kills", { zona: S.zona, enemyId: e.id });
 
-  // Drops de materiales (gota)
-  if (e.gota) {
-    e.gota.forEach((g) => {
-      if (rand() < g.chance) {
-        darItem(g.id, 1);
-        const it = GD.items[g.id];
-        if (it) log(t("drop.got", { item: L(it.nombre) }), "bien");
-      }
-    });
-  }
+  otorgarGota(e);   // drops de materiales
 
   finCombate();
 
-  // Mini-evento encadenado: continúa la secuencia en vez de volver a la zona
-  if (S.miniEvento) {
-    const texto = flavorDerrota;
-    S.screen = () => {
-      S.story = `<h2>${t("victory.title")}</h2><p>${texto}</p>`;
-      setActions([{ label: t("ui.continue"), cls: "primary", fn: () => avanzarMiniEvento() }]);
-    };
-    S.screen();
-    return;
-  }
-
-  const continuar = S.barco ? mostrarBarco : () => entrarZona(S.zona);
+  // Toda victoria comparte el mismo flujo de salida (mini-evento → barco → zona).
+  // En mini-evento encadenado no ofrecemos la coletilla "podrías devorar".
+  const continuar = fnContinuarCombate();
+  const couldDevour = S.miniEvento ? "" : `<p>${t("victory.couldDevour")}</p>`;
   const pintar = () => {
-    S.story = `<h2>${t("victory.title")}</h2><p>${flavorDerrota}</p><p>${t("victory.couldDevour")}</p>`;
+    S.story = `<h2>${t("victory.title")}</h2><p>${flavorDerrota}</p>${couldDevour}`;
     setActions([{ label: t("ui.continue"), cls: "primary", fn: continuar }]);
   };
   S.screen = pintar; pintar();
 }
 
 function finCombate() { S.combate = null; S.mode = "explorar"; }
+
+/* Otorga los drops de materiales (campo `gota`) de un enemigo, cada uno según su
+   probabilidad. Mismo trato para victoria normal, devorar, Feast y el barco. */
+function otorgarGota(e) {
+  if (!e || !e.gota) return;
+  e.gota.forEach((g) => {
+    if (rand() < g.chance) {
+      darItem(g.id, 1);
+      const it = GD.items[g.id];
+      if (it) log(t("drop.got", { item: L(it.nombre) }), "bien");
+    }
+  });
+}
+
+/* Continuación tras GANAR un combate (por golpe, devorar, Feast o magia):
+   todas las victorias convergen en el mismo flujo de salida. Devuelve la función
+   que debe ejecutar el botón "Continuar" según el contexto. */
+function fnContinuarCombate() {
+  if (S.miniEvento) return () => avanzarMiniEvento();
+  if (S.barco) return mostrarBarco;
+  return () => entrarZona(S.zona);
+}
 
 /* DEVORAR — sub-menú de técnicas */
 function abrirDevorar() {

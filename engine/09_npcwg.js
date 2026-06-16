@@ -25,9 +25,11 @@ function _wgState(npcId) {
   if (!p.npcWG) p.npcWG = {};
   if (!p.npcWG[npcId]) {
     const wgd = GD.npcWG[npcId];
-    p.npcWG[npcId] = { pesoIdx: wgd.pesoBase, wgAccum: 0, bondPts: 0, lastFed: -9999 };
+    p.npcWG[npcId] = { pesoIdx: wgd.pesoBase, wgAccum: 0, bondPts: 0, lastFed: -9999, relationship: "neutral" };
   }
-  return p.npcWG[npcId];
+  const wgs = p.npcWG[npcId];
+  if (!wgs.relationship) wgs.relationship = "neutral";
+  return wgs;
 }
 
 // Nivel de vínculo actual (0-4) según bondPts acumulados
@@ -63,6 +65,9 @@ function verNPCwg(npcId, loc) {
   h += `<p class="npcbody">${L(estado.desc)}</p>`;
   h += `<p class="hint">${t("npcwg.estado")}: <b>${L(estado.label)}</b></p>`;
   h += `<p class="hint">${t("npcwg.bond")}: <b>${bondName}</b> (${t("npcwg.bondPts", { n: wgs.bondPts })}) · ${t("npcwg.progress")}: ${progreso}</p>`;
+  if (wgs.relationship !== "neutral") {
+    h += `<p class="hint ${wgs.relationship === "enamorado" ? "" : "mal"}">${t("npcwg.relationship")}: <b>${t("npcwg.rel." + wgs.relationship)}</b></p>`;
+  }
   S.story = h;
   setActions([{ label: t("ui.back"), cls: "primary", fn: () => hablarNPC(npcId, loc) }]);
 }
@@ -156,6 +161,111 @@ function alimentarNPC(npcId, itemId, loc) {
   }
   // Volver a la pantalla del NPC
   hablarNPC(npcId, loc);
+}
+
+// ============================================================
+// DIALOG TREE ENGINE
+// ============================================================
+
+// Evalúa si se cumple una condición de opción de diálogo.
+// cond: { bond, peso, flag, decision }  — todos opcionales.
+function _dialogCondMet(cond, npcId) {
+  if (!cond) return true;
+  if (cond.bond !== undefined) {
+    const wgd = GD.npcWG && GD.npcWG[npcId];
+    const wgs = wgd ? _wgState(npcId) : null;
+    if (!wgd || !wgs || _bondLevel(wgs, wgd) < cond.bond) return false;
+  }
+  if (cond.peso !== undefined) {
+    const wgd = GD.npcWG && GD.npcWG[npcId];
+    const wgs = wgd ? _wgState(npcId) : null;
+    if (!wgd || !wgs || wgs.pesoIdx < cond.peso) return false;
+  }
+  if (cond.flag) {
+    const flags = S.player.flags || {};
+    if (!flags[cond.flag]) return false;
+  }
+  if (cond.decision) {
+    const [key, val] = cond.decision.split("=");
+    const decisions = S.player.decisions || {};
+    if (decisions[key] !== val) return false;
+  }
+  if (cond.relationship !== undefined) {
+    const wgdr = GD.npcWG && GD.npcWG[npcId];
+    const wgsr = wgdr ? _wgState(npcId) : null;
+    if (!wgsr || wgsr.relationship !== cond.relationship) return false;
+  }
+  return true;
+}
+
+// Aplica los efectos de una opción de diálogo elegida.
+// effect: { bondBonus, setFlag, setDecision }  — todos opcionales.
+function _dialogApplyEffect(effect, npcId) {
+  if (!effect) return;
+  if (effect.bondBonus) {
+    const wgd = GD.npcWG && GD.npcWG[npcId];
+    const wgs = wgd ? _wgState(npcId) : null;
+    if (wgs) wgs.bondPts += effect.bondBonus;
+  }
+  if (effect.setFlag) {
+    if (!S.player.flags) S.player.flags = {};
+    S.player.flags[effect.setFlag] = true;
+  }
+  if (effect.setDecision) {
+    const [key, val] = effect.setDecision.split("=");
+    if (!S.player.decisions) S.player.decisions = {};
+    S.player.decisions[key] = val;
+  }
+  if (effect.setRelationship) {
+    const wgdr = GD.npcWG && GD.npcWG[npcId];
+    const wgsr = wgdr ? _wgState(npcId) : null;
+    if (wgsr) {
+      wgsr.relationship = effect.setRelationship;
+      log(t("npcwg.rel.changed." + effect.setRelationship), "bien");
+    }
+  }
+}
+
+// Renderiza un nodo del árbol de diálogos.
+function renderDialogNode(npcId, nodeId, loc) {
+  S.screen = () => renderDialogNode(npcId, nodeId, loc);
+  const tree = GD.dialogTrees[npcId];
+  const node = tree && tree.nodes[nodeId];
+  if (!node) { hablarNPC(npcId, loc); return; }
+
+  const npc = GD.npcs[npcId];
+  let h = `${npcSprite(npcId)}<h2>${L(npc.nombre)}</h2>`;
+  h += `<p class="npcline">"${L(node.text)}"</p>`;
+  S.story = h;
+
+  const acts = node.options
+    .filter(opt => _dialogCondMet(opt.cond, npcId))
+    .map(opt => ({
+      label: L(opt.text),
+      cls: opt.tone === "positive" ? "good" : opt.tone === "negative" ? "bad" : "",
+      fn: () => {
+        _dialogApplyEffect(opt.effect, npcId);
+        if (opt.next === "exit") {
+          hablarNPC(npcId, loc);
+        } else {
+          renderDialogNode(npcId, opt.next, loc);
+        }
+      },
+    }));
+
+  // Fallback si todas las opciones están bloqueadas por condición
+  if (!acts.length) {
+    acts.push({ label: L("dialogTree.common.despedirse"), cls: "primary", fn: () => hablarNPC(npcId, loc) });
+  }
+
+  setActions(acts);
+}
+
+// Inicia el árbol de diálogos de un NPC (desde el nodo raíz).
+function startDialogTree(npcId, loc) {
+  const tree = GD.dialogTrees && GD.dialogTrees[npcId];
+  if (!tree) { hablarNPC(npcId, loc); return; }
+  renderDialogNode(npcId, tree.root, loc);
 }
 
 // Trabajar: gana oro a cambio de STAMINA + TIEMPO (no spameable)

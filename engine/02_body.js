@@ -57,7 +57,11 @@ function stat(key) {
 function capEntrenamientoPuerto(key) {
   return Math.max(2, Math.floor(S.player.base[key] / 3));
 }
-function maxHea() { return 40 + stat("AGU") * 6 + S.player.nivel * 5; }
+/* Vida máxima. La masa es magia: la grasa por encima del piso esencial se almacena
+   como savia y engrosa la barra de vida (FAT_HP_PER_KG). Esto vuelve al cuerpo pesado
+   una mole durísima de tumbar — el contrapeso a su inmovilidad. */
+function fatHP() { return round(Math.max(0, pesoGraso() - FAT_FLOOR) * FAT_HP_PER_KG); }
+function maxHea() { return 40 + stat("AGU") * 6 + S.player.nivel * 5 + fatHP(); }
 function maxFul() { return round((60 + stat("EST") * 10) * rasgo("panzaMult", 1)); }
 function maxMana() { return 4 + stat("INT"); }
 function maxSta() { return 80 + stat("AGU") * 4; }
@@ -128,8 +132,8 @@ function estadoCuerpoJugador() {
     ["flaco",      21],    // IMC 18.5–21
     ["esbelto",    24],    // IMC 21–24
     ["promedio",   27],
-    ["blando", 31], ["rellenito", 35], ["gordo", 55], ["muyGordo", 78],
-    ["obeso", 108], ["morbido", 150], ["super", 275], ["ultra", 355],
+    ["blando", 31], ["rellenito", 35], ["gordo", 55], ["cebado", 66], ["muyGordo", 78],
+    ["corpulento", 92], ["obeso", 108], ["descomunal", 128], ["morbido", 150], ["super", 275], ["ultra", 355],
     // --- Estados puramente estéticos (sin mecánica nueva): solo más IMC ---
     ["coloso", 495], ["leviatan", 660], ["monumento", 1200],
   ];
@@ -141,8 +145,8 @@ function estadoCuerpoJugador() {
    Para los mensajes de "demasiado lleno" / "sin aliento": no siempre sos una mole.
    Tres voces: "bajo" (cuerpos livianos/medios), "alto" (gordo en adelante) y
    "ripped" (los 3 estados musculosos). tPeso() resuelve la clave compuesta. */
-const ESTADOS_MSG_ALTO = ["gordo", "muyGordo", "obeso", "morbido", "super", "ultra",
-  "coloso", "leviatan", "monumento", "singularidad"];
+const ESTADOS_MSG_ALTO = ["gordo", "cebado", "muyGordo", "corpulento", "obeso", "descomunal",
+  "morbido", "super", "ultra", "coloso", "leviatan", "monumento", "singularidad"];
 function pesoMsgVariant() {
   const st = estadoCuerpoJugador();
   if (st === "ripped1" || st === "ripped2" || st === "ripped3") return "ripped";
@@ -174,7 +178,7 @@ function etiquetaGordura() {
    Actualiza highestWeight/highestFat, detecta transiciones a estados "obesos" para
    timesObese (solo cuenta el cruce, no cada turno que el jugador permanece ahí), y
    dispara las quests/logros asociados. */
-const ESTADOS_OBESOS      = ["obeso", "morbido", "super", "ultra", "coloso", "leviatan", "monumento", "singularidad"];
+const ESTADOS_OBESOS      = ["obeso", "descomunal", "morbido", "super", "ultra", "coloso", "leviatan", "monumento", "singularidad"];
 const ESTADOS_MEGA_OBESOS = [         "morbido", "super", "ultra", "coloso", "leviatan", "monumento", "singularidad"];
 function trackWeightStats(p) {
   const ls = p.lifetimeStats;
@@ -211,7 +215,10 @@ function mostrarDistancia(cm) {
 // Altura: métrico en metros (1.79 m); imperial en pies/pulgadas (5'10")
 function mostrarAltura(cm) {
   if (GD.unidades === "imperial") {
-    const ti = cm / 2.54, ft = Math.floor(ti / 12), inch = Math.round(ti - ft * 12);
+    // Redondear primero a pulgadas totales y luego repartir en pies/pulgadas,
+    // para que 11.8" no quede como 12" (ej: 152cm = 5'0", no 4'12").
+    const totalIn = Math.round(cm / 2.54);
+    const ft = Math.floor(totalIn / 12), inch = totalIn - ft * 12;
     return ft + "'" + inch + '"';
   }
   return t("unit.m", { n: (cm / 100).toFixed(2) });
@@ -219,8 +226,12 @@ function mostrarAltura(cm) {
 function toggleUnidades() {
   GD.unidades = GD.unidades === "metric" ? "imperial" : "metric";
   try { localStorage.setItem("pleroma_units", GD.unidades); } catch (e) {}
-  if (S.screen) S.screen();
-  render();
+  renderTopbar();   // refrescar la etiqueta del botón (Métrico/Imperial)
+  // Re-ejecutar la pantalla activa vuelve a construir el DOM y, crucialmente,
+  // re-asigna sus handlers (botones .hbtn de altura, etc.). Llamar render() de
+  // nuevo después reemplazaría esos nodos y perdería los handlers, así que solo
+  // caemos a render() cuando no hay pantalla activa.
+  if (S.screen) S.screen(); else render();
 }
 function etiquetaLlenura() {
   const r = S.player.ful / maxFul();

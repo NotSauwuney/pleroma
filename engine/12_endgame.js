@@ -26,7 +26,7 @@ function mostrarMuerte(causa, enBarco) {
   const penaltyKey = causa === "inanicion" ? "death.penaltyStarved" : "death.penalty";
   const rescate = enBarco ? `<p>${t("barco.rescate")}</p>` : "";
   S.story = `<h2>${t("death.title")}</h2>
-    <p>${t("death." + causa)}</p>
+    <p>${causa === "vencido" ? tPeso("death.vencido") : t("death." + causa)}</p>
     ${rescate}
     <p class="hint">${t(penaltyKey, { xp: p.xp, oro: p.oro })}</p>`;
   setActions([{ label: t(enBarco ? "death.wakeBtnPuerto" : "death.wakeBtn"), cls: "primary", fn: () => revivir(causa, enBarco) }]);
@@ -204,7 +204,7 @@ function guardarPantalla(volverA) {
   for (let i = 0; i < SAVE_SLOTS; i++) {
     const meta = _slotMeta(i);
     const info = meta
-      ? `<b>${meta.nombre}</b> · Nv.${meta.nivel} · <span class="hint">${meta.fecha}</span>`
+      ? `<b>${meta.nombre}</b> · ${t("ui.levelAbbr")}${meta.nivel} · <span class="hint">${meta.fecha}</span>`
       : `<span class="hint">${t("save.slotEmpty")}</span>`;
     const deletebtn = meta
       ? `<button class="act slotbtn-delete" data-slot="${i}" style="color:var(--mal,#c44);">${t("save.deleteBtn")}</button>`
@@ -225,9 +225,7 @@ function guardarPantalla(volverA) {
     <button class="act primary" id="btnExportSave">${t("save.exportBtn")}</button>
   </div>`;
   S.story = h;
-  setActions([{ label: t("ui.back"), cls: "primary", fn: () => {
-    if (_guardarPantallaVolverA === "combate") renderCombate(); else mostrarZona();
-  }}]);
+  setActions([{ label: t("ui.back"), cls: "primary", fn: () => volverDesde(_guardarPantallaVolverA) }]);
   document.querySelectorAll(".slotbtn-save").forEach((b) => {
     const i = +b.dataset.slot;
     b.onclick = () => _slotMeta(i) ? _confirmarSobreescribir(i) : _guardarEnSlot(i);
@@ -277,7 +275,7 @@ function cargarPantalla() {
   for (let i = 0; i < SAVE_SLOTS; i++) {
     const meta = _slotMeta(i);
     const info = meta
-      ? `<b>${meta.nombre}</b> · Nv.${meta.nivel} · <span class="hint">${meta.fecha}</span>`
+      ? `<b>${meta.nombre}</b> · ${t("ui.levelAbbr")}${meta.nivel} · <span class="hint">${meta.fecha}</span>`
       : `<span class="hint">${t("save.slotEmpty")}</span>`;
     h += `<div class="saveslot">
       <span class="slotnum">${t("save.slot", { n: i + 1 })}</span>
@@ -290,7 +288,7 @@ function cargarPantalla() {
   if (leg) {
     h += `<div class="saveslot" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line);">
       <span class="slotnum hint">${t("load.legacySlot")}</span>
-      <span class="slotinfo"><b>${leg.nombre}</b> · Nv.${leg.nivel}</span>
+      <span class="slotinfo"><b>${leg.nombre}</b> · ${t("ui.levelAbbr")}${leg.nivel}</span>
       <button class="act" id="btnLoadLegacy">${t("load.loadBtn")}</button>
     </div>`;
   }
@@ -468,12 +466,12 @@ function bindTopbar() {
           const code = res.codes[0];
           setLang(code);
           renderTopbar();
-          if (typeof log === "function") log(`Idioma cargado: ${langName(code)} (${res.codes.join(", ")}).`, "bien");
+          if (typeof log === "function") log(t("ui.langLoaded", { name: langName(code), codes: res.codes.join(", ") }), "bien");
         } else {
-          alert("No se pudo cargar el idioma:\n\n" + res.error);
+          alert(t("ui.langLoadFail", { error: res.error }));
         }
       };
-      reader.onerror = () => alert("No se pudo leer el archivo.");
+      reader.onerror = () => alert(t("ui.langReadFail"));
       reader.readAsText(file, "utf-8");
       inp.value = "";   // permite re-subir el mismo archivo
     };

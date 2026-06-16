@@ -101,6 +101,7 @@ function avanzarTiempo(turnos, sinInanicion) {
       const maxLL = maxLeanLoss();
       if (maxLL > 0) p.leanLoss = Math.min(maxLL, (p.leanLoss || 0) + LEAN_METAB);
     }
+    if (p.hea > maxHea()) p.hea = maxHea();   // perder grasa baja la vida máx (savia) -> no dejar la barra por encima del tope
     if (p.turnos % 3 === 0) p.mana = Math.min(maxMana(), p.mana + 1);
   }
   // Cuando la acción es comer, la inanición se difiere para resolverla tras la comida.

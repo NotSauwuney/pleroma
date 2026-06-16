@@ -51,6 +51,14 @@ GD.npcWG = {
         label: "@@npcWG.tabernero.estados.3.label",
         desc: "@@npcWG.tabernero.estados.3.desc",
       },
+      {
+        label: "@@npcWG.tabernero.estados.4.label",
+        desc: "@@npcWG.tabernero.estados.4.desc",
+      },
+      {
+        label: "@@npcWG.tabernero.estados.5.label",
+        desc: "@@npcWG.tabernero.estados.5.desc",
+      },
     ],
     favFoods: ["guiso", "festin", "cocina_guiso_granja", "cocina_festin_cosecha"],
     receptivo: ["dia", "noche"],
@@ -107,6 +115,14 @@ GD.npcWG = {
         label: "@@npcWG.granjero.estados.3.label",
         desc: "@@npcWG.granjero.estados.3.desc",
       },
+      {
+        label: "@@npcWG.granjero.estados.4.label",
+        desc: "@@npcWG.granjero.estados.4.desc",
+      },
+      {
+        label: "@@npcWG.granjero.estados.5.label",
+        desc: "@@npcWG.granjero.estados.5.desc",
+      },
     ],
     favFoods: ["pan", "cocina_sopa_raices", "cocina_pan_campo", "cocina_guiso_granja"],
     receptivo: ["dia"],
@@ -161,6 +177,14 @@ GD.npcWG = {
       {
         label: "@@npcWG.cocinera.estados.3.label",
         desc: "@@npcWG.cocinera.estados.3.desc",
+      },
+      {
+        label: "@@npcWG.cocinera.estados.4.label",
+        desc: "@@npcWG.cocinera.estados.4.desc",
+      },
+      {
+        label: "@@npcWG.cocinera.estados.5.label",
+        desc: "@@npcWG.cocinera.estados.5.desc",
       },
     ],
     favFoods: ["pastel", "cocina_torta_miel", "cocina_natilla", "cocina_budin_manteca", "cocina_gloria_glotona"],
@@ -288,6 +312,14 @@ GD.npcWG = {
       {
         label: "@@npcWG.mercader.estados.3.label",
         desc: "@@npcWG.mercader.estados.3.desc",
+      },
+      {
+        label: "@@npcWG.mercader.estados.4.label",
+        desc: "@@npcWG.mercader.estados.4.desc",
+      },
+      {
+        label: "@@npcWG.mercader.estados.5.label",
+        desc: "@@npcWG.mercader.estados.5.desc",
       },
     ],
     favFoods: ["crema", "pastel", "cocina_natilla", "cocina_gloria_glotona"],

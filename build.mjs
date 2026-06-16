@@ -1,7 +1,7 @@
 import { minify } from "terser";
-import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, cpSync, rmSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync, cpSync, rmSync, createWriteStream } from "fs";
 import { join } from "path";
-import { execSync } from "child_process";
+import archiver from "archiver";
 
 const ROOT = new URL(".", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1");
 
@@ -25,6 +25,7 @@ const JS_FILES = [
   "engine/04_render.js",
   "engine/05_charcreation.js",
   "engine/06_exploration.js",
+  "engine/06b_events.js",
   "engine/07_screens.js",
   "engine/08_town.js",
   "engine/09_npcwg.js",
@@ -87,18 +88,30 @@ async function build() {
 
   // Crear pleroma.zip con index.html y bundle.min.js en la raíz (requerido por itch.io)
   // + la carpeta assets/ junto a ellos (rutas relativas que el HTML referencia).
+  //
+  // Usamos `archiver` en vez de PowerShell Compress-Archive: este último escribe
+  // los separadores de ruta con barra invertida ("assets\sprites\x.png"), lo que
+  // viola la especificación ZIP (debe ser "/"). En Windows se ve bien, pero al
+  // extraer en Linux/macOS —y en la app de itch.io— cada entrada queda como un
+  // archivo plano con barras invertidas en el nombre en vez de una carpeta, y
+  // itch lo rechaza por "insecure file paths". archiver genera entradas con "/"
+  // y solo incluye exactamente lo que necesitamos (index + bundle + assets).
   const zipPath = join(ROOT, "pleroma.zip");
   if (existsSync(zipPath)) unlinkSync(zipPath);
-  const zipItems = [
-    `'${join(ROOT, "dist", "index.html")}'`,
-    `'${join(ROOT, "dist", "bundle.min.js")}'`,
-  ];
-  if (hasAssets) zipItems.push(`'${assetsDist}'`);
-  execSync(
-    `powershell -Command "Compress-Archive -Path ${zipItems.join(",")} -DestinationPath '${zipPath}'"`,
-    { stdio: "inherit" }
-  );
-  console.log("pleroma.zip  ← listo para subir a itch.io");
+  await new Promise((resolve, reject) => {
+    const output = createWriteStream(zipPath);
+    const archive = archiver("zip", { zlib: { level: 9 } });
+    output.on("close", resolve);
+    archive.on("warning", (err) => { if (err.code === "ENOENT") console.warn(err); else reject(err); });
+    archive.on("error", reject);
+    archive.pipe(output);
+    // En la raíz del zip, con nombres explícitos (siempre "/" como separador).
+    archive.file(join(ROOT, "dist", "index.html"), { name: "index.html" });
+    archive.file(join(ROOT, "dist", "bundle.min.js"), { name: "bundle.min.js" });
+    if (hasAssets) archive.directory(assetsDist, "assets");
+    archive.finalize();
+  });
+  console.log(`pleroma.zip  ← listo para subir a itch.io (${(readFileSync(zipPath).length / 1024).toFixed(1)} KB)`);
   console.log("\n✓ Build completo.");
 }
 

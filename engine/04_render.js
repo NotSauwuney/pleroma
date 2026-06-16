@@ -60,10 +60,46 @@ function spriteFallback(img) {
 if (typeof window !== "undefined") window.spriteFallback = spriteFallback;
 
 function render() {
-  $("#story").innerHTML = S.story || "";
+  const story = $("#story");
+  story.innerHTML = S.story || "";
+  applySceneLayout(story);
   renderActions();
   renderSidebar();
   renderLog();
+}
+
+/* ============================================================
+   applySceneLayout: detecta un sprite líder en #story y reestructura
+   en paneles de escena (sin tocar cada pantalla).
+   - .spr-npc  -> alt. A: panel de arte (36%) + panel de contenido.
+   - .spr-enemy-> alt. D: arte centrado dominante + caption (nombre+vida).
+   Si no hay sprite (img se autoeliminó por falta de archivo), la vista
+   queda como texto plano, igual que antes.
+   ============================================================ */
+function applySceneLayout(story) {
+  story.classList.remove("scene-npc", "scene-enemy");
+  const lead = story.firstElementChild;
+  if (!lead || lead.tagName !== "IMG") return;
+
+  if (lead.classList.contains("spr-npc")) {
+    const art = el("div", "npc-art");
+    const content = el("div", "npc-content");
+    story.removeChild(lead);
+    art.appendChild(lead);
+    while (story.firstChild) content.appendChild(story.firstChild);
+    story.appendChild(art);
+    story.appendChild(content);
+    story.classList.add("scene-npc");
+  } else if (lead.classList.contains("spr-enemy")) {
+    const art = el("div", "enemy-art");
+    const cap = el("div", "enemy-cap");
+    story.removeChild(lead);
+    art.appendChild(lead);
+    while (story.firstChild) cap.appendChild(story.firstChild);
+    story.appendChild(art);
+    story.appendChild(cap);
+    story.classList.add("scene-enemy");
+  }
 }
 
 function renderLog() {
@@ -131,3 +167,12 @@ function renderActions() {
   });
 }
 function setActions(list) { S.actions = list; render(); }
+
+/* Navegación de retorno compartida: las pantallas auxiliares (mochila, estado,
+   stats, guardado) reciben un destino y vuelven al contexto correcto.
+   Centralizado acá para no repetir el if-ladder en cada pantalla. */
+function volverDesde(dest) {
+  if (dest === "combate") renderCombate();
+  else if (dest === "barco") mostrarBarco();
+  else mostrarZona();
+}
